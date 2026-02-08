@@ -26,6 +26,7 @@ const ManageUsers = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -360,7 +361,9 @@ const ManageUsers = () => {
       setSuccess(
         "Password reset initiated. User will be prompted to change password on next login.",
       );
-      setShowEditModal(false);
+      setShowResetPasswordModal(false);
+      setSelectedUser(null);
+      await fetchUsers();
     } catch (err) {
       setError(err.message || "Failed to reset password");
       console.error("Password reset error:", err);
@@ -717,18 +720,29 @@ const ManageUsers = () => {
                         </td>
                         {isAdmin && (
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            {u.role === USER_ROLES.STUDENT && (
+                              <button
+                                onClick={() => {
+                                  setSelectedUser(u);
+                                  setEditForm({
+                                    class: u.class || "",
+                                    batch: u.batch || "",
+                                  });
+                                  setShowEditModal(true);
+                                }}
+                                className="text-indigo-600 hover:text-indigo-900 mr-4"
+                              >
+                                Edit
+                              </button>
+                            )}
                             <button
                               onClick={() => {
                                 setSelectedUser(u);
-                                setEditForm({
-                                  class: u.class || "",
-                                  batch: u.batch || "",
-                                });
-                                setShowEditModal(true);
+                                setShowResetPasswordModal(true);
                               }}
-                              className="text-indigo-600 hover:text-indigo-900 mr-4"
+                              className="text-orange-600 hover:text-orange-900 mr-4"
                             >
-                              Edit
+                              Reset Password
                             </button>
                             <button
                               onClick={() => handleDeleteUser(u.id)}
@@ -903,108 +917,118 @@ const ManageUsers = () => {
           </div>
         )}
 
-        {/* Edit User Modal */}
+        {/* Edit Student Modal */}
         {showEditModal && selectedUser && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
               <div className="mt-3">
                 <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
-                  {selectedUser.role === USER_ROLES.STUDENT
-                    ? "Edit Student Information"
-                    : "Reset Password"}
+                  Edit Student Information
                 </h3>
 
-                {selectedUser.role === USER_ROLES.STUDENT ? (
-                  <form onSubmit={handleUpdateStudent}>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Email: <strong>{selectedUser.email}</strong>
-                      </label>
-                    </div>
+                <form onSubmit={handleUpdateStudent}>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Email: <strong>{selectedUser.email}</strong>
+                    </label>
+                  </div>
 
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Class
-                      </label>
-                      <select
-                        value={editForm.class}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, class: e.target.value })
-                        }
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        required
-                      >
-                        <option value="">Select Class</option>
-                        {[5, 6, 7, 8, 9, 10, 11, 12].map((cls) => (
-                          <option key={cls} value={`Class ${cls}`}>
-                            Class {cls}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Class
+                    </label>
+                    <select
+                      value={editForm.class}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, class: e.target.value })
+                      }
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      required
+                    >
+                      <option value="">Select Class</option>
+                      {[5, 6, 7, 8, 9, 10, 11, 12].map((cls) => (
+                        <option key={cls} value={`Class ${cls}`}>
+                          Class {cls}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Batch
-                      </label>
-                      <select
-                        value={editForm.batch}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, batch: e.target.value })
-                        }
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        required
-                      >
-                        <option value="">Select Batch</option>
-                        <option value="Batch A">Batch A</option>
-                        <option value="Batch B">Batch B</option>
-                        <option value="Batch C">Batch C</option>
-                      </select>
-                    </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Batch
+                    </label>
+                    <select
+                      value={editForm.batch}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, batch: e.target.value })
+                      }
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      required
+                    >
+                      <option value="">Select Batch</option>
+                      <option value="Batch A">Batch A</option>
+                      <option value="Batch B">Batch B</option>
+                      <option value="Batch C">Batch C</option>
+                    </select>
+                  </div>
 
-                    <div className="flex gap-2 justify-end">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowEditModal(false);
-                          setSelectedUser(null);
-                        }}
-                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                      >
-                        Update
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Reset password for: <strong>{selectedUser.email}</strong>
-                    </p>
-                    <div className="flex gap-2 justify-end">
-                      <button
-                        onClick={() => {
-                          setShowEditModal(false);
-                          setSelectedUser(null);
-                        }}
-                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => handleResetPassword(selectedUser.id)}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                      >
-                        Confirm Reset
-                      </button>
-                    </div>
-                  </>
-                )}
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowEditModal(false);
+                        setSelectedUser(null);
+                      }}
+                      className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reset Password Modal */}
+        {showResetPasswordModal && selectedUser && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
+                  Reset Password
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Reset password for: <strong>{selectedUser.email}</strong>
+                </p>
+                <p className="text-sm text-gray-500 mb-4">
+                  The user will be prompted to change their password on next
+                  login.
+                </p>
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => {
+                      setShowResetPasswordModal(false);
+                      setSelectedUser(null);
+                    }}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleResetPassword(selectedUser.id)}
+                    className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+                  >
+                    Confirm Reset
+                  </button>
+                </div>
               </div>
             </div>
           </div>

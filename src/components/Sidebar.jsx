@@ -101,7 +101,7 @@ const Sidebar = () => {
           />
         </svg>
       ),
-      roles: [USER_ROLES.ADMIN],
+      roles: [USER_ROLES.ADMIN, USER_ROLES.TEACHER],
     },
   ];
 
