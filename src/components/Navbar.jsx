@@ -1,0 +1,393 @@
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import Logo from "./Logo";
+import { FiMenu, FiX, FiChevronDown, FiChevronRight } from "react-icons/fi";
+import { Dropdown } from "antd";
+import { useAuth } from "../context/AuthContext";
+
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [openMobileSubmenu, setOpenMobileSubmenu] = useState(null);
+  const location = useLocation();
+  const { user, userRole, isStudent, isTeacher, isAdmin } = useAuth();
+
+  // Handle window resize to close mobile menu on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsOpen(false);
+        setOpenMobileSubmenu(null);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Courses dropdown items
+  const coursesItems = [
+    {
+      key: "jee",
+      label: (
+        <Link
+          to="/courses/category/jee"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          JEE Preparation
+        </Link>
+      ),
+    },
+    {
+      key: "neet",
+      label: (
+        <Link
+          to="/courses/category/neet"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          NEET Preparation
+        </Link>
+      ),
+    },
+    {
+      key: "foundation",
+      label: (
+        <Link
+          to="/courses/category/foundation"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Foundation (6-10)
+        </Link>
+      ),
+    },
+    {
+      key: "boards",
+      label: (
+        <Link
+          to="/courses/category/boards"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Board Exams (11-12)
+        </Link>
+      ),
+    },
+  ];
+
+  // Login dropdown items
+  const loginItems = [
+    {
+      key: "student",
+      label: (
+        <Link
+          to="/login?role=student"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Student Login
+        </Link>
+      ),
+    },
+    {
+      key: "teacher",
+      label: (
+        <Link
+          to="/login?role=teacher"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Teacher Login
+        </Link>
+      ),
+    },
+    {
+      key: "admin",
+      label: (
+        <Link
+          to="/login?role=admin"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Admin Login
+        </Link>
+      ),
+    },
+  ];
+
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    {
+      name: "Courses",
+      path: "/courses",
+      hasDropdown: true,
+      items: coursesItems,
+    },
+    { name: "Faculty", path: "/faculty" },
+    { name: "Blog", path: "/blog" },
+    { name: "Events", path: "/gallery" },
+    { name: "Contact", path: "/contact" },
+  ];
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const isActive = (path) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
+
+  const toggleMobileSubmenu = (name) => {
+    setOpenMobileSubmenu(openMobileSubmenu === name ? null : name);
+  };
+
+  return (
+    <nav
+      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/95 backdrop-blur-md shadow-md py-6 md:py-2 border-b border-gray-100"
+          : "bg-white py-8 md:py-4 border-b border-transparent"
+      }`}
+    >
+      <div className="container-custom">
+        <div className="flex justify-center items-center relative">
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center absolute left-4 md:left-8">
+            <Link to="/">
+              <Logo className="h-10 w-auto" textClassName="text-2xl" />
+            </Link>
+          </div>
+
+          {/* Desktop Menu - Centered */}
+          <div className="hidden md:flex space-x-1 items-center justify-center">
+            {navLinks.map((link) =>
+              link.hasDropdown ? (
+                <Dropdown
+                  key={link.name}
+                  menu={{ items: link.items }}
+                  placement="bottomCenter"
+                  overlayClassName="navbar-dropdown"
+                  trigger={["hover"]}
+                >
+                  <Link
+                    to={link.path}
+                    className={`relative px-4 py-2 font-medium transition-all duration-300 group inline-flex items-center gap-1 hover:scale-105 ${
+                      isActive(link.path)
+                        ? "text-samarth-blue-700"
+                        : "text-samarth-gray-600 hover:text-samarth-blue-700"
+                    }`}
+                  >
+                    {link.name}
+                    <FiChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+                    <span
+                      className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-samarth-blue-700 transform origin-center transition-transform duration-500 ease-out ${
+                        isActive(link.path)
+                          ? "scale-x-100"
+                          : "scale-x-0 group-hover:scale-x-100"
+                      }`}
+                    />
+                  </Link>
+                </Dropdown>
+              ) : (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`relative px-4 py-2 font-medium transition-all duration-300 group hover:scale-105 ${
+                    isActive(link.path)
+                      ? "text-samarth-blue-700"
+                      : "text-samarth-gray-600 hover:text-samarth-blue-700"
+                  }`}
+                >
+                  {link.name}
+                  <span
+                    className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-samarth-blue-700 transform origin-center transition-transform duration-500 ease-out ${
+                      isActive(link.path)
+                        ? "scale-x-100"
+                        : "scale-x-0 group-hover:scale-x-100"
+                    }`}
+                  />
+                </Link>
+              ),
+            )}
+
+            {/* Login Dropdown or Dashboard Link */}
+            <div className="absolute right-4 md:right-8">
+              {user ? (
+                <Link
+                  to={
+                    isStudent
+                      ? "/student/dashboard"
+                      : isTeacher
+                        ? "/teacher/dashboard"
+                        : "/admin/dashboard"
+                  }
+                  className="btn-sweep px-6 py-2.5 rounded-full bg-samarth-blue-700 text-white font-medium hover:bg-samarth-blue-900 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ring-4 ring-transparent hover:ring-samarth-blue-100"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Dropdown
+                  menu={{ items: loginItems }}
+                  placement="bottomRight"
+                  overlayClassName="navbar-dropdown"
+                  trigger={["hover"]}
+                >
+                  <button className="btn-sweep px-6 py-2.5 rounded-full bg-samarth-blue-700 text-white font-medium hover:bg-samarth-blue-900 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ring-4 ring-transparent hover:ring-samarth-blue-100 inline-flex items-center gap-2">
+                    Login
+                    <FiChevronDown className="w-4 h-4" />
+                  </button>
+                </Dropdown>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden absolute right-4 flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-samarth-gray-600 hover:text-samarth-blue-900 focus:outline-none p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden absolute mt-6 w-full bg-white border-b border-gray-100 shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${
+          isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 py-4 space-y-2">
+          {navLinks.map((link) => (
+            <div key={link.name}>
+              {link.hasDropdown ? (
+                <>
+                  <button
+                    onClick={() => toggleMobileSubmenu(link.name)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                      isActive(link.path)
+                        ? "bg-samarth-blue-50 text-samarth-blue-700"
+                        : "text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {link.name}
+                    <FiChevronRight
+                      className={`w-4 h-4 transition-transform ${openMobileSubmenu === link.name ? "rotate-90" : ""}`}
+                    />
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${openMobileSubmenu === link.name ? "max-h-48" : "max-h-0"}`}
+                  >
+                    <div className="pl-6 py-2 space-y-1">
+                      {link.name === "Courses" && (
+                        <>
+                          <Link
+                            to="/courses/category/jee"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            JEE Preparation
+                          </Link>
+                          <Link
+                            to="/courses/category/neet"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            NEET Preparation
+                          </Link>
+                          <Link
+                            to="/courses/category/foundation"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            Foundation (6-10)
+                          </Link>
+                          <Link
+                            to="/courses/category/boards"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            Board Exams (11-12)
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <Link
+                  to={link.path}
+                  className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    isActive(link.path)
+                      ? "bg-samarth-blue-50 text-samarth-blue-700"
+                      : "text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              )}
+            </div>
+          ))}
+
+          {/* Mobile Login Options or Dashboard */}
+          {user ? (
+            <div className="pt-2 border-t border-gray-100">
+              <Link
+                to={
+                  isStudent
+                    ? "/student/dashboard"
+                    : isTeacher
+                      ? "/teacher/dashboard"
+                      : "/admin/dashboard"
+                }
+                className="block px-4 py-3 rounded-lg text-base font-medium bg-samarth-blue-700 text-white hover:bg-samarth-blue-900 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Go to Dashboard
+              </Link>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-gray-100">
+              <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Login Options
+              </p>
+              <Link
+                to="/login?role=student"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Student Login
+              </Link>
+              <Link
+                to="/login?role=teacher"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Teacher Login
+              </Link>
+              <Link
+                to="/login?role=admin"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Admin Login
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

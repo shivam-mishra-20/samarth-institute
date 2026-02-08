@@ -1,0 +1,9 @@
+/* Custom styles for sidebar collapsible behavior */
+:root {
+  --sidebar-width: 14rem; /* 56 * 4px = 224px */
+}
+
+/* This will be updated by JavaScript when sidebar collapses */
+.sidebar-collapsed {
+  --sidebar-width: 4rem; /* 16 * 4px = 64px */
+}

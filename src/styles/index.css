@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-samarth-bg: #f8fafc;
+  --color-samarth-white: #ffffff;
+  --color-samarth-blue-900: #0b3d91;
+  --color-samarth-blue-700: #1565d8;
+  --color-samarth-blue-500: #2b7ce9;
+  --color-samarth-blue-300: #90c3ff;
+  --color-samarth-red-600: #e53935;
+  --color-samarth-red-400: #ff7a75;
+  --color-samarth-gray-600: #6b7280;
+  --color-samarth-gray-200: #e5e7eb;
+  --color-samarth-gray-100: #f3f4f6;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+html,
+body {
+  background-color: var(--color-samarth-bg);
+  font-family: var(--font-sans);
+  color: #1f2937;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+@layer utilities {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-sweep {
+    @apply relative overflow-hidden transition-all duration-300 ease-out;
+  }
+
+  .btn-sweep::after {
+    content: "";
+    @apply absolute top-0 -left-[100%] w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 transition-all duration-500 ease-out;
+  }
+
+  .btn-sweep:hover::after {
+    @apply left-[100%];
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
