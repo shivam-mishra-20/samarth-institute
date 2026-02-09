@@ -1,62 +1,206 @@
 /* eslint-disable no-unused-vars */
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FiArrowRight } from 'react-icons/fi';
-import { scholarshipDetails } from '../data/seed';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FiArrowRight, FiChevronLeft, FiChevronRight, FiAward } from "react-icons/fi";
+import { scholarshipDetails } from "../data/seed";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Hero = () => {
+  // Carousel slides - Add more banner images here
+  const slides = [
+    {
+      id: 1,
+      image: "Banner.JPG.jpeg",
+      alt: "Samarth Institute Banner 1",
+    },
+    {
+      id: 2,
+      image: "logo_2.jpg",
+      alt: "Samarth Institute Banner 2",
+    },
+    // Add more slides here as needed
+    // {
+    //   id: 2,
+    //   image: "Banner2.jpg",
+    //   alt: "Samarth Institute Banner 2"
+    // },
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlay || slides.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlay, slides.length]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+    setIsAutoPlay(false);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    setIsAutoPlay(false);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+    setIsAutoPlay(false);
+  };
+
   return (
-    <section className="relative h-[600px] mt-18 flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-            <img 
-                src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1920" 
-                alt="Students learning" 
-                className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/60"></div>
-        </div>
+    <section className="relative w-full mt-16 md:mt-20 overflow-hidden">
+      {/* Scholarship Banner (Floating at top) */}
+      <div className="relative z-30 bg-samarth-red-600/95 backdrop-blur-sm text-white text-center py-2 px-4">
+        <p className="text-xs sm:text-sm font-medium animate-pulse">
+          🎓 {scholarshipDetails.title} | {scholarshipDetails.dates}{" "}
+          <Link
+            to="/register"
+            className="font-bold hover:text-samarth-blue-100"
+          >
+            {scholarshipDetails.cta}
+          </Link>
+        </p>
+      </div>
 
-        {/* Scholarship Banner (Floating at top) */}
-        <div className="absolute top-0 left-0 right-0 z-30 bg-samarth-red-600/90 backdrop-blur-sm text-white text-center py-2 px-4">
-             <p className="text-sm font-medium animate-pulse">
-               🎓 {scholarshipDetails.title} | {scholarshipDetails.dates} | <Link to="/register" className="underline font-bold hover:text-samarth-blue-100">{scholarshipDetails.cta}</Link>
-             </p>
-        </div>
-
-        {/* Hero Content */}
-        <div className="container-custom relative z-10 text-center px-4">
+      {/* Banner Carousel Section */}
+      <div className="relative w-full group">
+        {/* Carousel Images */}
+        <div className="relative w-full h-auto overflow-hidden">
+          <AnimatePresence mode="wait">
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="max-w-4xl mx-auto"
+              key={currentSlide}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.5 }}
+              className="w-full h-auto"
             >
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight px-2">
-                    Learn Skills From Our <br className="hidden md:block" />
-                    <span className="text-samarth-blue-300 block md:inline mt-2 md:mt-0">Top Instructors</span>
-                </h1>
-                <p className="text-base md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed px-4">
-                    Samarth Classes is a leading educational center dedicated to fostering academic excellence. Equipping students from Class 6th to 12th for Board exams, JEE, NEET, and Olympiads.
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center gap-4 px-4">
-                     <Link to="/courses" className="w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-samarth-blue-600 hover:bg-samarth-blue-700 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-lg flex items-center justify-center btn-sweep text-sm md:text-base">
-                        Explore Courses <FiArrowRight className="ml-2" />
-                     </Link>
-                     <Link to="/about" className="w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold rounded-full transition-all flex items-center justify-center text-sm md:text-base">
-                        About Institute
-                     </Link>
-                </div>
+              <img
+                src={slides[currentSlide].image}
+                alt={slides[currentSlide].alt}
+                className="w-full h-auto object-contain max-h-[400px] sm:max-h-[500px] md:max-h-[600px] lg:max-h-[700px]"
+              />
             </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Carousel Indicators (Visual Only) */}
-        {/* <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-3 z-20">
-            <div className="w-2.5 h-2.5 rounded-full bg-white"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-white/50 hover:bg-white transition-colors cursor-pointer"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-white/50 hover:bg-white transition-colors cursor-pointer"></div>
-        </div> */}
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 pointer-events-none"></div>
+
+        {/* Navigation Buttons - Show only if more than 1 slide */}
+        {slides.length > 1 && (
+          <>
+            <button
+              onClick={prevSlide}
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              aria-label="Previous slide"
+            >
+              <FiChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-2 sm:p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              aria-label="Next slide"
+            >
+              <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+
+            {/* Carousel Indicators */}
+            <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
+                    index === currentSlide
+                      ? "bg-white w-6 sm:w-8"
+                      : "bg-white/50 hover:bg-white/75"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Action Buttons Below Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+        className="py-6 sm:py-8 px-4 sm:px-6 bg-gradient-to-b from-gray-50 to-white"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+            <Link
+              to="/courses"
+              className="w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3 bg-samarth-blue-600 bg-samarth-blue-700 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-xl flex items-center justify-center btn-sweep text-sm sm:text-base"
+            >
+              Explore Courses <FiArrowRight className="ml-2" />
+            </Link>
+            <Link
+              to="/contact"
+              className="w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-xl flex items-center justify-center text-sm sm:text-base"
+            >
+              Contact Us
+            </Link>
+            <Link
+              to="/register"
+              className="w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2 text-sm sm:text-base"
+            >
+              <FiAward className="w-4 h-4 sm:w-5 sm:h-5" />
+              Register For Scholarship (Limited Seats)
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Trusted By Section */}
+      <div className="border-t border-gray-100 py-8 sm:py-10 bg-gradient-to-b from-white to-gray-50">
+        <div className="container-custom">
+          <p className="text-center text-gray-700 font-semibold mb-6 sm:mb-8 tracking-wide text-base sm:text-lg md:text-xl">
+            Who we teach, trust us!
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+            {[
+              "CBSE",
+              "GSEB",
+              "JEE Main",
+              "NEET",
+              "Olympiad",
+              "Foundation",
+              "Pre-Foundation",
+            ].map((brand, idx) => {
+              const colors = [
+                "text-blue-600 hover:text-blue-700",
+                "text-purple-600 hover:text-purple-700",
+                "text-green-600 hover:text-green-700",
+                "text-orange-600 hover:text-orange-700",
+                "text-red-600 hover:text-red-700",
+                "text-indigo-600 hover:text-indigo-700",
+                "text-pink-600 hover:text-pink-700",
+              ];
+              return (
+                <span
+                  key={idx}
+                  className={`text-base sm:text-lg md:text-2xl lg:text-3xl font-bold ${colors[idx]} transition-all duration-300 transform hover:scale-110 whitespace-nowrap`}
+                >
+                  {brand}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "./Logo";
-import { FiMenu, FiX, FiChevronDown, FiChevronRight } from "react-icons/fi";
+import {
+  FiMenu,
+  FiX,
+  FiChevronDown,
+  FiChevronRight,
+  FiPhone,
+} from "react-icons/fi";
 import { Dropdown } from "antd";
 import { useAuth } from "../context/AuthContext";
 
@@ -159,7 +165,10 @@ const Navbar = () => {
         <div className="flex justify-center items-center relative">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center absolute left-4 md:left-8">
-            <Link to="/">
+            <Link
+              to="/"
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+            >
               <Logo className="h-10 w-auto" textClassName="text-2xl" />
             </Link>
           </div>
@@ -216,8 +225,18 @@ const Navbar = () => {
               ),
             )}
 
-            {/* Login Dropdown or Dashboard Link */}
-            <div className="absolute right-4 md:right-8">
+            {/* Enquiry and Login Buttons */}
+            <div className="absolute right-4 md:right-8 flex items-center gap-3">
+              {/* Enquiry Button */}
+              <Link
+                to="/contact"
+                className="px-6 py-2.5 rounded-full bg-orange-500 text-white font-medium hover:bg-orange-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ring-4 ring-transparent hover:ring-orange-100 inline-flex items-center gap-2"
+              >
+                <FiPhone className="w-4 h-4" />
+                Enquiry
+              </Link>
+
+              {/* Login Dropdown or Dashboard Link */}
               {user ? (
                 <Link
                   to={
@@ -339,9 +358,20 @@ const Navbar = () => {
             </div>
           ))}
 
-          {/* Mobile Login Options or Dashboard */}
-          {user ? (
-            <div className="pt-2 border-t border-gray-100">
+          {/* Mobile Enquiry and Login Options */}
+          <div className="pt-2 border-t border-gray-100">
+            {/* Enquiry Button */}
+            <Link
+              to="/contact"
+              onClick={() => setIsOpen(false)}
+              className="w-full mb-2 px-4 py-3 rounded-lg text-base font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors inline-flex items-center justify-center gap-2"
+            >
+              <FiPhone className="w-4 h-4" />
+              Enquiry
+            </Link>
+
+            {/* Login Options or Dashboard */}
+            {user ? (
               <Link
                 to={
                   isStudent
@@ -355,35 +385,35 @@ const Navbar = () => {
               >
                 Go to Dashboard
               </Link>
-            </div>
-          ) : (
-            <div className="pt-2 border-t border-gray-100">
-              <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Login Options
-              </p>
-              <Link
-                to="/login?role=student"
-                className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                Student Login
-              </Link>
-              <Link
-                to="/login?role=teacher"
-                className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                Teacher Login
-              </Link>
-              <Link
-                to="/login?role=admin"
-                className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                Admin Login
-              </Link>
-            </div>
-          )}
+            ) : (
+              <>
+                <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  Login Options
+                </p>
+                <Link
+                  to="/login?role=student"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Student Login
+                </Link>
+                <Link
+                  to="/login?role=teacher"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Teacher Login
+                </Link>
+                <Link
+                  to="/login?role=admin"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Admin Login
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

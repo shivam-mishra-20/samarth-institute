@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import Home from "./marketing/Home";
+import Home from "./pages/Home";
 import Courses from "./pages/Courses";
 import Faculties from "./pages/Faculties";
 import Faculty from "./pages/Faculty";
