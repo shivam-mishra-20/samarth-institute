@@ -495,7 +495,7 @@ const Home = () => {
                 <div className="md:w-1/2 relative">
                   <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20 transform rotate-2 hover:rotate-0 transition-transform duration-500">
                     <img
-                      src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=800"
+                      src="testimonial_3.jpeg"
                       alt="Join us"
                       className="w-full h-auto"
                     />

@@ -1,60 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiAward, FiTrendingUp, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FiAward,
+  FiTrendingUp,
+  FiChevronLeft,
+  FiChevronRight,
+} from "react-icons/fi";
 
 // Sample student results data for Samarth Institute
 const studentResults = [
   {
     id: 1,
-    name: "Arjun Patel",
-    course: "JEE Advanced 2025",
-    rank: "AIR 342",
-    percentage: "98.6%",
-    testimonial: "Samarth Institute's structured approach and dedicated faculty helped me achieve my dream rank. The study material was comprehensive and the doubt-clearing sessions were invaluable.",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face",
-    resultImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face"
+    name: "Jinal Vasava",
+    course: "MBBS - PDU College, Rajkot",
+    rank: "Merit Student",
+    percentage: "Top Scorer",
+    testimonial:
+      "Samarth Institute guided me throughout my journey to secure admission in the prestigious PDU College. The faculty's dedication and comprehensive teaching methodology helped me achieve my medical dreams.",
+    image: "result_1.jpeg",
+    resultImage: "result_1.jpeg",
   },
   {
     id: 2,
-    name: "Priya Sharma",
-    course: "NEET 2025",
-    rank: "AIR 189",
-    percentage: "99.2%",
-    testimonial: "The biology faculty at Samarth is exceptional. Regular mock tests and performance analysis helped me identify my weak areas and improve consistently.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face",
-    resultImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face"
+    name: "Bhagya Shah",
+    course: "JEE 2026",
+    rank: "94% ile",
+    percentage: "94%",
+    testimonial:
+      "The expert guidance from IITians and NITians at Samarth Institute helped me achieve an excellent percentile in JEE. The problem-solving approach and regular tests were game-changers.",
+    image:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
+    resultImage: "result_2.jpeg",
   },
   {
     id: 3,
-    name: "Rahul Mehta",
-    course: "GUJCET 2025",
-    rank: "State Rank 15",
-    percentage: "99.8%",
-    testimonial: "Joining Samarth was the best decision for my career. The personalized attention and expert guidance made all the difference in my preparation journey.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
-    resultImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face"  
-  },
-  {
-    id: 4,
-    name: "Ananya Desai",
-    course: "JEE Mains 2025",
-    rank: "99.5 Percentile",
-    percentage: "99.5%",
-    testimonial: "The problem-solving techniques taught at Samarth Institute are unmatched. The faculty's experience in competitive exams truly shows in their teaching methodology.",
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
-    resultImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face"
+    name: "Jignyasa Patil",
+    course: "10th Standard 2026",
+    rank: "A1 Grade",
+    percentage: "98.31 PR",
+    testimonial:
+      "Samarth Institute's foundation program laid a strong base for my board exams. The combination of board preparation along with competitive exam training helped me excel with an A1 grade.",
+    image:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
+    resultImage: "result_3.jpeg",
   },
   {
     id: 5,
-    name: "Karan Singh",
-    course: "Board Exams 2025",
-    rank: "District Topper",
-    percentage: "97.8%",
-    testimonial: "Samarth Institute's focus on concept clarity and regular practice helped me top my district in board exams. Forever grateful to my mentors here.",
-    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face",
-    resultImage: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face"
-  }
+    name: "Mannat Singh",
+    course: "10th Standard 2026",
+    rank: "A1 Grade",
+    percentage: "96.00%",
+    testimonial:
+      "The comprehensive teaching approach at Samarth Institute helped me excel in my board exams. The experienced IITians and NITians provided excellent guidance for both boards and competitive preparation.",
+    image: "result_4.jpeg",
+    resultImage: "result_4.jpeg",
+  },
+  {
+    id: 6,
+    name: "Annanya Purwar",
+    course: "MBBS - GMERS College, Gotri",
+    rank: "Merit Student",
+    percentage: "Top Performer",
+    testimonial:
+      "Samarth Institute's best combination of JEE+NEET and GUJCET+Board's preparation helped me secure my seat at GMERS College. The faculty's expertise made all the difference.",
+    image: "result_5.jpeg",
+    resultImage: "result_5.jpeg",
+  },
+  {
+    id: 7,
+    name: "Result Board",
+    image: "result_5.jpeg",
+    resultImage: "result_6.jpeg",
+  },
 ];
 
 const StudentResults = () => {
@@ -64,17 +82,19 @@ const StudentResults = () => {
   // Auto-rotate every 4 seconds
   useEffect(() => {
     if (!isAutoPlaying) return;
-    
+
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % studentResults.length);
     }, 4000);
-    
+
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
 
   const handlePrev = () => {
     setIsAutoPlaying(false);
-    setActiveIndex((prev) => (prev - 1 + studentResults.length) % studentResults.length);
+    setActiveIndex(
+      (prev) => (prev - 1 + studentResults.length) % studentResults.length,
+    );
   };
 
   const handleNext = () => {
@@ -88,7 +108,12 @@ const StudentResults = () => {
   };
 
   const activeStudent = studentResults[activeIndex];
-  
+
+  // Safety check
+  if (!activeStudent || studentResults.length === 0) {
+    return null;
+  }
+
   // Get visible students (current and next two for the list display)
   const getVisibleStudents = () => {
     const visible = [];
@@ -103,7 +128,7 @@ const StudentResults = () => {
     <section className="py-16 md:py-24 bg-gradient-to-b from-white to-orange-50">
       <div className="container-custom">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -119,12 +144,13 @@ const StudentResults = () => {
             Our Student Results
           </h2>
           <p className="text-samarth-gray-600 max-w-2xl mx-auto">
-            Celebrating the outstanding achievements of Samarth Institute students who have excelled in various competitive examinations.
+            Celebrating the outstanding achievements of Samarth Institute
+            students who have excelled in various competitive examinations.
           </p>
         </motion.div>
 
         {/* Main Content */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -145,36 +171,32 @@ const StudentResults = () => {
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ duration: 0.4, delay: idx * 0.1 }}
                       className={`p-5 rounded-2xl transition-all duration-300 cursor-pointer ${
-                        idx === 0 
-                          ? 'bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 shadow-md' 
-                          : 'bg-gray-50 border border-gray-100 hover:bg-gray-100'
+                        idx === 0
+                          ? "bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 shadow-md"
+                          : "bg-gray-50 border border-gray-100 hover:bg-gray-100"
                       }`}
-                      onClick={() => handleDotClick((activeIndex + idx) % studentResults.length)}
+                      onClick={() =>
+                        handleDotClick(
+                          (activeIndex + idx) % studentResults.length,
+                        )
+                      }
                     >
                       <div className="flex items-start gap-4">
-                        {/* Student Image */}
-                        <div className={`relative shrink-0 ${idx === 0 ? 'ring-4 ring-orange-400 ring-offset-2' : ''} rounded-full`}>
-                          <img
-                            src={student.image}
-                            alt={student.name}
-                            className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover"
-                          />
-                          {idx === 0 && (
-                            <div className="absolute -top-1 -right-1 bg-orange-500 rounded-full p-1">
-                              <FiAward className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                        </div>
-                        
                         {/* Student Info */}
                         <div className="flex-1 min-w-0">
-                          <h4 className={`font-bold text-base md:text-lg ${idx === 0 ? 'text-orange-900' : 'text-gray-800'}`}>
+                          <h4
+                            className={`font-bold text-base md:text-lg ${idx === 0 ? "text-orange-900" : "text-gray-800"}`}
+                          >
                             {student.name}
                           </h4>
-                          <p className={`text-sm ${idx === 0 ? 'text-orange-700' : 'text-gray-500'} mb-2`}>
+                          <p
+                            className={`text-sm ${idx === 0 ? "text-orange-700" : "text-gray-500"} mb-2`}
+                          >
                             {student.course}
                           </p>
-                          <p className={`text-xs md:text-sm leading-relaxed line-clamp-2 ${idx === 0 ? 'text-orange-800' : 'text-gray-600'}`}>
+                          <p
+                            className={`text-xs md:text-sm leading-relaxed line-clamp-2 ${idx === 0 ? "text-orange-800" : "text-gray-600"}`}
+                          >
                             {student.testimonial}
                           </p>
                           {idx === 0 && (
@@ -197,39 +219,39 @@ const StudentResults = () => {
 
               {/* Navigation Controls */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
-                <a 
-                  href="/results" 
+                <a
+                  href="/results"
                   className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-full shadow-lg shadow-orange-200 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
                 >
                   View All Results
                 </a>
-                
+
                 {/* Nav Arrows & Dots */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <button 
+                  <button
                     onClick={handlePrev}
                     className="p-2 rounded-full bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 transition-colors"
                     aria-label="Previous result"
                   >
                     <FiChevronLeft className="w-5 h-5" />
                   </button>
-                  
+
                   <div className="flex gap-1.5 sm:gap-2">
                     {studentResults.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={() => handleDotClick(idx)}
                         className={`h-2 rounded-full transition-all duration-300 ${
-                          idx === activeIndex 
-                            ? 'w-5 sm:w-6 bg-orange-500' 
-                            : 'w-2 bg-gray-300 hover:bg-orange-300'
+                          idx === activeIndex
+                            ? "w-5 sm:w-6 bg-orange-500"
+                            : "w-2 bg-gray-300 hover:bg-orange-300"
                         }`}
                         aria-label={`Go to result ${idx + 1}`}
                       />
                     ))}
                   </div>
-                  
-                  <button 
+
+                  <button
                     onClick={handleNext}
                     className="p-2 rounded-full bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 transition-colors"
                     aria-label="Next result"
@@ -265,14 +287,18 @@ const StudentResults = () => {
                         transition={{ delay: 0.3 }}
                       >
                         <div className="flex items-center gap-3 mb-3">
-                          <img
+                          {/* <img
                             src={activeStudent.image}
                             alt={activeStudent.name}
                             className="w-12 h-12 rounded-full border-2 border-white object-cover"
-                          />
+                          /> */}
                           <div>
-                            <h4 className="font-bold text-lg">{activeStudent.name}</h4>
-                            <p className="text-white/80 text-sm">{activeStudent.course}</p>
+                            <h4 className="font-bold text-lg">
+                              {activeStudent.name}
+                            </h4>
+                            <p className="text-white/80 text-sm">
+                              {activeStudent.course}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
@@ -288,8 +314,6 @@ const StudentResults = () => {
                   </div>
                 </motion.div>
               </AnimatePresence>
-              
-
             </div>
           </div>
         </motion.div>
