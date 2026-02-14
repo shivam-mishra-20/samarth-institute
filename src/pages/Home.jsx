@@ -105,30 +105,30 @@ const Home = () => {
       <Navbar />
       <ScholarshipPopup />
 
-      <main className="flex-grow">
+      <main className="grow">
         {/* Hero Section */}
         <Hero />
 
         {/* Class Offerings Section - Course Cards */}
-        <section className="py-16 bg-gray-50">
+        <section className="py-20 bg-linear-to-b from-gray-50 to-white">
           <div className="container-custom">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="text-center mb-12"
+              className="text-center mb-16"
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-samarth-blue-900 mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                 Our Class Offerings
               </h2>
-              <p className="text-samarth-gray-600 max-w-2xl mx-auto text-lg">
+              <p className="text-gray-600 max-w-2xl mx-auto text-lg">
                 Choose the right program for your academic journey
               </p>
             </motion.div>
 
             <motion.div
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
@@ -314,13 +314,13 @@ const Home = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="text-center mt-12"
+              className="text-center mt-16"
             >
               <Link
                 to="/courses"
-                className="inline-flex items-center px-8 py-4 bg-samarth-blue-700 text-white font-semibold rounded-full hover:bg-samarth-blue-900 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="inline-flex items-center px-10 py-4 bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold text-lg rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1 duration-300"
               >
-                View All Course Details <FiArrowRight className="ml-2" />
+                View All Course Details <FiArrowRight className="ml-3 w-5 h-5" />
               </Link>
             </motion.div>
           </div>

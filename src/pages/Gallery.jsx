@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,15 +14,26 @@ const Gallery = () => {
     ? galleryImages 
     : galleryImages.filter(img => img.category === selectedCategory);
 
+  // Handle scroll lock when lightbox is open
+  useEffect(() => {
+    if (lightboxImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [lightboxImage]);
+
   const openLightbox = (image, index) => {
     setLightboxImage(image);
     setLightboxIndex(index);
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
   };
 
   const closeLightbox = () => {
     setLightboxImage(null);
-    document.body.style.overflow = 'unset';
   };
 
   const nextImage = () => {
@@ -41,9 +52,9 @@ const Gallery = () => {
     <div className="min-h-screen flex flex-col bg-samarth-bg font-sans text-gray-800">
       <Navbar />
       
-      <main className="flex-grow">
+      <main className="grow">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-to-br from-indigo-900 via-samarth-blue-800 to-samarth-blue-900 text-white">
+        <section className="relative pt-32 pb-20 overflow-hidden bg-linear-to-br from-indigo-900 via-samarth-blue-800 to-samarth-blue-900 text-white">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
            {/* Animated blobs */}
            <div className="absolute -top-40 -right-40 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
@@ -67,7 +78,7 @@ const Gallery = () => {
         </section>
 
         {/* Filter Section */}
-        <section className="sticky top-[72px] z-30 bg-white/80 backdrop-blur-lg border-b border-gray-100 py-4 shadow-sm">
+        <section className="sticky top-18 z-30 bg-white/80 backdrop-blur-lg border-b border-gray-100 py-4 shadow-sm">
            <div className="container-custom overflow-x-auto no-scrollbar">
              <div className="flex justify-start md:justify-center gap-2 min-w-max px-2">
                {galleryCategories.map((category) => (
@@ -89,7 +100,7 @@ const Gallery = () => {
         </section>
 
         {/* Gallery Grid */}
-        <section className="py-12 md:py-20 min-h-[600px]">
+        <section className="py-12 md:py-20 min-h-150">
           <div className="container-custom">
             
             {filteredImages.length === 0 ? (
@@ -110,7 +121,7 @@ const Gallery = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
-                        className="group relative cursor-pointer overflow-hidden rounded-2xl shadow-md hover:shadow-2xl aspect-[4/3] bg-gray-200"
+                        className="group relative cursor-pointer overflow-hidden rounded-2xl shadow-md hover:shadow-2xl aspect-4/3 bg-gray-200"
                         onClick={() => openLightbox(image, index)}
                       >
                         <img
@@ -121,7 +132,7 @@ const Gallery = () => {
                         />
                         
                         {/* Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                             <span className="inline-block px-3 py-1 bg-samarth-blue-600 text-white text-xs font-bold rounded-lg mb-2 w-fit transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                                 {image.category}
                             </span>
@@ -151,7 +162,7 @@ const Gallery = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-60 bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm"
             onClick={closeLightbox}
           >
             {/* Close Button */}

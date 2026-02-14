@@ -164,43 +164,7 @@ const Hero = () => {
         </div>
       </motion.div>
 
-      {/* Trusted By Section */}
-      <div className="border-t border-gray-100 py-8 sm:py-10 bg-gradient-to-b from-white to-gray-50">
-        <div className="container-custom">
-          <p className="text-center text-gray-700 font-semibold mb-6 sm:mb-8 tracking-wide text-base sm:text-lg md:text-xl">
-            Who we teach, trust us!
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-            {[
-              "CBSE",
-              "GSEB",
-              "JEE Main",
-              "NEET",
-              "Olympiad",
-              "Foundation",
-              "Pre-Foundation",
-            ].map((brand, idx) => {
-              const colors = [
-                "text-blue-600 hover:text-blue-700",
-                "text-purple-600 hover:text-purple-700",
-                "text-green-600 hover:text-green-700",
-                "text-orange-600 hover:text-orange-700",
-                "text-red-600 hover:text-red-700",
-                "text-indigo-600 hover:text-indigo-700",
-                "text-pink-600 hover:text-pink-700",
-              ];
-              return (
-                <span
-                  key={idx}
-                  className={`text-base sm:text-lg md:text-2xl lg:text-3xl font-bold ${colors[idx]} transition-all duration-300 transform hover:scale-110 whitespace-nowrap`}
-                >
-                  {brand}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+
     </section>
   );
 };
