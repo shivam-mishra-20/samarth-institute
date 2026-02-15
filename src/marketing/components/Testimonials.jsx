@@ -25,7 +25,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-20 bg-white overflow-hidden">
+    <section className="py-16 bg-white overflow-hidden">
       <div className="container-custom">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           {/* Left Column - Images */}

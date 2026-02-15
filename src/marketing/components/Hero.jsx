@@ -1,7 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiArrowRight, FiChevronLeft, FiChevronRight, FiAward } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiChevronLeft,
+  FiChevronRight,
+  FiAward,
+} from "react-icons/fi";
 import { scholarshipDetails } from "../data/seed";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -163,8 +168,6 @@ const Hero = () => {
           </div>
         </div>
       </motion.div>
-
-
     </section>
   );
 };

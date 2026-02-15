@@ -125,7 +125,7 @@ const StudentResults = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-white to-orange-50">
+    <section className="py-16 bg-gradient-to-b from-white to-orange-50">
       <div className="container-custom">
         {/* Section Header */}
         <motion.div

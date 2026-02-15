@@ -6,7 +6,7 @@ import {
   FiPhone,
   FiMapPin,
   FiFacebook,
-  FiTwitter,
+  FiYoutube,
   FiLinkedin,
   FiInstagram,
   FiSend,
@@ -38,7 +38,7 @@ const Footer = () => {
                 href="#"
                 className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-samarth-blue-700 hover:text-white transition-all"
               >
-                <FiTwitter size={18} />
+                <FiYoutube size={18} />
               </a>
               <a
                 href="#"

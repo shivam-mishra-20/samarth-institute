@@ -15,6 +15,7 @@ import {
   FiLayers,
   FiMonitor,
   FiBook,
+  FiAward,
 } from "react-icons/fi";
 import { Link, useSearchParams } from "react-router-dom";
 

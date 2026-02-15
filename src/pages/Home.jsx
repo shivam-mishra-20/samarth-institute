@@ -16,6 +16,8 @@ import CourseCard, {
   CourseCardSkeleton,
 } from "../marketing/components/CourseCard";
 import ClassCard from "../marketing/components/ClassCard";
+import CategoryCard from "../marketing/components/CategoryCard";
+import { Stethoscope, Atom, Backpack, BookOpen, GraduationCap, Target } from "lucide-react";
 import FacultyCard from "../marketing/components/FacultyCard";
 import Testimonials from "../marketing/components/Testimonials";
 import StudentResults from "../marketing/components/StudentResults";
@@ -110,14 +112,14 @@ const Home = () => {
         <Hero />
 
         {/* Class Offerings Section - Course Cards */}
-        <section className="py-20 bg-linear-to-b from-gray-50 to-white">
+        <section className="pt-20 pb-12 bg-linear-to-b from-gray-50 to-white">
           <div className="container-custom">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="text-center mb-16"
+              className="text-center mb-12"
             >
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                 Our Class Offerings
@@ -128,7 +130,7 @@ const Home = () => {
             </motion.div>
 
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
               variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
@@ -136,195 +138,66 @@ const Home = () => {
             >
               {[
                 {
-                  title: "Class 5 Pre Foundation",
-                  category: "PRE-FOUNDATION",
-                  duration: "1 Year",
-                  grade: "Class 5",
-                  description:
-                    "Early foundation building with fun and engaging activities.",
-                  features: [
-                    "Conceptual Clarity",
-                    "Activity-Based Learning",
-                    "Creative Thinking",
-                  ],
-                  slug: "class-5-pre-foundation",
+                  title: "NEET",
+                  tags: ["Class 11", "Class 12"],
+                  link: "/courses/neet",
+                  icon: Stethoscope,
+                  bgColor: "blue",
+                  accentColor: "orange",
                 },
                 {
-                  title: "Class 5 Foundation",
-                  category: "FOUNDATION",
-                  duration: "1 Year",
-                  grade: "Class 5",
-                  description:
-                    "Building strong foundations with concept-based learning.",
-                  features: [
-                    "Basic Concept Building",
-                    "Interactive Learning",
-                    "Skill Development",
-                  ],
-                  slug: "class-5-foundation",
+                  title: "IIT JEE",
+                  tags: ["Class 11", "Class 12"],
+                  link: "/courses/jee",
+                  icon: Atom,
+                  bgColor: "blue",
+                  accentColor: "yellow",
                 },
                 {
-                  title: "Class 6 Foundation",
-                  category: "FOUNDATION",
-                  duration: "1 Year",
-                  grade: "Class 6",
-                  description:
-                    "Strong base in crucial subjects with fun learning.",
-                  features: [
-                    "Science Experiments",
-                    "Olympiad Intro",
-                    "Logic Building",
-                  ],
-                  slug: "class-6-foundation",
+                  title: "Pre Foundation",
+                  tags: ["Class 6", "Class 7", "Class 8", "NTSE/Olympiad", "Competitive Exams"],
+                  link: "/courses/pre-foundation",
+                  icon: Backpack,
+                  bgColor: "yellow",
+                  accentColor: "orange",
                 },
                 {
-                  title: "Class 7 Advancer",
-                  category: "ADVANCED",
-                  duration: "1 Year",
-                  grade: "Class 7",
-                  description:
-                    "Advancing skills with critical thinking development.",
-                  features: [
-                    "Problem Solving",
-                    "Competitive Prep",
-                    "Analytical Thinking",
-                  ],
-                  slug: "class-7-advancer",
+                  title: "Foundation",
+                  tags: ["Class 9"],
+                  link: "/courses/foundation",
+                  icon: BookOpen,
+                  bgColor: "green",
+                  accentColor: "green",
                 },
                 {
-                  title: "Class 8 Pre-Foundation",
-                  category: "PRE-FOUNDATION",
-                  duration: "1 Year",
-                  grade: "Class 8",
-                  description: "Early preparation for competitive exams.",
-                  features: [
-                    "JEE/NEET Foundation",
-                    "Advanced Mathematics",
-                    "Scientific Reasoning",
-                  ],
-                  slug: "class-8-pre-foundation",
+                  title: "School Boards",
+                  tags: ["Class 10"],
+                  link: "/courses/boards",
+                  icon: GraduationCap,
+                  bgColor: "purple",
+                  accentColor: "purple",
                 },
                 {
-                  title: "Class 9 Excellence",
-                  category: "EXCELLENCE",
-                  duration: "1 Year",
-                  grade: "Class 9",
-                  description:
-                    "Comprehensive program for board and competitive exams.",
-                  features: [
-                    "Board Exam Focus",
-                    "Competitive Training",
-                    "Regular Assessments",
-                  ],
-                  slug: "class-9-excellence",
+                  title: "Dropper",
+                  tags: ["Class 11", "Class 12"],
+                  link: "/courses/dropper",
+                  icon: Target,
+                  bgColor: "pink",
+                  accentColor: "pink",
                 },
-                {
-                  title: "Class 10 Board Booster",
-                  category: "BOARD PREP",
-                  duration: "1 Year",
-                  grade: "Class 10",
-                  description:
-                    "Intensive board exam preparation for maximum scores.",
-                  features: [
-                    "Board Mastery",
-                    "Exam Pattern Training",
-                    "Mock Tests",
-                  ],
-                  slug: "class-10-board-booster",
-                },
-                {
-                  title: "Class 11 Science (State/CBSE)",
-                  category: "SCIENCE",
-                  duration: "1 Year",
-                  grade: "Class 11",
-                  description:
-                    "Complete science curriculum with JEE/NEET foundation.",
-                  features: [
-                    "PCM/PCB Coverage",
-                    "JEE/NEET Foundation",
-                    "Board Excellence",
-                  ],
-                  slug: "class-11-science",
-                },
-                {
-                  title: "Class 12 Board Achiever",
-                  category: "BOARD PREP",
-                  duration: "1 Year",
-                  grade: "Class 12",
-                  description:
-                    "Final year program for board and entrance success.",
-                  features: [
-                    "Board Excellence",
-                    "Entrance Prep",
-                    "Career Counseling",
-                  ],
-                  slug: "class-12-board-achiever",
-                },
-                {
-                  title: "JEE Main & Advanced (Target 2026)",
-                  category: "COMPETITIVE",
-                  duration: "2 Years",
-                  grade: "JEE Aspirants",
-                  description:
-                    "Comprehensive JEE preparation with expert faculty.",
-                  features: [
-                    "Complete JEE Syllabus",
-                    "Mock Tests",
-                    "Doubt Clearing",
-                  ],
-                  slug: "jee-main-advanced-2026",
-                },
-                {
-                  title: "NEET Medical (Target 2026)",
-                  category: "COMPETITIVE",
-                  duration: "2 Years",
-                  grade: "NEET Aspirants",
-                  description:
-                    "Complete NEET preparation for medical entrance.",
-                  features: [
-                    "Complete NEET Syllabus",
-                    "NCERT Mastery",
-                    "Test Series",
-                  ],
-                  slug: "neet-medical-2026",
-                },
-                {
-                  title: "Dropper / Repeater Batch",
-                  category: "INTENSIVE",
-                  duration: "1 Year",
-                  grade: "All Streams",
-                  description:
-                    "Focused intensive program for score improvement.",
-                  features: [
-                    "Personalized Attention",
-                    "Previous Year Analysis",
-                    "Intensive Practice",
-                  ],
-                  slug: "dropper-repeater-batch",
-                },
-              ].map((course, idx) => (
+              ].map((category, idx) => (
                 <motion.div key={idx} variants={fadeInUp}>
-                  <ClassCard course={course} />
+                  <CategoryCard category={category} />
                 </motion.div>
               ))}
             </motion.div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className="text-center mt-16"
-            >
-              <Link
-                to="/courses"
-                className="inline-flex items-center px-10 py-4 bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold text-lg rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1 duration-300"
-              >
-                View All Course Details <FiArrowRight className="ml-3 w-5 h-5" />
-              </Link>
-            </motion.div>
           </div>
         </section>
+
+        {/* Divider */}
+        <div className="container-custom">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        </div>
 
         {/* About Section */}
         <AboutSection />
@@ -349,8 +222,13 @@ const Home = () => {
           <InstituteFeatures />
         </motion.div>
 
+        {/* Divider */}
+        <div className="container-custom py-4">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        </div>
+
         {/* Courses Section (Staggered Grid) */}
-        <section className="py-20 container-custom">
+        <section className="py-16 container-custom">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -390,8 +268,13 @@ const Home = () => {
           </motion.div>
         </section>
 
+        {/* Divider */}
+        <div className="container-custom py-4">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        </div>
+
         {/* Faculties Highlight (Staggered Grid) */}
-        <section className="py-20 container-custom">
+        <section className="py-16 container-custom">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -440,6 +323,11 @@ const Home = () => {
             </Link>
           </motion.div>
         </section>
+
+        {/* Divider */}
+        <div className="container-custom py-4">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        </div>
 
         {/* Student Results Section */}
         <motion.div
