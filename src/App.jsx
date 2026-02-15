@@ -5,6 +5,7 @@ import Courses from "./pages/Courses";
 import Faculties from "./pages/Faculties";
 import Faculty from "./pages/Faculty";
 import About from "./pages/About";
+import FounderMessage from "./pages/FounderMessage";
 import CourseDetail from "./pages/CourseDetail";
 import CourseCategory from "./pages/CourseCategory";
 import BlogDetail from "./pages/BlogDetail";
@@ -41,11 +42,12 @@ function App() {
           <Route path="/faculty" element={<Faculty />} />
           <Route path="/faculties" element={<Faculties />} />
           <Route path="/about" element={<About />} />
+          <Route path="/founder-message" element={<FounderMessage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register-scholarship" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/setup-users" element={<SetupUsers />} />

@@ -30,6 +30,54 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // About dropdown items
+  const aboutItems = [
+    {
+      key: "about",
+      label: (
+        <Link
+          to="/about"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          About Samarth Institute
+        </Link>
+      ),
+    },
+    {
+      key: "founder",
+      label: (
+        <Link
+          to="/founder-message"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Founder's Message
+        </Link>
+      ),
+    },
+    {
+      key: "infrastructure",
+      label: (
+        <Link
+          to="/about#infrastructure"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Infrastructure
+        </Link>
+      ),
+    },
+    {
+      key: "faculties",
+      label: (
+        <Link
+          to="/faculty"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Faculties
+        </Link>
+      ),
+    },
+  ];
+
   // Courses dropdown items
   const coursesItems = [
     {
@@ -117,16 +165,21 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
+    {
+      name: "About",
+      path: "/about",
+      hasDropdown: true,
+      items: aboutItems,
+    },
     {
       name: "Courses",
       path: "/courses",
       hasDropdown: true,
       items: coursesItems,
     },
-    { name: "Faculty", path: "/faculty" },
+    // { name: "Faculty", path: "/faculty" },
     { name: "Blog", path: "/blog" },
-    { name: "Events", path: "/gallery" },
+    // { name: "Events", path: "/gallery" },
     { name: "Contact", path: "/contact" },
   ];
 
@@ -184,9 +237,8 @@ const Navbar = () => {
                   overlayClassName="navbar-dropdown"
                   trigger={["hover"]}
                 >
-                  <Link
-                    to={link.path}
-                    className={`relative px-4 py-2 font-medium transition-all duration-300 group inline-flex items-center gap-1 hover:scale-105 ${
+                  <span
+                    className={`relative px-4 py-2 font-medium transition-all duration-300 group inline-flex items-center gap-1 hover:scale-105 cursor-pointer ${
                       isActive(link.path)
                         ? "text-samarth-blue-700"
                         : "text-samarth-gray-600 hover:text-samarth-blue-700"
@@ -201,7 +253,7 @@ const Navbar = () => {
                           : "scale-x-0 group-hover:scale-x-100"
                       }`}
                     />
-                  </Link>
+                  </span>
                 </Dropdown>
               ) : (
                 <Link
@@ -307,6 +359,38 @@ const Navbar = () => {
                     className={`overflow-hidden transition-all duration-300 ${openMobileSubmenu === link.name ? "max-h-48" : "max-h-0"}`}
                   >
                     <div className="pl-6 py-2 space-y-1">
+                      {link.name === "About" && (
+                        <>
+                          <Link
+                            to="/about"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            About Samarth Institute
+                          </Link>
+                          <Link
+                            to="/founder-message"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            Founder's Message
+                          </Link>
+                          <Link
+                            to="/about#infrastructure"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            Infrastructure
+                          </Link>
+                          <Link
+                            to="/faculty"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            Faculties
+                          </Link>
+                        </>
+                      )}
                       {link.name === "Courses" && (
                         <>
                           <Link

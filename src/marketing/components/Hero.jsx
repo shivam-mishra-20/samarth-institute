@@ -62,7 +62,7 @@ const Hero = () => {
         <p className="text-xs sm:text-sm font-medium animate-pulse">
           🎓 {scholarshipDetails.title} | {scholarshipDetails.dates}{" "}
           <Link
-            to="/register"
+            to="/register-scholarship"
             className="font-bold hover:text-samarth-blue-100"
           >
             {scholarshipDetails.cta}
@@ -154,7 +154,7 @@ const Hero = () => {
               Contact Us
             </Link>
             <Link
-              to="/register"
+              to="/register-scholarship"
               className="w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2 text-sm sm:text-base"
             >
               <FiAward className="w-4 h-4 sm:w-5 sm:h-5" />

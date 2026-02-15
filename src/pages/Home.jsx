@@ -486,7 +486,7 @@ const Home = () => {
                     transform lives. Join our community today.
                   </p>
                   <Link
-                    to="/register"
+                    to="/register-scholarship"
                     className="btn-sweep inline-block px-6 py-3 md:px-8 md:py-4 bg-white text-blue-900 font-bold rounded-full shadow-lg hover:bg-blue-50 transition-colors"
                   >
                     Become a Student

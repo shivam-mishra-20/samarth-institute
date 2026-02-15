@@ -154,7 +154,7 @@ const Faculty = () => {
               <p className="text-indigo-100 mb-8 max-w-xl mx-auto">
                 Get personalized attention from our expert educators and excel in your academic goals.
               </p>
-              <a href="/register" className="inline-block px-10 py-4 bg-white text-indigo-700 font-bold rounded-full hover:bg-indigo-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              <a href="/register-scholarship" className="inline-block px-10 py-4 bg-white text-indigo-700 font-bold rounded-full hover:bg-indigo-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 Enroll Now
               </a>
             </motion.div>

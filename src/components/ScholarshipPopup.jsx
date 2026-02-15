@@ -201,7 +201,7 @@ const ScholarshipPopup = () => {
               {/* CTA */}
               <div className="pt-2">
                 <Link
-                  to="/register"
+                  to="/register-scholarship"
                   onClick={() => setIsOpen(false)}
                   className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"
                 >
