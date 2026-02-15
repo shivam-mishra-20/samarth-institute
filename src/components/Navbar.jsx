@@ -16,7 +16,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState(null);
   const location = useLocation();
-  const { user, userRole, isStudent, isTeacher, isAdmin } = useAuth();
+  const { user, isStudent, isTeacher } = useAuth();
 
   // Handle window resize to close mobile menu on desktop
   useEffect(() => {
@@ -33,10 +33,10 @@ const Navbar = () => {
   // About dropdown items
   const aboutItems = [
     {
-      key: "about",
+      key: "about-institute",
       label: (
         <Link
-          to="/about"
+          to="/about?section=institute"
           className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
         >
           About Samarth Institute
@@ -44,13 +44,24 @@ const Navbar = () => {
       ),
     },
     {
-      key: "founder",
+      key: "director-message",
       label: (
         <Link
-          to="/founder-message"
+          to="/about?section=director"
           className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
         >
-          Founder's Message
+          Director Message
+        </Link>
+      ),
+    },
+    {
+      key: "faculty",
+      label: (
+        <Link
+          to="/about?section=faculty"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Faculty And Experts
         </Link>
       ),
     },
@@ -58,7 +69,7 @@ const Navbar = () => {
       key: "infrastructure",
       label: (
         <Link
-          to="/about#infrastructure"
+          to="/about?section=infrastructure"
           className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
         >
           Infrastructure
@@ -66,62 +77,217 @@ const Navbar = () => {
       ),
     },
     {
-      key: "faculties",
+      key: "programme",
       label: (
         <Link
-          to="/faculty"
+          to="/about?section=programme"
           className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
         >
-          Faculties
+          Samarth Programme
         </Link>
       ),
     },
   ];
 
-  // Courses dropdown items
-  const coursesItems = [
+  // Academic dropdown mega menu
+  const academicItems = [
     {
-      key: "jee",
+      key: "academic-mega",
       label: (
-        <Link
-          to="/courses/category/jee"
-          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-        >
-          JEE Preparation
-        </Link>
+        <div className="grid grid-cols-4 gap-8 p-4 min-w-150">
+          {/* PRE FOUNDATION COURSE */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              PRE FOUNDATION COURSE
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/academic/pre-foundation/class-6"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Class 6
+              </Link>
+              <Link
+                to="/academic/pre-foundation/class-7"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Class 7
+              </Link>
+              <Link
+                to="/academic/pre-foundation/class-8"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Class 8
+              </Link>
+            </div>
+          </div>
+
+          {/* FOUNDATION COURSE */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              FOUNDATION COURSE
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/academic/foundation/class-9"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Class 9
+              </Link>
+              <Link
+                to="/academic/foundation/class-10"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Class 10
+              </Link>
+            </div>
+          </div>
+
+          {/* AFTER BOARD'S */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              AFTER BOARD'S
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/academic/after-boards/eklavy-neet"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Eklavy - Re Neet Batch
+              </Link>
+              <Link
+                to="/academic/after-boards/arjuna-jee"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Arjuna - Re JEE Batch
+              </Link>
+            </div>
+          </div>
+
+          {/* INTEGRATED CLASSROOM PROGRAM */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              INTEGRATED CLASSROOM PROGRAM
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/academic/integrated/ntse-olympiad"
+                className="block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md leading-tight"
+              >
+                Target NTSE/OLYMPIAD/FOUNDATION
+                <br />
+                <span className="text-xs text-gray-500">
+                  (6 To 10th) - 5 Years
+                </span>
+              </Link>
+              <Link
+                to="/academic/integrated/iit-nit"
+                className="block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md leading-tight"
+              >
+                Target IIT/NIT
+                <br />
+                <span className="text-xs text-gray-500">
+                  (11th Maths Group) - 2 Years
+                </span>
+              </Link>
+              <Link
+                to="/academic/integrated/neet"
+                className="block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md leading-tight"
+              >
+                Target NEET
+                <br />
+                <span className="text-xs text-gray-500">
+                  (11th Biology Group) - 2 Years
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
       ),
     },
+  ];
+
+  // Student Corner dropdown - custom mega menu
+  const studentCornerItems = [
     {
-      key: "neet",
+      key: "student-corner-mega",
       label: (
-        <Link
-          to="/courses/category/neet"
-          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-        >
-          NEET Preparation
-        </Link>
-      ),
-    },
-    {
-      key: "foundation",
-      label: (
-        <Link
-          to="/courses/category/foundation"
-          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-        >
-          Foundation (6-10)
-        </Link>
-      ),
-    },
-    {
-      key: "boards",
-      label: (
-        <Link
-          to="/courses/category/boards"
-          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-        >
-          Board Exams (11-12)
-        </Link>
+        <div className="grid grid-cols-3 gap-8 p-4 min-w-150">
+          {/* STUDENT Section */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              STUDENT
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/students-corner?tab=time-table"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Time Table
+              </Link>
+              <Link
+                to="/students-corner?tab=student-feedback"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Student Feedback
+              </Link>
+              <Link
+                to="/students-corner?tab=video-feedback"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Student Video Feedback
+              </Link>
+              <Link
+                to="/students-corner?tab=alumni"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Alumini Registration
+              </Link>
+            </div>
+          </div>
+
+          {/* GET ADMISSION Section */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              GET ADMISSION
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/students-corner?tab=apply-online"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Apply Online
+              </Link>
+            </div>
+          </div>
+
+          {/* DOWNLOAD Section */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              DOWNLOAD
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/students-corner?tab=brochure"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Institute Brochure
+              </Link>
+              <Link
+                to="/students-corner?tab=exam-papers"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Exam Papers
+              </Link>
+              <Link
+                to="/students-corner?tab=news-circulars"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                News & Circulars
+              </Link>
+            </div>
+          </div>
+        </div>
       ),
     },
   ];
@@ -172,15 +338,19 @@ const Navbar = () => {
       items: aboutItems,
     },
     {
-      name: "Courses",
-      path: "/courses",
+      name: "Academic",
+      path: "/academic",
       hasDropdown: true,
-      items: coursesItems,
+      items: academicItems,
     },
-    // { name: "Faculty", path: "/faculty" },
     { name: "Blog", path: "/blog" },
-    // { name: "Events", path: "/gallery" },
-    { name: "Contact", path: "/contact" },
+    {
+      name: "Student's Corner",
+      path: "/students-corner",
+      hasDropdown: true,
+      items: studentCornerItems,
+    },
+    { name: "Events", path: "/gallery" },
   ];
 
   // Handle scroll effect
@@ -217,7 +387,7 @@ const Navbar = () => {
       <div className="container-custom">
         <div className="flex justify-center items-center relative">
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center absolute left-4 md:left-8">
+          <div className="shrink-0 flex items-center absolute left-4 md:left-8">
             <Link
               to="/"
               className="cursor-pointer hover:opacity-80 transition-opacity"
@@ -227,7 +397,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Menu - Centered */}
-          <div className="hidden md:flex space-x-1 items-center justify-center">
+          <div className="hidden md:flex space-x-6 items-center justify-center">
             {navLinks.map((link) =>
               link.hasDropdown ? (
                 <Dropdown
@@ -247,7 +417,7 @@ const Navbar = () => {
                     {link.name}
                     <FiChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
                     <span
-                      className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-samarth-blue-700 transform origin-center transition-transform duration-500 ease-out ${
+                      className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-samarth-blue-700 transform origin-center transition-transform duration-500 ease-out ${
                         isActive(link.path)
                           ? "scale-x-100"
                           : "scale-x-0 group-hover:scale-x-100"
@@ -267,7 +437,7 @@ const Navbar = () => {
                 >
                   {link.name}
                   <span
-                    className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-samarth-blue-700 transform origin-center transition-transform duration-500 ease-out ${
+                    className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-samarth-blue-700 transform origin-center transition-transform duration-500 ease-out ${
                       isActive(link.path)
                         ? "scale-x-100"
                         : "scale-x-0 group-hover:scale-x-100"
@@ -278,7 +448,7 @@ const Navbar = () => {
             )}
 
             {/* Enquiry and Login Buttons */}
-            <div className="absolute right-4 md:right-8 flex items-center gap-3">
+            <div className="absolute right-8 md:right-16 flex items-center gap-3">
               {/* Enquiry Button */}
               <Link
                 to="/contact"
@@ -334,7 +504,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div
         className={`md:hidden absolute mt-6 w-full bg-white border-b border-gray-100 shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+          isOpen ? "max-h-150 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="px-4 py-4 space-y-2">
@@ -356,71 +526,215 @@ const Navbar = () => {
                     />
                   </button>
                   <div
-                    className={`overflow-hidden transition-all duration-300 ${openMobileSubmenu === link.name ? "max-h-48" : "max-h-0"}`}
+                    className={`overflow-hidden transition-all duration-300 ${openMobileSubmenu === link.name ? "max-h-96" : "max-h-0"}`}
                   >
                     <div className="pl-6 py-2 space-y-1">
                       {link.name === "About" && (
                         <>
                           <Link
-                            to="/about"
+                            to="/about?section=institute"
                             onClick={() => setIsOpen(false)}
                             className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                           >
                             About Samarth Institute
                           </Link>
                           <Link
-                            to="/founder-message"
+                            to="/about?section=director"
                             onClick={() => setIsOpen(false)}
                             className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                           >
-                            Founder's Message
+                            Director Message
                           </Link>
                           <Link
-                            to="/about#infrastructure"
+                            to="/about?section=faculty"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            Faculty And Experts
+                          </Link>
+                          <Link
+                            to="/about?section=infrastructure"
                             onClick={() => setIsOpen(false)}
                             className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                           >
                             Infrastructure
                           </Link>
                           <Link
-                            to="/faculty"
+                            to="/about?section=programme"
                             onClick={() => setIsOpen(false)}
                             className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                           >
-                            Faculties
+                            Samarth Programme
                           </Link>
                         </>
                       )}
-                      {link.name === "Courses" && (
+                      {link.name === "Academic" && (
                         <>
-                          <Link
-                            to="/courses/category/jee"
-                            onClick={() => setIsOpen(false)}
-                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                          >
-                            JEE Preparation
-                          </Link>
-                          <Link
-                            to="/courses/category/neet"
-                            onClick={() => setIsOpen(false)}
-                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                          >
-                            NEET Preparation
-                          </Link>
-                          <Link
-                            to="/courses/category/foundation"
-                            onClick={() => setIsOpen(false)}
-                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                          >
-                            Foundation (6-10)
-                          </Link>
-                          <Link
-                            to="/courses/category/boards"
-                            onClick={() => setIsOpen(false)}
-                            className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                          >
-                            Board Exams (11-12)
-                          </Link>
+                          <div className="mb-2">
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              Pre Foundation Course
+                            </p>
+                            <Link
+                              to="/academic/pre-foundation/class-6"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Class 6
+                            </Link>
+                            <Link
+                              to="/academic/pre-foundation/class-7"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Class 7
+                            </Link>
+                            <Link
+                              to="/academic/pre-foundation/class-8"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Class 8
+                            </Link>
+                          </div>
+                          <div className="mb-2">
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              Foundation Course
+                            </p>
+                            <Link
+                              to="/academic/foundation/class-9"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Class 9
+                            </Link>
+                            <Link
+                              to="/academic/foundation/class-10"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Class 10
+                            </Link>
+                          </div>
+                          <div className="mb-2">
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              After Board's
+                            </p>
+                            <Link
+                              to="/academic/after-boards/eklavy-neet"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Eklavy - Re Neet Batch
+                            </Link>
+                            <Link
+                              to="/academic/after-boards/arjuna-jee"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Arjuna - Re JEE Batch
+                            </Link>
+                          </div>
+                          <div className="mb-2">
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              Integrated Program
+                            </p>
+                            <Link
+                              to="/academic/integrated/ntse-olympiad"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Target NTSE/Olympiad (6-10th)
+                            </Link>
+                            <Link
+                              to="/academic/integrated/iit-nit"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Target IIT/NIT (11th Maths)
+                            </Link>
+                            <Link
+                              to="/academic/integrated/neet"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Target NEET (11th Biology)
+                            </Link>
+                          </div>
+                        </>
+                      )}
+                      {link.name === "Student's Corner" && (
+                        <>
+                          <div className="mb-2">
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              Student
+                            </p>
+                            <Link
+                              to="/students-corner?tab=time-table"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Time Table
+                            </Link>
+                            <Link
+                              to="/students-corner?tab=student-feedback"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Student Feedback
+                            </Link>
+                            <Link
+                              to="/students-corner?tab=video-feedback"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Student Video Feedback
+                            </Link>
+                            <Link
+                              to="/students-corner?tab=alumni"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Alumini Registration
+                            </Link>
+                          </div>
+                          <div className="mb-2">
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              Get Admission
+                            </p>
+                            <Link
+                              to="/students-corner?tab=apply-online"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Apply Online
+                            </Link>
+                          </div>
+                          <div>
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              Download
+                            </p>
+                            <Link
+                              to="/students-corner?tab=brochure"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Institute Brochure
+                            </Link>
+                            <Link
+                              to="/students-corner?tab=exam-papers"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Exam Papers
+                            </Link>
+                            <Link
+                              to="/students-corner?tab=news-circulars"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              News & Circulars
+                            </Link>
+                          </div>
                         </>
                       )}
                     </div>

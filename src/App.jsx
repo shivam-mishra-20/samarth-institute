@@ -5,13 +5,24 @@ import Courses from "./pages/Courses";
 import Faculties from "./pages/Faculties";
 import Faculty from "./pages/Faculty";
 import About from "./pages/About";
-import FounderMessage from "./pages/FounderMessage";
+import Academic from "./pages/Academic";
+import PreFoundationClass6 from "./pages/academic/PreFoundationClass6";
+import PreFoundationClass7 from "./pages/academic/PreFoundationClass7";
+import PreFoundationClass8 from "./pages/academic/PreFoundationClass8";
+import FoundationClass9 from "./pages/academic/FoundationClass9";
+import FoundationClass10 from "./pages/academic/FoundationClass10";
+import AfterBoardsEklavy from "./pages/academic/AfterBoardsEklavy";
+import AfterBoardsArjuna from "./pages/academic/AfterBoardsArjuna";
+import IntegratedNTSE from "./pages/academic/IntegratedNTSE";
+import IntegratedIIT from "./pages/academic/IntegratedIIT";
+import IntegratedNEET from "./pages/academic/IntegratedNEET";
 import CourseDetail from "./pages/CourseDetail";
 import CourseCategory from "./pages/CourseCategory";
 import BlogDetail from "./pages/BlogDetail";
 import Contact from "./pages/Contact";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
+import StudentCorner from "./pages/StudentCorner";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -42,12 +53,53 @@ function App() {
           <Route path="/faculty" element={<Faculty />} />
           <Route path="/faculties" element={<Faculties />} />
           <Route path="/about" element={<About />} />
-          <Route path="/founder-message" element={<FounderMessage />} />
+          <Route path="/academic" element={<Academic />} />
+          <Route
+            path="/academic/pre-foundation/class-6"
+            element={<PreFoundationClass6 />}
+          />
+          <Route
+            path="/academic/pre-foundation/class-7"
+            element={<PreFoundationClass7 />}
+          />
+          <Route
+            path="/academic/pre-foundation/class-8"
+            element={<PreFoundationClass8 />}
+          />
+          <Route
+            path="/academic/foundation/class-9"
+            element={<FoundationClass9 />}
+          />
+          <Route
+            path="/academic/foundation/class-10"
+            element={<FoundationClass10 />}
+          />
+          <Route
+            path="/academic/after-boards/eklavy-neet"
+            element={<AfterBoardsEklavy />}
+          />
+          <Route
+            path="/academic/after-boards/arjuna-jee"
+            element={<AfterBoardsArjuna />}
+          />
+          <Route
+            path="/academic/integrated/ntse-olympiad"
+            element={<IntegratedNTSE />}
+          />
+          <Route
+            path="/academic/integrated/iit-nit"
+            element={<IntegratedIIT />}
+          />
+          <Route
+            path="/academic/integrated/neet"
+            element={<IntegratedNEET />}
+          />
           <Route path="/contact" element={<Contact />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
-          <Route path="/register-scholarship" element={<Register />} />
+          <Route path="/students-corner" element={<StudentCorner />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/setup-users" element={<SetupUsers />} />
