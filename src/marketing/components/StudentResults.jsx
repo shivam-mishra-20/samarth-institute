@@ -7,6 +7,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 // Sample student results data for Samarth Institute
 const studentResults = [
@@ -125,7 +126,7 @@ const StudentResults = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-b from-white to-orange-50">
+    <section className="py-16 bg-linear-to-b from-white to-orange-50">
       <div className="container-custom">
         {/* Section Header */}
         <motion.div
@@ -172,7 +173,7 @@ const StudentResults = () => {
                       transition={{ duration: 0.4, delay: idx * 0.1 }}
                       className={`p-5 rounded-2xl transition-all duration-300 cursor-pointer ${
                         idx === 0
-                          ? "bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 shadow-md"
+                          ? "bg-linear-to-r from-orange-50 to-orange-100 border-2 border-orange-300 shadow-md"
                           : "bg-gray-50 border border-gray-100 hover:bg-gray-100"
                       }`}
                       onClick={() =>
@@ -219,12 +220,12 @@ const StudentResults = () => {
 
               {/* Navigation Controls */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
-                <a
-                  href="/results"
-                  className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-full shadow-lg shadow-orange-200 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
+                <Link
+                  to="/results-showcase"
+                  className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-linear-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-full shadow-lg shadow-orange-200 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
                 >
                   View All Results
-                </a>
+                </Link>
 
                 {/* Nav Arrows & Dots */}
                 <div className="flex items-center gap-3 sm:gap-4">
@@ -263,7 +264,7 @@ const StudentResults = () => {
             </div>
 
             {/* Right Side - Featured Image */}
-            <div className="lg:w-1/2 relative min-h-[250px] sm:min-h-[300px] md:min-h-[400px] lg:min-h-[450px] bg-gradient-to-br from-gray-100 to-gray-200 order-1 lg:order-2">
+            <div className="lg:w-1/2 relative min-h-62.5 sm:min-h-75 md:min-h-100 lg:min-h-112.5 bg-linear-to-br from-gray-100 to-gray-200 order-1 lg:order-2">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStudent.id}
@@ -279,7 +280,7 @@ const StudentResults = () => {
                     className="w-full h-full object-cover"
                   />
                   {/* Overlay with student info */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}

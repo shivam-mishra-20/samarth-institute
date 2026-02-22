@@ -109,6 +109,48 @@ const features = [
     ],
     bulletIcons: [Cctv, Flame, DoorOpen],
   },
+  {
+    icon: Trophy,
+    title: "Proven Track Record",
+    description: "Consistent results in board exams and competitive examinations.",
+    color: "bg-yellow-100 text-yellow-600",
+    accentColor: "bg-yellow-200",
+    link: "/results",
+    bulletPoints: [
+      "90%+ Board results",
+      "JEE/NEET selections",
+      "Olympiad qualifications",
+      "Scholarship winners",
+    ],
+  },
+  {
+    icon: GraduationCap,
+    title: "Comprehensive Programs",
+    description: "Diverse courses from Class 6th to 12th covering all competitive exams.",
+    color: "bg-indigo-100 text-indigo-600",
+    accentColor: "bg-indigo-200",
+    link: "/academic",
+    bulletPoints: [
+      "Foundation (6th-10th)",
+      "JEE/NEET preparation",
+      "NTSE/Olympiad coaching",
+      "Board exam focus",
+    ],
+  },
+  {
+    icon: TrendingUp,
+    title: "Career Guidance",
+    description: "Professional counseling for informed career decisions and goal setting.",
+    color: "bg-pink-100 text-pink-600",
+    accentColor: "bg-pink-200",
+    link: "/contact",
+    bulletPoints: [
+      "Career counseling sessions",
+      "College admission guidance",
+      "Stream selection help",
+      "Personality development",
+    ],
+  },
 ];
 
 const InstituteFeatures = () => {

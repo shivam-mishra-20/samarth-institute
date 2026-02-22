@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { 
@@ -13,7 +13,8 @@ import {
   FiCheckCircle,
   FiUsers,
   FiVideo,
-  FiBook
+  FiBook,
+  FiAward
 } from 'react-icons/fi';
 
 const StudentCorner = () => {
@@ -83,42 +84,6 @@ const StudentCorner = () => {
     }
   ];
 
-  // Sample application options
-  const applicationOptions = [
-    {
-      id: 1,
-      title: 'New Admission 2026-27',
-      description: 'Apply for new admission in JEE, NEET, and Foundation courses for the academic year 2026-27.',
-      deadline: 'March 31, 2026',
-      status: 'Open',
-      link: '/register'
-    },
-    {
-      id: 2,
-      title: 'Scholarship Application',
-      description: 'Apply for merit-based scholarships. Upto 50% fee waiver for deserving students.',
-      deadline: 'February 28, 2026',
-      status: 'Open',
-      link: '/contact'
-    },
-    {
-      id: 3,
-      title: 'Course Transfer Request',
-      description: 'Request to transfer from one course to another within the institute.',
-      deadline: 'Ongoing',
-      status: 'Open',
-      link: '/contact'
-    },
-    {
-      id: 4,
-      title: 'Re-admission Application',
-      description: 'Re-admission process for students who took a break from their studies.',
-      deadline: 'February 15, 2026',
-      status: 'Open',
-      link: '/contact'
-    }
-  ];
-
   // Sample news and circulars
   const newsCirculars = [
     {
@@ -172,10 +137,7 @@ const StudentCorner = () => {
   ];
 
   const tabs = [
-    { id: 'time-table', label: 'Time Table', icon: FiCalendar, category: 'Student' },
-    { id: 'student-feedback', label: 'Student Feedback', icon: FiUsers, category: 'Student' },
-    { id: 'video-feedback', label: 'Video Feedback', icon: FiVideo, category: 'Student' },
-    { id: 'alumni', label: 'Alumni Registration', icon: FiUsers, category: 'Student' },
+    { id: 'results', label: 'Results Showcase', icon: FiAward, category: 'Achievements' },
     { id: 'apply-online', label: 'Apply Online', icon: FiExternalLink, category: 'Admission' },
     { id: 'brochure', label: 'Institute Brochure', icon: FiBook, category: 'Download' },
     { id: 'exam-papers', label: 'Exam Papers', icon: FiFileText, category: 'Download' },
@@ -206,7 +168,7 @@ const StudentCorner = () => {
               </h1>
               
               <p className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
-                Access exam papers, apply online, and stay updated with latest news and circulars
+                Access exam papers, apply for scholarships, and stay updated with latest news
               </p>
             </div>
           </div>
@@ -293,56 +255,147 @@ const StudentCorner = () => {
               <div>
                 <div className="mb-8">
                   <h2 className="text-3xl font-bold text-gray-800 mb-2">Apply Online</h2>
-                  <p className="text-gray-600">Submit applications for admissions, scholarships, and other services</p>
+                  <p className="text-gray-600">Apply for scholarship or make an enquiry</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  {applicationOptions.map((app) => (
-                    <div
-                      key={app.id}
-                      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 p-6 hover:scale-[1.02]"
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-800 mb-2">{app.title}</h3>
-                          <p className="text-gray-600 mb-4">{app.description}</p>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          app.status === 'Open' 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-red-100 text-red-700'
-                        }`}>
-                          {app.status}
-                        </span>
+                <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                  {/* Apply for Scholarship */}
+                  <div className="bg-linear-to-br from-blue-600 to-purple-600 rounded-xl shadow-xl p-8 text-white hover:scale-105 transition-transform duration-300">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-2xl font-bold mb-3">Apply for Scholarship</h3>
+                        <p className="text-blue-100 mb-6">
+                          Merit-based scholarships available. Up to 50% fee waiver for deserving students based on academic performance.
+                        </p>
                       </div>
-                      
-                      <div className="flex items-center text-gray-600 text-sm mb-4">
-                        <FiClock className="w-4 h-4 mr-2" />
-                        Deadline: {app.deadline}
+                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shrink-0">
+                        <FiCheckCircle className="w-8 h-8" />
                       </div>
-                      
-                      <a
-                        href={app.link}
-                        className="inline-flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300"
-                      >
-                        Apply Now
-                        <FiExternalLink className="w-5 h-5" />
-                      </a>
                     </div>
-                  ))}
+                    
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-2 text-blue-100">
+                        <FiCheckCircle className="w-5 h-5 shrink-0" />
+                        <span>Merit-based evaluation</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-blue-100">
+                        <FiCheckCircle className="w-5 h-5 shrink-0" />
+                        <span>Up to 50% fee concession</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-blue-100">
+                        <FiCheckCircle className="w-5 h-5 shrink-0" />
+                        <span>Available for all courses</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-blue-100">
+                        <FiCheckCircle className="w-5 h-5 shrink-0" />
+                        <span>Quick approval process</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center text-yellow-300 text-sm mb-6 bg-white/10 rounded-lg p-3">
+                      <FiClock className="w-5 h-5 mr-2 shrink-0" />
+                      <span>Scholarship applications open till February 28, 2026</span>
+                    </div>
+                    
+                    <a
+                      href="/register"
+                      className="flex items-center justify-center gap-2 bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl w-full"
+                    >
+                      Apply Now
+                      <FiExternalLink className="w-5 h-5" />
+                    </a>
+                  </div>
+
+                  {/* Enquire Now Form */}
+                  <div className="bg-white rounded-xl shadow-xl p-8 border border-gray-200">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <FiInfo className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-800">Enquire Now</h3>
+                        <p className="text-gray-600 text-sm">We'll get back to you shortly</p>
+                      </div>
+                    </div>
+
+                    <form className="space-y-5">
+                      <div>
+                        <label className="block text-gray-700 font-medium mb-2">Full Name *</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your full name"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-medium mb-2">Email Address *</label>
+                        <input
+                          type="email"
+                          placeholder="your.email@example.com"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-medium mb-2">Phone Number *</label>
+                        <input
+                          type="tel"
+                          placeholder="+91 XXXXX XXXXX"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-medium mb-2">Course Interested In *</label>
+                        <select 
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        >
+                          <option value="">Select a course</option>
+                          <option>Pre Foundation (Class 6-8)</option>
+                          <option>Foundation Class 9</option>
+                          <option>Foundation Class 10</option>
+                          <option>Integrated JEE (Class 11-12)</option>
+                          <option>Integrated NEET (Class 11-12)</option>
+                          <option>Integrated NTSE (Class 6-10)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-medium mb-2">Your Message</label>
+                        <textarea
+                          rows="4"
+                          placeholder="Tell us about your query or requirements..."
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                        ></textarea>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                      >
+                        <FiCheckCircle className="w-5 h-5" />
+                        Submit Enquiry
+                      </button>
+                    </form>
+                  </div>
                 </div>
 
                 {/* Information Box */}
-                <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
                   <div className="flex items-start gap-3">
                     <FiAlertCircle className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
                     <div>
                       <h4 className="text-lg font-semibold text-blue-900 mb-2">Important Information</h4>
                       <ul className="space-y-2 text-blue-800">
-                        <li>• Ensure all required documents are ready before starting the application</li>
-                        <li>• Applications submitted after the deadline will not be considered</li>
-                        <li>• For any queries, please contact our admission office</li>
-                        <li>• Keep a copy of your application ID for future reference</li>
+                        <li>• For scholarship applications, ensure all required documents are ready</li>
+                        <li>• Our team will contact you within 24-48 hours for enquiries</li>
+                        <li>• For urgent queries, please call our admission office directly</li>
+                        <li>• Keep your application/enquiry ID for future reference</li>
                       </ul>
                     </div>
                   </div>
@@ -400,241 +453,48 @@ const StudentCorner = () => {
               </div>
             )}
 
-            {/* Time Table Tab */}
-            {selectedTab === 'time-table' && (
+            {/* Results Showcase Tab */}
+            {selectedTab === 'results' && (
               <div>
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-2">Time Table</h2>
-                  <p className="text-gray-600">View and download class schedules and timetables</p>
+                <div className="mb-8 text-center">
+                  <h2 className="text-3xl font-bold text-gray-800 mb-2">Outstanding Results & Achievements</h2>
+                  <p className="text-gray-600">Celebrating our students' remarkable success stories</p>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-                  <div className="flex items-center gap-3 mb-6">
-                    <FiCalendar className="w-8 h-8 text-blue-600" />
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-800">Academic Timetable 2026-27</h3>
-                      <p className="text-gray-600">Updated on February 10, 2026</p>
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4 mb-6">
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">JEE & NEET Batch</h4>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        <FiDownload className="w-5 h-5" />
-                        Download Timetable
-                      </button>
-                    </div>
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">Foundation Batch (6-10)</h4>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        <FiDownload className="w-5 h-5" />
-                        Download Timetable
-                      </button>
-                    </div>
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">Board Exams (11-12)</h4>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        <FiDownload className="w-5 h-5" />
-                        Download Timetable
-                      </button>
-                    </div>
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">Test Series Schedule</h4>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        <FiDownload className="w-5 h-5" />
-                        Download Schedule
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <div className="flex items-start gap-2">
-                      <FiAlertCircle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
-                      <p className="text-yellow-800">
-                        <strong>Note:</strong> Timetables are subject to change. Please check regularly for updates.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Student Feedback Tab */}
-            {selectedTab === 'student-feedback' && (
-              <div>
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-2">Student Feedback</h2>
-                  <p className="text-gray-600">Share your valuable feedback to help us improve</p>
-                </div>
-
-                <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-8 border border-gray-100">
-                  <form className="space-y-6">
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Your Name</label>
-                      <input
-                        type="text"
-                        placeholder="Enter your full name"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Course/Batch</label>
-                      <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option>Select your course</option>
-                        <option>JEE Preparation</option>
-                        <option>NEET Preparation</option>
-                        <option>Foundation (6-10)</option>
-                        <option>Board Exams (11-12)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Feedback Category</label>
-                      <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option>Select category</option>
-                        <option>Teaching Quality</option>
-                        <option>Course Content</option>
-                        <option>Infrastructure</option>
-                        <option>Study Material</option>
-                        <option>Other</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Your Feedback</label>
-                      <textarea
-                        rows="6"
-                        placeholder="Share your thoughts and suggestions..."
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      ></textarea>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                <div className="bg-linear-to-r from-blue-50 to-purple-50 rounded-xl shadow-md p-8 border border-blue-100 mb-8">
+                  <div className="text-center">
+                    <FiAward className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-800 mb-3">View Complete Results</h3>
+                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                      Explore our comprehensive results showcase featuring top achievers across all standards.
+                      See detailed performance metrics and success stories.
+                    </p>
+                    <Link
+                      to="/results-showcase"
+                      className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-8 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
                     >
-                      <FiCheckCircle className="w-5 h-5" />
-                      Submit Feedback
-                    </button>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {/* Video Feedback Tab */}
-            {selectedTab === 'video-feedback' && (
-              <div>
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-2">Student Video Feedback</h2>
-                  <p className="text-gray-600">Watch what our students have to say about their experience</p>
+                      <FiExternalLink className="w-5 h-5" />
+                      View Full Results Page
+                    </Link>
+                  </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3, 4, 5, 6].map((video) => (
-                    <div key={video} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow">
-                      <div className="aspect-video bg-gray-200 flex items-center justify-center">
-                        <FiVideo className="w-16 h-16 text-gray-400" />
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold text-gray-800 mb-1">Student Testimonial {video}</h3>
-                        <p className="text-sm text-gray-600 mb-3">JEE 2025 - AIR 234</p>
-                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors">
-                          Watch Video
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Alumni Registration Tab */}
-            {selectedTab === 'alumni' && (
-              <div>
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-2">Alumni Registration</h2>
-                  <p className="text-gray-600">Stay connected with your alma mater</p>
-                </div>
-
-                <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-8 border border-gray-100">
-                  <form className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2">First Name</label>
-                        <input
-                          type="text"
-                          placeholder="First name"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2">Last Name</label>
-                        <input
-                          type="text"
-                          placeholder="Last name"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Email Address</label>
-                      <input
-                        type="email"
-                        placeholder="your.email@example.com"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Phone Number</label>
-                      <input
-                        type="tel"
-                        placeholder="+91 XXXXX XXXXX"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2">Batch Year</label>
-                        <input
-                          type="text"
-                          placeholder="e.g., 2020-2021"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2">Course</label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                          <option>Select course</option>
-                          <option>JEE Preparation</option>
-                          <option>NEET Preparation</option>
-                          <option>Foundation</option>
-                          <option>Board Exams</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Current Occupation/College</label>
-                      <input
-                        type="text"
-                        placeholder="Where are you now?"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                      <FiCheckCircle className="w-5 h-5" />
-                      Register as Alumni
-                    </button>
-                  </form>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 text-center">
+                    <div className="text-4xl font-bold text-blue-600 mb-2">98.31%</div>
+                    <div className="text-sm text-gray-600 mb-1">Jignyasa Patil</div>
+                    <div className="text-xs text-gray-500">Class 10th - Top Scorer</div>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 text-center">
+                    <div className="text-4xl font-bold text-purple-600 mb-2">98.05%</div>
+                    <div className="text-sm text-gray-600 mb-1">Jinal Vasava</div>
+                    <div className="text-xs text-gray-500">Outstanding Achievement</div>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 text-center">
+                    <div className="text-4xl font-bold text-indigo-600 mb-2">96.86%</div>
+                    <div className="text-sm text-gray-600 mb-1">Jash Patel</div>
+                    <div className="text-xs text-gray-500">Excellent Performance</div>
+                  </div>
                 </div>
               </div>
             )}
@@ -696,7 +556,7 @@ const StudentCorner = () => {
         </section>
 
         {/* Contact CTA Section */}
-        <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <section className="py-16 bg-linear-to-r from-blue-600 to-purple-600 text-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Need Help or Have Questions?</h2>
             <p className="text-xl mb-8 text-blue-100">Our team is here to assist you with any queries</p>

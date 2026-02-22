@@ -23,6 +23,7 @@ import Contact from "./pages/Contact";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import StudentCorner from "./pages/StudentCorner";
+import ResultsShowcase from "./pages/ResultsShowcase";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -99,6 +100,7 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/students-corner" element={<StudentCorner />} />
+          <Route path="/results-showcase" element={<ResultsShowcase />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

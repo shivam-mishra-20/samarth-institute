@@ -85,7 +85,7 @@ const Testimonials = () => {
                 </div>
                 <div>
                   <p className="font-bold text-gray-900 text-sm lg:text-base">
-                    100+
+                    3000+
                   </p>
                   <p className="text-xs lg:text-sm text-gray-500">Students</p>
                 </div>

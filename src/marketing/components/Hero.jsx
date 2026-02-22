@@ -21,14 +21,14 @@ const Hero = () => {
         
         <div className="relative max-w-7xl mx-auto z-10">
           {/* Top Row - Main Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-orange-200 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md">
-                  <GraduationCap className="w-7 h-7 text-red-600" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-orange-200 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md">
+                    <GraduationCap className="w-7 h-7 text-red-600" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
                     <p className="font-black text-gray-900 text-lg sm:text-xl">#ExamReadyWithSamarth</p>
                     <motion.div
                       animate={{ scale: [1, 1.1, 1] }}
@@ -38,33 +38,34 @@ const Hero = () => {
                       <Star className="w-3 h-3 fill-current" />
                       ADMISSIONS OPEN
                     </motion.div>
+                    </div>
+                    <p className="text-xs text-gray-700 font-bold">JEE | NEET | FOUNDATION | Classes 6th-12th</p>
                   </div>
-                  <p className="text-xs text-gray-700 font-bold">JEE | NEET | FOUNDATION | Classes 6th-12th</p>
+                  </div>
+                  <div className="hidden xl:block">
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="flex items-center gap-2 px-6 py-3 bg-white text-red-700 font-black text-3xl rounded-xl shadow-xl border-2 border-red-300"
+                  >
+                    <Trophy className="w-7 h-7 text-yellow-600" />
+                    UP TO 90% OFF
+                    <Trophy className="w-7 h-7 text-yellow-600" />
+                  </motion.div>
+                  </div>
                 </div>
-              </div>
-              <div className="hidden xl:block">
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="flex items-center gap-2 px-6 py-3 bg-white text-red-700 font-black text-3xl rounded-xl shadow-xl border-2 border-red-300"
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-full shadow-xl text-sm sm:text-base flex items-center gap-2 border-2 border-red-700"
+                  onClick={() => window.location.href = '/register'}
                 >
-                  <Trophy className="w-7 h-7 text-yellow-600" />
-                  UP TO 90% OFF
-                  <Trophy className="w-7 h-7 text-yellow-600" />
-                </motion.div>
-              </div>
-            </div>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-full shadow-xl text-sm sm:text-base flex items-center gap-2 border-2 border-red-700"
-            >
-              Register Now <FiArrowRight className="w-5 h-5" />
-            </motion.button>
-          </div>
+                  Register Now <FiArrowRight className="w-5 h-5" />
+                </motion.button>
+                </div>
 
-          {/* Bottom Row - Details Grid */}
+                {/* Bottom Row - Details Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {/* Scholarship Pool */}
             <div className="col-span-2 md:col-span-2 lg:col-span-2 p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
@@ -112,7 +113,7 @@ const Hero = () => {
                 <Target className="w-4 h-4 text-green-600" />
                 <span className="text-xs font-bold text-gray-700">Small Batch</span>
               </div>
-              <p className="text-xl font-black text-gray-900">15-18</p>
+              <p className="text-xl font-black text-gray-900">20 - 25</p>
               <p className="text-xs text-gray-700">students</p>
             </div>
           </div>

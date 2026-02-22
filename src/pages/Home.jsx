@@ -138,52 +138,70 @@ const Home = () => {
             >
               {[
                 {
-                  title: "NEET",
-                  tags: ["Class 11", "Class 12"],
-                  link: "/courses/neet",
-                  icon: Stethoscope,
-                  bgColor: "blue",
-                  accentColor: "orange",
-                },
-                {
-                  title: "IIT JEE",
-                  tags: ["Class 11", "Class 12"],
-                  link: "/courses/jee",
-                  icon: Atom,
-                  bgColor: "blue",
-                  accentColor: "yellow",
-                },
-                {
                   title: "Pre Foundation",
-                  tags: ["Class 6", "Class 7", "Class 8", "NTSE/Olympiad", "Competitive Exams"],
-                  link: "/courses/pre-foundation",
+                  subtitle: "Building Strong Fundamentals",
+                  tags: ["Class 6", "Class 7", "Class 8"],
+                  subjects: ["Math", "Science", "Logical Reasoning", "Olympiad Prep"],
+                  link: "/academic?section=pre-foundation",
                   icon: Backpack,
-                  bgColor: "yellow",
-                  accentColor: "orange",
+                  bgColor: "blue",
+                  accentColor: "indigo",
+                  description: "Early foundation for competitive mindset with Olympiad & NTSE preparation"
                 },
                 {
-                  title: "Foundation",
-                  tags: ["Class 9"],
-                  link: "/courses/foundation",
+                  title: "Foundation Class 9",
+                  subtitle: "Critical Foundation Year",
+                  tags: ["Class 9", "NTSE Stage I"],
+                  subjects: ["Math", "Physics", "Chemistry", "Biology"],
+                  link: "/academic?section=foundation",
                   icon: BookOpen,
                   bgColor: "green",
-                  accentColor: "green",
+                  accentColor: "emerald",
+                  description: "Advanced concepts with Board + NTSE preparation"
                 },
                 {
-                  title: "School Boards",
-                  tags: ["Class 10"],
-                  link: "/courses/boards",
+                  title: "Foundation Class 10",
+                  subtitle: "Board Excellence & Beyond",
+                  tags: ["Class 10", "NTSE Stage II", "Board Exams"],
+                  subjects: ["Math", "Science", "Social Science", "English", "Hindi"],
+                  link: "/academic?section=foundation",
                   icon: GraduationCap,
-                  bgColor: "purple",
-                  accentColor: "purple",
+                  bgColor: "teal",
+                  accentColor: "cyan",
+                  description: "Complete Board syllabus with competitive foundation"
                 },
                 {
-                  title: "Dropper",
-                  tags: ["Class 11", "Class 12"],
-                  link: "/courses/dropper",
-                  icon: Target,
-                  bgColor: "pink",
+                  title: "Integrated JEE",
+                  subtitle: "Target IIT/NIT",
+                  tags: ["Class 11-12", "2 Years"],
+                  subjects: ["Physics", "Chemistry", "Mathematics"],
+                  link: "/academic?section=integrated",
+                  icon: Atom,
+                  bgColor: "purple",
                   accentColor: "pink",
+                  description: "JEE Main & Advanced with Board exam integrated approach"
+                },
+                {
+                  title: "Integrated NEET",
+                  subtitle: "Target Medical Colleges",
+                  tags: ["Class 11-12", "2 Years"],
+                  subjects: ["Physics", "Chemistry", "Biology"],
+                  link: "/academic?section=integrated",
+                  icon: Stethoscope,
+                  bgColor: "red",
+                  accentColor: "orange",
+                  description: "NEET focused curriculum with NCERT mastery emphasis"
+                },
+                {
+                  title: "Integrated NTSE",
+                  subtitle: "5 Year Excellence Program",
+                  tags: ["Class 6-10", "Long-term"],
+                  subjects: ["Complete Foundation", "Olympiad", "NTSE"],
+                  link: "/academic?section=integrated",
+                  icon: Target,
+                  bgColor: "amber",
+                  accentColor: "yellow",
+                  description: "Multi-year program building strong fundamentals for competitive excellence"
                 },
               ].map((category, idx) => (
                 <motion.div key={idx} variants={fadeInUp}>
@@ -196,7 +214,7 @@ const Home = () => {
 
         {/* Divider */}
         <div className="container-custom">
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+          <div className="h-px bg-linear-to-r from-transparent via-gray-300 to-transparent"></div>
         </div>
 
         {/* About Section */}
@@ -224,7 +242,7 @@ const Home = () => {
 
         {/* Divider */}
         <div className="container-custom py-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+          <div className="h-px bg-linear-to-r from-transparent via-gray-300 to-transparent"></div>
         </div>
 
         {/* Courses Section (Staggered Grid) */}
@@ -270,63 +288,7 @@ const Home = () => {
 
         {/* Divider */}
         <div className="container-custom py-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-        </div>
-
-        {/* Faculties Highlight (Staggered Grid) */}
-        <section className="py-16 container-custom">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={zoomIn}
-            className="text-center mb-12"
-          >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-sm font-semibold mb-4">
-              Our Team
-            </span>
-            <h2 className="text-4xl font-bold text-samarth-blue-900 mb-4">
-              Learn from Industry Experts
-            </h2>
-            <p className="text-samarth-gray-600 max-w-2xl mx-auto">
-              Gain insights from industry experts and master real-world skills
-              for career growth.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            {faculties.map((faculty) => (
-              <motion.div variants={fadeInUp} key={faculty.id}>
-                <FacultyCard faculty={faculty} />
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="text-center mt-10"
-          >
-            <Link
-              to="/faculties"
-              className="inline-block px-8 py-3 bg-indigo-600 text-white font-medium rounded-full hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
-            >
-              See all
-            </Link>
-          </motion.div>
-        </section>
-
-        {/* Divider */}
-        <div className="container-custom py-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+          <div className="h-px bg-linear-to-r from-transparent via-gray-300 to-transparent"></div>
         </div>
 
         {/* Student Results Section */}
@@ -374,7 +336,7 @@ const Home = () => {
                     transform lives. Join our community today.
                   </p>
                   <Link
-                    to="/register-scholarship"
+                    to="/register"
                     className="btn-sweep inline-block px-6 py-3 md:px-8 md:py-4 bg-white text-blue-900 font-bold rounded-full shadow-lg hover:bg-blue-50 transition-colors"
                   >
                     Become a Student

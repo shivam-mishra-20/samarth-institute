@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiSearch, 
@@ -18,7 +19,7 @@ import { Link } from 'react-router-dom';
 
 import { coursesData } from '../data/coursesData';
 
-const categories = ["All", "Foundation", "Boards", "Competitive"];
+const categories = ["All", "Pre-Foundation", "Foundation", "Competitive", "Long-term"];
 
 const Courses = () => {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -47,7 +48,7 @@ const Courses = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-6xl font-bold mb-6"
             >
-              Expert Designed Courses
+              Our Class Offerings
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -55,7 +56,7 @@ const Courses = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-blue-100 max-w-2xl mx-auto mb-10"
             >
-              From building strong foundations in Class 6 to mastering competitive exams like JEE & NEET, we have the perfect roadmap for your success.
+              Choose the right program for your academic journey. From Pre-Foundation to competitive exam preparation, we have comprehensive programs for Classes 6 to 12.
             </motion.p>
             
             {/* Search Bar */}
@@ -124,10 +125,15 @@ const Courses = () => {
                              </div>
                           </div>
                           
-                          <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-samarth-blue-700 transition-colors">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-1 group-hover:text-samarth-blue-700 transition-colors">
                              {course.title}
                           </h3>
-                          <div className="text-sm font-medium text-gray-500 mb-4 flex items-center">
+                          {course.subtitle && (
+                            <p className="text-sm font-medium text-gray-500 mb-3">
+                              {course.subtitle}
+                            </p>
+                          )}
+                          <div className="text-sm font-medium text-gray-600 mb-4 flex items-center">
                              <FiBookOpen className="mr-2 text-samarth-blue-500"/> {course.grade}
                           </div>
 
@@ -135,18 +141,33 @@ const Courses = () => {
                              {course.description}
                           </p>
                           
-                          <div className="space-y-3 mb-8">
-                             {course.features.map((feature, idx) => (
+                          {/* Subjects */}
+                          <div className="mb-4">
+                            <p className="text-xs font-bold text-gray-500 uppercase mb-2">Subjects Covered:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {course.subjects.map((subject, idx) => (
+                                <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                                  {subject}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 mb-6">
+                             {course.features.slice(0, 3).map((feature, idx) => (
                                 <div key={idx} className="flex items-start text-sm text-gray-700">
-                                   <FiCheck className={`mt-0.5 mr-2 text-${course.color}-500 shrink-0`} />
+                                   <FiCheck className={`mt-0.5 mr-2 text-blue-500 shrink-0`} />
                                    {feature}
                                 </div>
                              ))}
                           </div>
 
-                          <Link to={`/courses/${course.slug}`} className="w-full py-3 rounded-xl border-2 border-blue-600 text-blue-700 font-bold hover:bg-blue-600 hover:text-white transition-colors flex items-center justify-center gap-2 group-hover:gap-3">
-                             Brochure & Syllabus <FiArrowRight />
-                          </Link>
+                          <a 
+                            href={course.link}
+                            className="w-full py-3 rounded-xl border-2 border-blue-600 text-blue-700 font-bold hover:bg-blue-600 hover:text-white transition-colors flex items-center justify-center gap-2 group-hover:gap-3"
+                          >
+                             View Details <FiArrowRight />
+                          </a>
                        </div>
                     </motion.div>
                  ))}
@@ -168,26 +189,26 @@ const Courses = () => {
       <section className="py-20 bg-blue-50">
          <div className="container-custom">
             <div className="text-center mb-16">
-               <h2 className="text-3xl font-bold text-samarth-blue-900 mb-4">Why Our Curriculum Works</h2>
-               <p className="text-gray-600 max-w-2xl mx-auto">Our courses are scientifically designed to match the cognitive development of students at each stage.</p>
+               <h2 className="text-3xl font-bold text-samarth-blue-900 mb-4">Why Choose Samarth Institute?</h2>
+               <p className="text-gray-600 max-w-2xl mx-auto">Our programs are designed to provide comprehensive education from foundational concepts to competitive exam excellence.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
                {[
                   {
                      icon: <FiBook className="w-8 h-8"/>,
-                     title: "Structured Learning",
-                     desc: "Carefully sequenced topics ensuring prerequisite knowledge is solid before moving to advanced concepts."
+                     title: "Structured Curriculum",
+                     desc: "Carefully designed syllabus covering Board exams, NTSE, Olympiads, JEE & NEET with progressive learning approach."
                   },
                   {
                      icon: <FiUsers className="w-8 h-8"/>,
-                     title: "Expert Mentorship",
-                     desc: "Courses are delivered by subject matter experts who specialize in coaching for that specific grade level."
+                     title: "Expert Faculty",
+                     desc: "Teaching by IITians, NITians & Expert Faculties who specialize in their respective subjects and exam patterns."
                   },
                   {
                      icon: <FiAward className="w-8 h-8"/>,
-                     title: "Result Oriented",
-                     desc: "Every module includes regular assessments and feedback loops to track and improve performance."
+                     title: "Proven Results",
+                     desc: "98%+ Board results, NTSE selections, and top ranks in JEE/NEET with consistent student success stories."
                   }
                ].map((item, i) => (
                   <div key={i} className="bg-white p-8 rounded-2xl shadow-sm text-center">

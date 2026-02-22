@@ -242,7 +242,7 @@ const ScholarshipPopup = () => {
                     </div>
                     <div>
                       <h4 className="font-bold">Small Batches</h4>
-                      <p className="text-xs text-red-100">Only 15-18 students per batch</p>
+                      <p className="text-xs text-red-100">Only 20-25 students per batch</p>
                     </div>
                   </div>
                 </div>
@@ -258,7 +258,7 @@ const ScholarshipPopup = () => {
               {/* ===== CTA BUTTONS ===== */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  to="/register-scholarship"
+                  to="/register"
                   onClick={() => setIsOpen(false)}
                   className="flex-1 flex items-center justify-center gap-2 py-4 bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >

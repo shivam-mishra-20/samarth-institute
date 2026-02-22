@@ -94,11 +94,11 @@ const Navbar = () => {
     {
       key: "academic-mega",
       label: (
-        <div className="grid grid-cols-4 gap-8 p-4 min-w-150">
+        <div className="grid grid-cols-5 gap-6 p-4 min-w-200">
           {/* PRE FOUNDATION COURSE */}
           <div>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              PRE FOUNDATION COURSE
+              PRE FOUNDATION
             </h3>
             <div className="space-y-1">
               <Link
@@ -125,7 +125,7 @@ const Navbar = () => {
           {/* FOUNDATION COURSE */}
           <div>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              FOUNDATION COURSE
+              FOUNDATION
             </h3>
             <div className="space-y-1">
               <Link
@@ -143,41 +143,62 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* AFTER BOARD'S */}
+          {/* BOARDS */}
           <div>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              AFTER BOARD'S
+              BOARDS
+            </h3>
+            <div className="space-y-1">
+              <Link
+                to="/academic/boards/class-11"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Class 11
+              </Link>
+              <Link
+                to="/academic/boards/class-12"
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
+              >
+                Class 12
+              </Link>
+            </div>
+          </div>
+
+          {/* COMPETITIVE EXAMS */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              COMPETITIVE EXAMS
             </h3>
             <div className="space-y-1">
               <Link
                 to="/academic/after-boards/eklavy-neet"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
               >
-                Eklavy - Re Neet Batch
+                Eklavy - Re Neet
               </Link>
               <Link
                 to="/academic/after-boards/arjuna-jee"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
               >
-                Arjuna - Re JEE Batch
+                Arjuna - Re JEE
               </Link>
             </div>
           </div>
 
-          {/* INTEGRATED CLASSROOM PROGRAM */}
+          {/* INTEGRATED COURSES */}
           <div>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              INTEGRATED CLASSROOM PROGRAM
+              INTEGRATED
             </h3>
             <div className="space-y-1">
               <Link
                 to="/academic/integrated/ntse-olympiad"
                 className="block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md leading-tight"
               >
-                Target NTSE/OLYMPIAD/FOUNDATION
+                NTSE/OLYMPIAD
                 <br />
                 <span className="text-xs text-gray-500">
-                  (6 To 10th) - 5 Years
+                  (Class 6-10)
                 </span>
               </Link>
               <Link
@@ -187,7 +208,7 @@ const Navbar = () => {
                 Target IIT/NIT
                 <br />
                 <span className="text-xs text-gray-500">
-                  (11th Maths Group) - 2 Years
+                  (Class 11-12)
                 </span>
               </Link>
               <Link
@@ -197,7 +218,7 @@ const Navbar = () => {
                 Target NEET
                 <br />
                 <span className="text-xs text-gray-500">
-                  (11th Biology Group) - 2 Years
+                  (Class 11-12)
                 </span>
               </Link>
             </div>
@@ -212,36 +233,18 @@ const Navbar = () => {
     {
       key: "student-corner-mega",
       label: (
-        <div className="grid grid-cols-3 gap-8 p-4 min-w-150">
+        <div className="grid grid-cols-2 gap-8 p-4 min-w-100">
           {/* STUDENT Section */}
           <div>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              STUDENT
+              ACHIEVEMENTS
             </h3>
             <div className="space-y-1">
               <Link
-                to="/students-corner?tab=time-table"
+                to="/results-showcase"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
               >
-                Time Table
-              </Link>
-              <Link
-                to="/students-corner?tab=student-feedback"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
-              >
-                Student Feedback
-              </Link>
-              <Link
-                to="/students-corner?tab=video-feedback"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
-              >
-                Student Video Feedback
-              </Link>
-              <Link
-                to="/students-corner?tab=alumni"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
-              >
-                Alumini Registration
+                Results Showcase
               </Link>
             </div>
           </div>
@@ -385,9 +388,9 @@ const Navbar = () => {
       }`}
     >
       <div className="container-custom">
-        <div className="flex justify-center items-center relative">
+        <div className="flex justify-between items-center relative">
           {/* Logo */}
-          <div className="shrink-0 flex items-center absolute left-4 md:left-8">
+          <div className="shrink-0 flex items-center">
             <Link
               to="/"
               className="cursor-pointer hover:opacity-90 transition-opacity"
@@ -397,7 +400,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Menu - Centered */}
-          <div className="hidden md:flex space-x-6 items-center justify-center">
+          <div className="hidden md:flex space-x-6 items-center justify-center flex-1 mx-8">
             {navLinks.map((link) =>
               link.hasDropdown ? (
                 <Dropdown
@@ -446,9 +449,10 @@ const Navbar = () => {
                 </Link>
               ),
             )}
+          </div>
 
-            {/* Enquiry and Login Buttons */}
-            <div className="absolute right-8 md:right-16 flex items-center gap-3">
+          {/* Enquiry and Login Buttons */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
               {/* Enquiry Button */}
               <Link
                 to="/contact"
@@ -486,7 +490,6 @@ const Navbar = () => {
                 </Dropdown>
               )}
             </div>
-          </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden absolute right-4 flex items-center">
@@ -572,7 +575,7 @@ const Navbar = () => {
                         <>
                           <div className="mb-2">
                             <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                              Pre Foundation Course
+                              Pre Foundation
                             </p>
                             <Link
                               to="/academic/pre-foundation/class-6"
@@ -598,7 +601,7 @@ const Navbar = () => {
                           </div>
                           <div className="mb-2">
                             <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                              Foundation Course
+                              Foundation
                             </p>
                             <Link
                               to="/academic/foundation/class-9"
@@ -617,47 +620,66 @@ const Navbar = () => {
                           </div>
                           <div className="mb-2">
                             <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                              After Board's
+                              Boards
+                            </p>
+                            <Link
+                              to="/academic/boards/class-11"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Class 11
+                            </Link>
+                            <Link
+                              to="/academic/boards/class-12"
+                              onClick={() => setIsOpen(false)}
+                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                            >
+                              Class 12
+                            </Link>
+                          </div>
+                          <div className="mb-2">
+                            <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                              Competitive Exams
                             </p>
                             <Link
                               to="/academic/after-boards/eklavy-neet"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >
-                              Eklavy - Re Neet Batch
+                              Eklavy - Re Neet
                             </Link>
                             <Link
                               to="/academic/after-boards/arjuna-jee"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >
-                              Arjuna - Re JEE Batch
+                              Arjuna - Re JEE
                             </Link>
                           </div>
                           <div className="mb-2">
                             <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                              Integrated Program
+                              Integrated
                             </p>
                             <Link
                               to="/academic/integrated/ntse-olympiad"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >
-                              Target NTSE/Olympiad (6-10th)
+                              NTSE/Olympiad (Class 6-10)
                             </Link>
                             <Link
                               to="/academic/integrated/iit-nit"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >
-                              Target IIT/NIT (11th Maths)
+                              Target IIT/NIT (Class 11-12)
                             </Link>
                             <Link
                               to="/academic/integrated/neet"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >
-                              Target NEET (11th Biology)
+                              Target NEET (Class 11-12)
                             </Link>
                           </div>
                         </>
@@ -666,35 +688,14 @@ const Navbar = () => {
                         <>
                           <div className="mb-2">
                             <p className="px-4 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                              Student
+                              Achievements
                             </p>
                             <Link
-                              to="/students-corner?tab=time-table"
+                              to="/results-showcase"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >
-                              Time Table
-                            </Link>
-                            <Link
-                              to="/students-corner?tab=student-feedback"
-                              onClick={() => setIsOpen(false)}
-                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                            >
-                              Student Feedback
-                            </Link>
-                            <Link
-                              to="/students-corner?tab=video-feedback"
-                              onClick={() => setIsOpen(false)}
-                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                            >
-                              Student Video Feedback
-                            </Link>
-                            <Link
-                              to="/students-corner?tab=alumni"
-                              onClick={() => setIsOpen(false)}
-                              className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                            >
-                              Alumini Registration
+                              Results Showcase
                             </Link>
                           </div>
                           <div className="mb-2">
