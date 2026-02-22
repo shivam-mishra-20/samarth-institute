@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion } from 'framer-motion';
-import { FiUser, FiPhone, FiMail, FiCalendar, FiBookOpen, FiMapPin, FiCheckCircle, FiArrowRight, FiAward } from 'react-icons/fi';
+import { FiUser, FiPhone, FiMail, FiCalendar, FiBookOpen, FiMapPin, FiCheckCircle, FiArrowRight, FiAward, FiLoader } from 'react-icons/fi';
+import { db } from '../config/firebase.config';
+import { collection, doc, setDoc } from 'firebase/firestore';
 
 // Helper to get next N Sundays from today
 const getNextSundays = (count) => {
@@ -26,7 +28,8 @@ const Register = () => {
   const testDates = getNextSundays(6);
   
   const [formData, setFormData] = useState({
-    studentName: '',
+    firstName: '',
+    lastName: '',
     parentName: '',
     email: '',
     phone: '',
@@ -38,6 +41,7 @@ const Register = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const classOptions = ['6th', '7th', '8th', '9th', '10th', '11th'];
 
@@ -46,10 +50,43 @@ const Register = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Submitted:', formData);
-    setSubmitted(true);
+    setIsSubmitting(true);
+    
+    try {
+      // Create document ID: fname_lname_yy-mm-dd_classApplying
+      const now = new Date();
+      const yy = String(now.getFullYear()).slice(-2);
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const classForId = formData.classApplying.replace(/\s+/g, '-').toLowerCase();
+      const docId = `${formData.firstName.toLowerCase()}_${formData.lastName.toLowerCase()}_${yy}-${mm}-${dd}_${classForId}`;
+
+      const enquiryData = {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        parentName: formData.parentName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        classApplying: formData.classApplying,
+        testDate: formData.testDate,
+        school: formData.school.trim(),
+        address: formData.address.trim(),
+        branch: formData.branch,
+        submittedAt: now.toISOString(),
+        status: 'pending'
+      };
+
+      await setDoc(doc(collection(db, 'scholarshipEnquiries'), docId), enquiryData);
+      console.log('Form Submitted:', enquiryData);
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting registration:', error);
+      alert('Failed to submit registration. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const fadeInUp = {
@@ -123,19 +160,36 @@ const Register = () => {
                 <p className="text-gray-500 mb-8">Please fill in all the required information accurately.</p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
-                  {/* Student Name */}
+                  {/* First Name */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Student's Full Name *</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400"><FiUser /></span>
                       <input
                         type="text"
-                        name="studentName"
-                        value={formData.studentName}
+                        name="firstName"
+                        value={formData.firstName}
                         onChange={handleChange}
                         required
                         className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-                        placeholder="e.g., Rahul Sharma"
+                        placeholder="e.g., Rahul"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Last Name */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400"><FiUser /></span>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                        placeholder="e.g., Sharma"
                       />
                     </div>
                   </div>
@@ -322,10 +376,20 @@ const Register = () => {
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group transform hover:-translate-y-0.5"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  Register for Scholarship Test
-                  <FiArrowRight className="transition-transform group-hover:translate-x-1" />
+                  {isSubmitting ? (
+                    <>
+                      <FiLoader className="animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Register for Scholarship Test
+                      <FiArrowRight className="transition-transform group-hover:translate-x-1" />
+                    </>
+                  )}
                 </button>
 
                 <p className="text-center text-xs text-gray-400 mt-4">

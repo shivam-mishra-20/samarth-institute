@@ -197,9 +197,7 @@ const Navbar = () => {
               >
                 NTSE/OLYMPIAD
                 <br />
-                <span className="text-xs text-gray-500">
-                  (Class 6-10)
-                </span>
+                <span className="text-xs text-gray-500">(Class 6-10)</span>
               </Link>
               <Link
                 to="/academic/integrated/iit-nit"
@@ -207,9 +205,7 @@ const Navbar = () => {
               >
                 Target IIT/NIT
                 <br />
-                <span className="text-xs text-gray-500">
-                  (Class 11-12)
-                </span>
+                <span className="text-xs text-gray-500">(Class 11-12)</span>
               </Link>
               <Link
                 to="/academic/integrated/neet"
@@ -217,9 +213,7 @@ const Navbar = () => {
               >
                 Target NEET
                 <br />
-                <span className="text-xs text-gray-500">
-                  (Class 11-12)
-                </span>
+                <span className="text-xs text-gray-500">(Class 11-12)</span>
               </Link>
             </div>
           </div>
@@ -395,12 +389,15 @@ const Navbar = () => {
               to="/"
               className="cursor-pointer hover:opacity-90 transition-opacity"
             >
-              <Logo className="h-12 w-auto" textClassName="text-2xl font-black" />
+              <Logo
+                className="h-12 w-auto"
+                textClassName="text-2xl font-black"
+              />
             </Link>
           </div>
 
           {/* Desktop Menu - Centered */}
-          <div className="hidden md:flex space-x-6 items-center justify-center flex-1 mx-8">
+          <div className="hidden md:flex space-x-2 items-center justify-center flex-1 mx-8">
             {navLinks.map((link) =>
               link.hasDropdown ? (
                 <Dropdown
@@ -411,7 +408,7 @@ const Navbar = () => {
                   trigger={["hover"]}
                 >
                   <span
-                    className={`relative px-4 py-2 font-medium transition-all duration-300 group inline-flex items-center gap-1 hover:scale-105 cursor-pointer ${
+                    className={`relative px-2 py-2 font-medium transition-all duration-300 group inline-flex items-center gap-1 hover:scale-105 cursor-pointer whitespace-nowrap ${
                       isActive(link.path)
                         ? "text-samarth-blue-700"
                         : "text-samarth-gray-600 hover:text-samarth-blue-700"
@@ -432,7 +429,7 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`relative px-4 py-2 font-medium transition-all duration-300 group hover:scale-105 ${
+                  className={`relative px-2 py-2 font-medium transition-all duration-300 group hover:scale-105 whitespace-nowrap ${
                     isActive(link.path)
                       ? "text-samarth-blue-700"
                       : "text-samarth-gray-600 hover:text-samarth-blue-700"
@@ -453,43 +450,43 @@ const Navbar = () => {
 
           {/* Enquiry and Login Buttons */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
-              {/* Enquiry Button */}
-              <Link
-                to="/contact"
-                className="px-6 py-2.5 rounded-full bg-red-600 text-white font-bold hover:bg-red-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 border-2 border-red-700"
-              >
-                <FiPhone className="w-4 h-4" />
-                Enquiry
-              </Link>
+            {/* Enquiry Button */}
+            <Link
+              to="/contact"
+              className="px-6 py-2.5 rounded-full bg-red-600 text-white font-bold hover:bg-red-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 border-2 border-red-700"
+            >
+              <FiPhone className="w-4 h-4" />
+              Enquiry
+            </Link>
 
-              {/* Login Dropdown or Dashboard Link */}
-              {user ? (
-                <Link
-                  to={
-                    isStudent
-                      ? "/student/dashboard"
-                      : isTeacher
-                        ? "/teacher/dashboard"
-                        : "/admin/dashboard"
-                  }
-                  className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 border-2 border-blue-800"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <Dropdown
-                  menu={{ items: loginItems }}
-                  placement="bottomRight"
-                  overlayClassName="navbar-dropdown"
-                  trigger={["hover"]}
-                >
-                  <button className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 border-2 border-blue-800">
-                    Login
-                    <FiChevronDown className="w-4 h-4" />
-                  </button>
-                </Dropdown>
-              )}
-            </div>
+            {/* Login Dropdown or Dashboard Link */}
+            {user ? (
+              <Link
+                to={
+                  isStudent
+                    ? "/student/dashboard"
+                    : isTeacher
+                      ? "/teacher/dashboard"
+                      : "/admin/dashboard"
+                }
+                className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 border-2 border-blue-800"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Dropdown
+                menu={{ items: loginItems }}
+                placement="bottomRight"
+                overlayClassName="navbar-dropdown"
+                trigger={["hover"]}
+              >
+                <button className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 border-2 border-blue-800">
+                  Login
+                  <FiChevronDown className="w-4 h-4" />
+                </button>
+              </Dropdown>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden absolute right-4 flex items-center">

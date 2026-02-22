@@ -17,7 +17,14 @@ import CourseCard, {
 } from "../marketing/components/CourseCard";
 import ClassCard from "../marketing/components/ClassCard";
 import CategoryCard from "../marketing/components/CategoryCard";
-import { Stethoscope, Atom, Backpack, BookOpen, GraduationCap, Target } from "lucide-react";
+import {
+  Stethoscope,
+  Atom,
+  Backpack,
+  BookOpen,
+  GraduationCap,
+  Target,
+} from "lucide-react";
 import FacultyCard from "../marketing/components/FacultyCard";
 import Testimonials from "../marketing/components/Testimonials";
 import StudentResults from "../marketing/components/StudentResults";
@@ -141,12 +148,17 @@ const Home = () => {
                   title: "Pre Foundation",
                   subtitle: "Building Strong Fundamentals",
                   tags: ["Class 6", "Class 7", "Class 8"],
-                  subjects: ["Math", "Science", "Logical Reasoning", "Olympiad Prep"],
+                  subjects: [
+                    "Math",
+                    "Science",
+                    "Logical Reasoning",
+                    "Olympiad Prep",
+                  ],
                   link: "/academic?section=pre-foundation",
                   icon: Backpack,
                   bgColor: "blue",
                   accentColor: "indigo",
-                  description: "Early foundation for competitive mindset with Olympiad & NTSE preparation"
+                  description: "Olympiad & NTSE preparation",
                 },
                 {
                   title: "Foundation Class 9",
@@ -157,18 +169,26 @@ const Home = () => {
                   icon: BookOpen,
                   bgColor: "green",
                   accentColor: "emerald",
-                  description: "Advanced concepts with Board + NTSE preparation"
+                  description:
+                    "Advanced concepts with Board + NTSE preparation",
                 },
                 {
                   title: "Foundation Class 10",
                   subtitle: "Board Excellence & Beyond",
                   tags: ["Class 10", "NTSE Stage II", "Board Exams"],
-                  subjects: ["Math", "Science", "Social Science", "English", "Hindi"],
+                  subjects: [
+                    "Math",
+                    "Science",
+                    "Social Science",
+                    "English",
+                    "Hindi",
+                  ],
                   link: "/academic?section=foundation",
                   icon: GraduationCap,
                   bgColor: "teal",
                   accentColor: "cyan",
-                  description: "Complete Board syllabus with competitive foundation"
+                  description:
+                    "Complete Board syllabus with competitive foundation",
                 },
                 {
                   title: "Integrated JEE",
@@ -179,7 +199,8 @@ const Home = () => {
                   icon: Atom,
                   bgColor: "purple",
                   accentColor: "pink",
-                  description: "JEE Main & Advanced with Board exam integrated approach"
+                  description:
+                    "JEE Main & Advanced with Board exam integrated approach",
                 },
                 {
                   title: "Integrated NEET",
@@ -190,7 +211,8 @@ const Home = () => {
                   icon: Stethoscope,
                   bgColor: "red",
                   accentColor: "orange",
-                  description: "NEET focused curriculum with NCERT mastery emphasis"
+                  description:
+                    "NEET focused curriculum with NCERT mastery emphasis",
                 },
                 {
                   title: "Integrated NTSE",
@@ -201,7 +223,8 @@ const Home = () => {
                   icon: Target,
                   bgColor: "amber",
                   accentColor: "yellow",
-                  description: "Multi-year program building strong fundamentals for competitive excellence"
+                  description:
+                    "Multi-year program building strong fundamentals for competitive excellence",
                 },
               ].map((category, idx) => (
                 <motion.div key={idx} variants={fadeInUp}>
@@ -211,6 +234,47 @@ const Home = () => {
             </motion.div>
           </div>
         </section>
+
+        {/* Teacher Recruitment Banner */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-orange-400 py-6 md:py-0 md:h-[90px] flex items-center relative overflow-hidden group"
+        >
+          {/* Decorative circles */}
+          <div className="absolute -left-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+          <div className="absolute left-1/4 -bottom-8 w-24 h-24 bg-orange-300/20 rounded-full blur-lg"></div>
+          <div className="absolute right-1/3 -top-6 w-20 h-20 bg-blue-300/20 rounded-full blur-lg"></div>
+          <div className="absolute -right-8 -bottom-8 w-28 h-28 bg-orange-400/30 rounded-full blur-xl"></div>
+
+          {/* Shimmer effect */}
+          <div className="absolute inset-0 opacity-30 overflow-hidden pointer-events-none">
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12"></div>
+          </div>
+
+          <div className="container-custom flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 w-full relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="hidden md:flex w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full items-center justify-center">
+                <GraduationCap className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-white text-lg md:text-xl font-bold text-center md:text-left [text-shadow:_0_2px_8px_rgba(0,0,0,0.3)]">
+                Are you a teacher?{" "}
+                <span className="text-white">
+                  Join the team at Samarth Institute
+                </span>
+              </p>
+            </div>
+            <Link
+              to="/join-team"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-blue-700 font-bold rounded-full hover:bg-orange-50 hover:text-orange-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl border-2 border-white/50"
+            >
+              Register
+              <FiArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </motion.div>
 
         {/* Divider */}
         <div className="container-custom">

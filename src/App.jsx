@@ -24,6 +24,10 @@ import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import StudentCorner from "./pages/StudentCorner";
 import ResultsShowcase from "./pages/ResultsShowcase";
+import TeacherRegistration from "./pages/TeacherRegistration";
+import TeacherApplications from "./pages/TeacherApplications";
+import ScholarshipApplications from "./pages/ScholarshipApplications";
+import ContactEnquiries from "./pages/ContactEnquiries";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -101,6 +105,31 @@ function App() {
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/students-corner" element={<StudentCorner />} />
           <Route path="/results-showcase" element={<ResultsShowcase />} />
+          <Route path="/join-team" element={<TeacherRegistration />} />
+          <Route
+            path="/teacher-applications"
+            element={
+              <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
+                <TeacherApplications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/scholarship-applications"
+            element={
+              <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+                <ScholarshipApplications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/contact-enquiries"
+            element={
+              <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
+                <ContactEnquiries />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

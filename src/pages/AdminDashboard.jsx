@@ -254,7 +254,7 @@ const AdminDashboard = () => {
                 </h2>
               </div>
               <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <button
                     onClick={handleManageUsers}
                     className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
@@ -272,6 +272,24 @@ const AdminDashboard = () => {
                     className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                   >
                     Manage Results
+                  </button>
+                  <button
+                    onClick={() => navigate("/teacher-applications")}
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700"
+                  >
+                    Teacher Applications
+                  </button>
+                  <button
+                    onClick={() => navigate("/scholarship-applications")}
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700"
+                  >
+                    Scholarship Applications
+                  </button>
+                  <button
+                    onClick={() => navigate("/contact-enquiries")}
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    Contact Enquiries
                   </button>
                   <button className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                     System Settings
