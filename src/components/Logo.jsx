@@ -2,16 +2,18 @@ import React from "react";
 
 const Logo = ({
   className = "h-12 w-auto",
-  textClassName = "text-xl font-semibold",
+  textClassName = "text-xl font-bold",
 }) => {
   return (
-    <div className="flex items-center gap-4 py-2">
+    <div className="flex items-center gap-3 py-2">
       <img
-        src="/logo_2.jpg"
-        alt="Samarth Classes"
-        className={`${className} p-1`}
+        src="/logo.png"
+        alt="Samarth Classes Logo"
+        className={`${className} object-contain`}
       />
-      <div className={textClassName}></div>
+      <span className={`${textClassName} text-blue-700 tracking-tight`}>
+        Samarth
+      </span>
     </div>
   );
 };
@@ -24,10 +26,10 @@ export const LogoWhite = ({
     <div className="flex items-center gap-3 py-2">
       <img
         src="/logo.png"
-        alt="Samarth Classes"
-        className={`${className} p-1 brightness-0 invert`} // Making it white for dark backgrounds
+        alt="Samarth Classes Logo"
+        className={`${className} object-contain brightness-0 invert`}
       />
-      <span className={textClassName}>Samarth Institute</span>
+      <span className={textClassName}>Samarth</span>
     </div>
   );
 };

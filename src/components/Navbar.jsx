@@ -390,9 +390,9 @@ const Navbar = () => {
           <div className="shrink-0 flex items-center absolute left-4 md:left-8">
             <Link
               to="/"
-              className="cursor-pointer hover:opacity-80 transition-opacity"
+              className="cursor-pointer hover:opacity-90 transition-opacity"
             >
-              <Logo className="h-10 w-auto" textClassName="text-2xl" />
+              <Logo className="h-12 w-auto" textClassName="text-2xl font-black" />
             </Link>
           </div>
 
@@ -452,7 +452,7 @@ const Navbar = () => {
               {/* Enquiry Button */}
               <Link
                 to="/contact"
-                className="px-6 py-2.5 rounded-full bg-orange-500 text-white font-medium hover:bg-orange-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ring-4 ring-transparent hover:ring-orange-100 inline-flex items-center gap-2"
+                className="px-6 py-2.5 rounded-full bg-red-600 text-white font-bold hover:bg-red-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 border-2 border-red-700"
               >
                 <FiPhone className="w-4 h-4" />
                 Enquiry
@@ -468,7 +468,7 @@ const Navbar = () => {
                         ? "/teacher/dashboard"
                         : "/admin/dashboard"
                   }
-                  className="btn-sweep px-6 py-2.5 rounded-full bg-samarth-blue-700 text-white font-medium hover:bg-samarth-blue-900 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ring-4 ring-transparent hover:ring-samarth-blue-100"
+                  className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 border-2 border-blue-800"
                 >
                   Dashboard
                 </Link>
@@ -479,7 +479,7 @@ const Navbar = () => {
                   overlayClassName="navbar-dropdown"
                   trigger={["hover"]}
                 >
-                  <button className="btn-sweep px-6 py-2.5 rounded-full bg-samarth-blue-700 text-white font-medium hover:bg-samarth-blue-900 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ring-4 ring-transparent hover:ring-samarth-blue-100 inline-flex items-center gap-2">
+                  <button className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 border-2 border-blue-800">
                     Login
                     <FiChevronDown className="w-4 h-4" />
                   </button>
@@ -762,7 +762,7 @@ const Navbar = () => {
             <Link
               to="/contact"
               onClick={() => setIsOpen(false)}
-              className="w-full mb-2 px-4 py-3 rounded-lg text-base font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors inline-flex items-center justify-center gap-2"
+              className="w-full mb-2 px-4 py-3 rounded-lg text-base font-bold bg-red-600 text-white hover:bg-red-700 transition-all shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2"
             >
               <FiPhone className="w-4 h-4" />
               Enquiry
@@ -778,7 +778,7 @@ const Navbar = () => {
                       ? "/teacher/dashboard"
                       : "/admin/dashboard"
                 }
-                className="block px-4 py-3 rounded-lg text-base font-medium bg-samarth-blue-700 text-white hover:bg-samarth-blue-900 transition-colors"
+                className="block px-4 py-3 rounded-lg text-base font-bold bg-blue-700 text-white hover:bg-blue-800 transition-all shadow-md hover:shadow-lg"
                 onClick={() => setIsOpen(false)}
               >
                 Go to Dashboard
@@ -790,21 +790,21 @@ const Navbar = () => {
                 </p>
                 <Link
                   to="/login?role=student"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Student Login
                 </Link>
                 <Link
                   to="/login?role=teacher"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Teacher Login
                 </Link>
                 <Link
                   to="/login?role=admin"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-samarth-blue-700 hover:bg-gray-50 transition-colors"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Admin Login

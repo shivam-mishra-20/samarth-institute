@@ -101,7 +101,7 @@ const ScholarshipPopup = () => {
                 <div className="flex justify-center mb-4">
                   <div className="inline-flex items-center gap-3 px-8 py-4 bg-white text-blue-700 font-black text-3xl md:text-4xl rounded-2xl shadow-xl">
                     <Trophy className="w-8 h-8 text-red-500" />
-                    UP TO 30% OFF
+                    UP TO 90% OFF
                     <Trophy className="w-8 h-8 text-red-500" />
                   </div>
                 </div>
@@ -198,7 +198,7 @@ const ScholarshipPopup = () => {
                       <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
                       <div>
                         <p className="font-bold text-gray-800 text-sm">Merit Scholarship</p>
-                        <p className="text-xs text-gray-600"><span className="font-bold text-red-600">Up to 30% OFF</span> on tuition fees</p>
+                        <p className="text-xs text-gray-600"><span className="font-bold text-red-600">Up to 90% OFF</span> on tuition fees</p>
                       </div>
                     </div>
 

@@ -82,11 +82,11 @@ const Faculty = () => {
                   className="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-2xl transition-shadow duration-300"
                 >
                   {/* Image */}
-                  <div className="relative h-72 overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100">
+                  <div className="relative aspect-square overflow-hidden bg-gray-100">
                     <img
                       src={faculty.image}
                       alt={faculty.name}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-fill group-hover:scale-105 transition-transform duration-500"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(faculty.name)}&size=300&background=6366f1&color=fff&bold=true`;
