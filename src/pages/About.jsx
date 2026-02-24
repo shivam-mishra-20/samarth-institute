@@ -219,7 +219,7 @@ const InstituteSection = () => {
 
                   {/* Image Card */}
                   <motion.div
-                    className="rounded-2xl overflow-hidden shadow-xl group cursor-pointer"
+                    className="rounded-2xl overflow-hidden shadow-xl group cursor-pointer bg-white"
                     whileHover={{ scale: 1.02, y: -4 }}
                     transition={{ duration: 0.3 }}
                   >
@@ -227,7 +227,7 @@ const InstituteSection = () => {
                       <img
                         src={item.image}
                         alt={item.label}
-                        className="w-full h-[350px] object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-[350px] object-contain group-hover:scale-105 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
@@ -558,7 +558,7 @@ const FacultySection = () => (
             variants={scaleIn}
           >
             <div className="w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-gray-100">
-               <img src={faculty.img} alt={faculty.name} className="w-full h-full object-fill group-hover:scale-105 transition-transform duration-500" />
+               <img src={faculty.img} alt={faculty.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
             </div>
             <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
               {faculty.name}
@@ -684,11 +684,11 @@ const InfrastructureSection = () => (
             whileHover={{ y: -8 }}
           >
             {/* Image */}
-            <div className="overflow-hidden h-52">
+            <div className="overflow-hidden h-52 bg-gray-100">
               <img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
               />
             </div>
             {/* Content */}
@@ -716,11 +716,11 @@ const InfrastructureSection = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
       >
-        <div className="md:w-1/2 overflow-hidden rounded-2xl md:rounded-none md:rounded-l-3xl">
+        <div className="md:w-1/2 overflow-hidden rounded-2xl md:rounded-none md:rounded-l-3xl bg-gray-100">
           <img
             src="/image.png"
             alt="Our Faculty Team"
-            className="w-full h-[280px] md:h-[350px] object-cover hover:scale-105 transition-transform duration-700"
+            className="w-full h-[280px] md:h-[350px] object-contain hover:scale-105 transition-transform duration-700"
           />
         </div>
         <div className="md:w-1/2 md:p-10">

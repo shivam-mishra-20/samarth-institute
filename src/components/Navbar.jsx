@@ -377,8 +377,8 @@ const Navbar = () => {
     <nav
       className={`fixed w-full top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-md py-6 md:py-2 border-b border-gray-100"
-          : "bg-white py-8 md:py-4 border-b border-transparent"
+          ? "bg-white/95 backdrop-blur-md shadow-md py-2 border-b border-gray-100"
+          : "bg-white py-3 md:py-4 border-b border-transparent"
       }`}
     >
       <div className="container-custom">
@@ -390,8 +390,8 @@ const Navbar = () => {
               className="cursor-pointer hover:opacity-90 transition-opacity"
             >
               <Logo
-                className="h-12 w-auto"
-                textClassName="text-2xl font-black"
+                className="h-10 md:h-12 w-auto"
+                textClassName="text-xl md:text-2xl font-black"
               />
             </Link>
           </div>
@@ -489,7 +489,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden absolute right-4 flex items-center">
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-samarth-gray-600 hover:text-samarth-blue-900 focus:outline-none p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -503,11 +503,11 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden absolute mt-6 w-full bg-white border-b border-gray-100 shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-150 opacity-100" : "max-h-0 opacity-0"
+        className={`md:hidden absolute mt-3 w-full bg-white border-b border-gray-100 shadow-xl transition-all duration-300 ease-in-out overflow-y-auto ${
+          isOpen ? "max-h-[calc(100vh-60px)] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-4 py-4 space-y-2">
+        <div className="px-4 py-4 space-y-1">
           {navLinks.map((link) => (
             <div key={link.name}>
               {link.hasDropdown ? (

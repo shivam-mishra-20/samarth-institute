@@ -200,7 +200,7 @@ const Home = () => {
                   bgColor: "purple",
                   accentColor: "pink",
                   description:
-                    "JEE Main & Advanced with Board exam integrated approach",
+                    "Class 11 - 12 Boards + GUJCET with JEE Batch",
                 },
                 {
                   title: "Integrated NEET",
@@ -212,7 +212,7 @@ const Home = () => {
                   bgColor: "red",
                   accentColor: "orange",
                   description:
-                    "NEET focused curriculum with NCERT mastery emphasis",
+                    "Class 11 - 12 Boards + GUJCET with NEET Batch",
                 },
                 {
                   title: "Integrated NTSE",

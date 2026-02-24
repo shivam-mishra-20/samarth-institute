@@ -71,10 +71,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/faculties"
+                  to="/faculty"
                   className="hover:text-samarth-blue-400 transition-colors flex items-center"
                 >
-                  <span className="mr-2">›</span> Our Faculties
+                  <span className="mr-2">›</span> Our Faculty
                 </Link>
               </li>
               <li>
@@ -155,10 +155,10 @@ const Footer = () => {
             reserved.
           </p>
           <div className="flex space-x-6">
-            <Link to="/privacy" className="hover:text-white transition-colors">
+            <Link to="/contact" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="hover:text-white transition-colors">
+            <Link to="/contact" className="hover:text-white transition-colors">
               Terms of Service
             </Link>
           </div>

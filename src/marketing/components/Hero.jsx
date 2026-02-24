@@ -13,44 +13,44 @@ const Hero = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative w-full mt-16 md:mt-20 bg-linear-to-br from-orange-100 via-red-100 to-pink-100 border-b-4 border-orange-300 py-6 px-4 overflow-hidden shadow-2xl"
+        className="relative w-full mt-18 md:mt-16 lg:mt-20 bg-linear-to-br from-orange-100 via-red-100 to-pink-100 border-b-4 border-orange-300 py-4 md:py-6 px-3 md:px-4 overflow-hidden shadow-2xl"
       >
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-orange-200/30 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-56 h-56 bg-yellow-200/40 rounded-full translate-y-1/2 -translate-x-1/3"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 md:w-72 md:h-72 bg-orange-200/30 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-36 h-36 md:w-56 md:h-56 bg-yellow-200/40 rounded-full translate-y-1/2 -translate-x-1/3"></div>
         
         <div className="relative max-w-7xl mx-auto z-10">
           {/* Top Row - Main Banner */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-orange-200 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md">
-                    <GraduationCap className="w-7 h-7 text-red-600" />
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4 mb-3 md:mb-4">
+                <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto">
+                  <div className="flex items-center gap-2 md:gap-3 flex-1">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-200 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md shrink-0">
+                    <GraduationCap className="w-5 h-5 md:w-7 md:h-7 text-red-600" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                    <p className="font-black text-gray-900 text-lg sm:text-xl">#ExamReadyWithSamarth</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1 md:gap-2 flex-wrap">
+                    <p className="font-black text-gray-900 text-sm sm:text-base md:text-lg lg:text-xl">#ExamReadyWithSamarth</p>
                     <motion.div
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-600 text-white font-bold text-xs rounded-full"
+                      className="inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 bg-red-600 text-white font-bold text-[10px] md:text-xs rounded-full"
                     >
-                      <Star className="w-3 h-3 fill-current" />
+                      <Star className="w-2.5 h-2.5 md:w-3 md:h-3 fill-current" />
                       ADMISSIONS OPEN
                     </motion.div>
                     </div>
-                    <p className="text-xs text-gray-700 font-bold">JEE | NEET | FOUNDATION | Classes 6th-12th</p>
+                    <p className="text-[10px] md:text-xs text-gray-700 font-bold">JEE | NEET | FOUNDATION | Classes 6th-12th</p>
                   </div>
                   </div>
-                  <div className="hidden xl:block">
+                  <div className="hidden lg:block">
                   <motion.div
                     animate={{ scale: [1, 1.05, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="flex items-center gap-2 px-6 py-3 bg-white text-red-700 font-black text-3xl rounded-xl shadow-xl border-2 border-red-300"
+                    className="flex items-center gap-2 px-4 xl:px-6 py-2 xl:py-3 bg-white text-red-700 font-black text-xl xl:text-3xl rounded-xl shadow-xl border-2 border-red-300"
                   >
-                    <Trophy className="w-7 h-7 text-yellow-600" />
+                    <Trophy className="w-5 h-5 xl:w-7 xl:h-7 text-yellow-600" />
                     UP TO 90% OFF
-                    <Trophy className="w-7 h-7 text-yellow-600" />
+                    <Trophy className="w-5 h-5 xl:w-7 xl:h-7 text-yellow-600" />
                   </motion.div>
                   </div>
                 </div>
@@ -58,142 +58,142 @@ const Hero = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-full shadow-xl text-sm sm:text-base flex items-center gap-2 border-2 border-red-700"
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 md:px-6 lg:px-8 py-2 md:py-3 rounded-full shadow-xl text-xs sm:text-sm md:text-base flex items-center justify-center gap-2 border-2 border-red-700 w-full md:w-auto"
                   onClick={() => window.location.href = '/register'}
                 >
-                  Register Now <FiArrowRight className="w-5 h-5" />
+                  Register Now <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                 </motion.button>
                 </div>
 
                 {/* Bottom Row - Details Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-3">
             {/* Scholarship Pool */}
-            <div className="col-span-2 md:col-span-2 lg:col-span-2 p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
-              <div className="flex items-center gap-2 mb-1">
-                <Trophy className="w-5 h-5 text-yellow-600" />
-                <span className="text-xs font-bold text-gray-700">Scholarship Pool</span>
+            <div className="col-span-2 sm:col-span-3 md:col-span-2 lg:col-span-2 p-2 md:p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
+              <div className="flex items-center gap-1 md:gap-2 mb-1">
+                <Trophy className="w-4 h-4 md:w-5 md:h-5 text-yellow-600" />
+                <span className="text-[10px] md:text-xs font-bold text-gray-700">Scholarship Pool</span>
               </div>
-              <p className="text-2xl font-black text-red-700">₹50 Lakh</p>
+              <p className="text-xl md:text-2xl font-black text-red-700">₹50 Lakh</p>
             </div>
 
             {/* Next Test */}
-            <div className="p-3 rounded-xl bg-red-600 backdrop-blur-sm border-2 border-red-700 shadow-md">
+            <div className="p-2 md:p-3 rounded-xl bg-red-600 backdrop-blur-sm border-2 border-red-700 shadow-md">
               <div className="flex items-center gap-1 mb-1">
-                <Calendar className="w-4 h-4 text-white" />
-                <span className="text-xs font-bold text-white">Next Test</span>
+                <Calendar className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                <span className="text-[10px] md:text-xs font-bold text-white">Next Test</span>
               </div>
-              <p className="text-sm font-black text-white">22nd Feb</p>
-              <p className="text-xs text-red-100">Sunday</p>
+              <p className="text-xs md:text-sm font-black text-white">22nd Feb</p>
+              <p className="text-[10px] md:text-xs text-red-100">Sunday</p>
             </div>
 
             {/* Seats Left */}
-            <div className="p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
+            <div className="p-2 md:p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
               <div className="flex items-center gap-1 mb-1">
-                <Users className="w-4 h-4 text-orange-600" />
-                <span className="text-xs font-bold text-gray-700">Seats Left</span>
+                <Users className="w-3 h-3 md:w-4 md:h-4 text-orange-600" />
+                <span className="text-[10px] md:text-xs font-bold text-gray-700">Seats Left</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-2xl font-black text-gray-900">234</span>
-                <span className="text-xs text-red-600 font-bold animate-pulse">HURRY!</span>
+                <span className="text-xl md:text-2xl font-black text-gray-900">234</span>
+                <span className="text-[10px] md:text-xs text-red-600 font-bold animate-pulse">HURRY!</span>
               </div>
             </div>
 
             {/* Merit Rewards */}
-            <div className="p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
+            <div className="p-2 md:p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
               <div className="flex items-center gap-1 mb-1">
-                <Award className="w-4 h-4 text-yellow-600" />
-                <span className="text-xs font-bold text-gray-700">Top 10</span>
+                <Award className="w-3 h-3 md:w-4 md:h-4 text-yellow-600" />
+                <span className="text-[10px] md:text-xs font-bold text-gray-700">Top 10</span>
               </div>
-              <p className="text-xs font-black text-gray-900 leading-tight">Free Study Material</p>
+              <p className="text-[10px] md:text-xs font-black text-gray-900 leading-tight">Free Study Material</p>
             </div>
 
             {/* Batch Size */}
-            <div className="p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
+            <div className="p-2 md:p-3 rounded-xl bg-white/80 backdrop-blur-sm border-2 border-orange-300 shadow-md">
               <div className="flex items-center gap-1 mb-1">
-                <Target className="w-4 h-4 text-green-600" />
-                <span className="text-xs font-bold text-gray-700">Small Batch</span>
+                <Target className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
+                <span className="text-[10px] md:text-xs font-bold text-gray-700">Small Batch</span>
               </div>
-              <p className="text-xl font-black text-gray-900">20 - 25</p>
-              <p className="text-xs text-gray-700">students</p>
+              <p className="text-lg md:text-xl font-black text-gray-900">30-35</p>
+              <p className="text-[10px] md:text-xs text-gray-700">students</p>
             </div>
           </div>
 
           {/* Bottom Features - Mobile Hidden */}
-          <div className="hidden lg:flex items-center justify-center gap-6 mt-4 pt-4 border-t border-orange-300">
+          <div className="hidden md:flex flex-wrap items-center justify-center gap-4 lg:gap-6 mt-3 md:mt-4 pt-3 md:pt-4 border-t border-orange-300">
             <div className="flex items-center gap-2 text-gray-800">
-              <div className="w-8 h-8 bg-orange-200 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-red-600" />
+              <div className="w-7 h-7 md:w-8 md:h-8 bg-orange-200 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-600" />
               </div>
-              <span className="text-sm font-semibold">Interactive Live Classes</span>
+              <span className="text-xs md:text-sm font-semibold">Interactive Live Classes</span>
             </div>
             <div className="flex items-center gap-2 text-gray-800">
-              <div className="w-8 h-8 bg-orange-200 rounded-lg flex items-center justify-center">
-                <Target className="w-4 h-4 text-red-600" />
+              <div className="w-7 h-7 md:w-8 md:h-8 bg-orange-200 rounded-lg flex items-center justify-center">
+                <Target className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-600" />
               </div>
-              <span className="text-sm font-semibold">One-on-One Doubt Solving</span>
+              <span className="text-xs md:text-sm font-semibold">One-on-One Doubt Solving</span>
             </div>
             <div className="flex items-center gap-2 text-gray-800">
-              <div className="w-8 h-8 bg-orange-200 rounded-lg flex items-center justify-center">
-                <Users className="w-4 h-4 text-red-600" />
+              <div className="w-7 h-7 md:w-8 md:h-8 bg-orange-200 rounded-lg flex items-center justify-center">
+                <Users className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-600" />
               </div>
-              <span className="text-sm font-semibold">Personal Academic Mentor</span>
+              <span className="text-xs md:text-sm font-semibold">Personal Academic Mentor</span>
             </div>
             <div className="flex items-center gap-2 text-gray-800">
-              <div className="w-8 h-8 bg-orange-200 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-4 h-4 text-red-600" />
+              <div className="w-7 h-7 md:w-8 md:h-8 bg-orange-200 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-600" />
               </div>
-              <span className="text-sm font-semibold">Priority Batch Selection</span>
+              <span className="text-xs md:text-sm font-semibold">Priority Batch Selection</span>
             </div>
           </div>
         </div>
       </motion.div>
 
       {/* Hero Section */}
-      <section className="relative w-full overflow-hidden bg-linear-to-br from-blue-600 via-blue-700 to-red-600 min-h-[32vh]">
+      <section className="relative w-full overflow-hidden bg-linear-to-br from-blue-600 via-blue-700 to-red-600 min-h-[40vh] md:min-h-[32vh]">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-red-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-60 h-60 md:w-80 md:h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-60 h-60 md:w-80 md:h-80 bg-red-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 md:w-80 md:h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left Content Section */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="text-white space-y-4 lg:space-y-5 z-10"
+            className="text-white space-y-3 md:space-y-4 lg:space-y-5 z-10"
           >
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full"
+              className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full"
             >
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span className="text-sm font-bold text-white">Excellence Through Consistency</span>
+              <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-yellow-300" />
+              <span className="text-xs md:text-sm font-bold text-white">Excellence Through Consistency</span>
             </motion.div>
 
             {/* Main Headline */}
             <motion.h1 
-              className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="flex items-start gap-3 mb-2">
-                <Trophy className="w-10 h-10 text-yellow-400 mt-1 animate-pulse" />
+              <div className="flex items-start gap-2 md:gap-3 mb-1 md:mb-2">
+                <Trophy className="w-7 h-7 md:w-10 md:h-10 mt-0.5 md:mt-1 text-yellow-400 animate-pulse shrink-0" />
                 <div>
                   <span className="text-red-400 drop-shadow-lg">Consistency</span>
                   <span className="text-white"> is what</span>
                 </div>
               </div>
               <span className="text-blue-200 drop-shadow-lg">Transforms Average</span>
-              <span className="block mt-2 text-white">into </span>
-              <span className="text-red-400 drop-shadow-lg text-5xl lg:text-6xl">Excellence.</span>
+              <span className="block mt-1 md:mt-2 text-white">into </span>
+              <span className="text-red-400 drop-shadow-lg text-3xl sm:text-4xl md:text-5xl lg:text-6xl">Excellence.</span>
             </motion.h1>
 
             {/* Standards Section with Icon */}
@@ -203,15 +203,15 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <div className="flex items-center gap-2 text-white/80 text-sm font-semibold">
-                <GraduationCap className="w-5 h-5" />
+              <div className="flex items-center gap-1.5 md:gap-2 text-white/80 text-xs md:text-sm font-semibold">
+                <GraduationCap className="w-4 h-4 md:w-5 md:h-5" />
                 <span>Available for Standards</span>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                 {[6, 7, 8, 9, 10, 11, 12].map((std, i) => (
                   <motion.div
                     key={std}
-                    className="bg-red-600 text-white font-bold px-4 py-2 rounded-lg text-base shadow-lg border-2 border-red-400"
+                    className="bg-red-600 text-white font-bold px-2.5 md:px-4 py-1.5 md:py-2 rounded-lg text-sm md:text-base shadow-lg border-2 border-red-400"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: 0.5 + i * 0.05 }}
@@ -230,22 +230,64 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.9 }}
             >
-              <div className="flex items-center gap-2 text-white/80 text-sm font-semibold">
-                <BookOpen className="w-5 h-5" />
+              <div className="flex items-center gap-1.5 md:gap-2 text-white/80 text-xs md:text-sm font-semibold">
+                <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
                 <span>Boards & Streams</span>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                 {['Science', 'CBSE', 'GSEB', 'ICSE', 'Eng. Med.'].map((board, i) => (
                   <motion.span
                     key={board}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
-                    className="px-4 py-1.5 bg-white/20 backdrop-blur-sm border border-white/40 rounded-lg text-white font-bold text-sm"
+                    className="px-2.5 md:px-4 py-1 md:py-1.5 bg-white/20 backdrop-blur-sm border border-white/40 rounded-lg text-white font-bold text-xs md:text-sm"
                   >
                     {board}
                   </motion.span>
                 ))}
+              </div>
+            </motion.div>
+
+            {/* JEE / NEET Section - Prominent */}
+            <motion.div
+              className="space-y-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.1 }}
+            >
+              <div className="flex items-center gap-1.5 md:gap-2 text-yellow-300 text-xs md:text-sm font-semibold">
+                <Target className="w-4 h-4 md:w-5 md:h-5" />
+                <span>Competitive Exam Preparation</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 1.2 }}
+                  whileHover={{ scale: 1.1, y: -3 }}
+                  className="px-3 md:px-5 py-1.5 md:py-2 bg-linear-to-r from-yellow-500 to-orange-500 backdrop-blur-sm border-2 border-yellow-300 rounded-lg text-white font-black text-sm md:text-base shadow-xl"
+                >
+                  JEE (Main + Advanced)
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 1.3 }}
+                  whileHover={{ scale: 1.1, y: -3 }}
+                  className="px-3 md:px-5 py-1.5 md:py-2 bg-linear-to-r from-green-500 to-teal-500 backdrop-blur-sm border-2 border-green-300 rounded-lg text-white font-black text-sm md:text-base shadow-xl"
+                >
+                  NEET (UG)
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 1.4 }}
+                  whileHover={{ scale: 1.1, y: -3 }}
+                  className="px-3 md:px-5 py-1.5 md:py-2 bg-linear-to-r from-purple-500 to-pink-500 backdrop-blur-sm border-2 border-purple-300 rounded-lg text-white font-black text-sm md:text-base shadow-xl"
+                >
+                  Foundation Courses
+                </motion.div>
               </div>
             </motion.div>
 
@@ -256,19 +298,12 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.3 }}
             >
-              <div className="flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-                <CheckCircle className="w-5 h-5 text-green-400" />
-                <span className="text-sm font-semibold text-white">Expert Faculty</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-                <CheckCircle className="w-5 h-5 text-green-400" />
-                <span className="text-sm font-semibold text-white">Small Batches</span>
-              </div>
+          
             </motion.div>
 
             {/* CTA Button */}
             <motion.div 
-              className="flex gap-3 pt-3"
+              className="flex gap-3 pt-2 md:pt-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.5 }}
@@ -279,15 +314,15 @@ const Hero = () => {
               >
                 <Link
                   to="/courses"
-                  className="inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-8 py-4 rounded-xl font-black text-base hover:bg-blue-50 transition-colors shadow-2xl border-4 border-blue-200"
+                  className="inline-flex items-center justify-center gap-2 md:gap-3 bg-white text-blue-600 px-5 md:px-8 py-2.5 md:py-4 rounded-xl font-black text-sm md:text-base hover:bg-blue-50 transition-colors shadow-2xl border-4 border-blue-200"
                 >
-                  <FiBookOpen className="w-5 h-5" />
+                  <FiBookOpen className="w-4 h-4 md:w-5 md:h-5" />
                   Explore Courses
                   <motion.div
                     animate={{ x: [0, 5, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    <FiArrowRight className="w-5 h-5" />
+                    <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                   </motion.div>
                 </Link>
               </motion.div>
@@ -301,19 +336,19 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
             className="hidden lg:block"
           >
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4 h-112.5">
               {/* Image 1 - Top Left */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
-                className="col-span-2 row-span-2 bg-white rounded-2xl shadow-2xl overflow-hidden h-64"
+                className="col-span-2 row-span-2 bg-white rounded-2xl shadow-2xl overflow-hidden p-2"
               >
                 <img
                   src="/Images/image.png"
                   alt="Student Group"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain rounded-xl"
                 />
               </motion.div>
 
@@ -323,12 +358,12 @@ const Hero = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
-                className="bg-white rounded-xl shadow-xl overflow-hidden h-30"
+                className="bg-white rounded-xl shadow-xl overflow-hidden p-2"
               >
                 <img
                   src="/Images/image copy 2.png"
                   alt="Student"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               </motion.div>
 
@@ -338,12 +373,12 @@ const Hero = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
-                className="bg-white rounded-xl shadow-xl overflow-hidden h-30"
+                className="bg-white rounded-xl shadow-xl overflow-hidden p-2"
               >
                 <img
                   src="/Images/image copy 3.png"
                   alt="Student"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               </motion.div>
 
@@ -353,12 +388,12 @@ const Hero = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
-                className="bg-white rounded-xl shadow-xl overflow-hidden h-32"
+                className="bg-white rounded-xl shadow-xl overflow-hidden p-2"
               >
                 <img
                   src="/Images/image copy 4.png"
                   alt="Student"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               </motion.div>
 
@@ -368,12 +403,12 @@ const Hero = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
-                className="bg-white rounded-xl shadow-xl overflow-hidden h-32"
+                className="bg-white rounded-xl shadow-xl overflow-hidden p-2"
               >
                 <img
                   src="/Images/image copy 5.png"
                   alt="Student"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               </motion.div>
 
@@ -383,12 +418,12 @@ const Hero = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.9 }}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
-                className="bg-white rounded-xl shadow-xl overflow-hidden h-32"
+                className="bg-white rounded-xl shadow-xl overflow-hidden p-2"
               >
                 <img
                   src="/Images/image copy.png"
                   alt="Student"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               </motion.div>
             </div>

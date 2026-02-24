@@ -26,8 +26,8 @@ const studentResults = [
     id: 2,
     name: "Bhagya Shah",
     course: "JEE 2026",
-    rank: "94% ile",
-    percentage: "94%",
+    rank: "98% ile",
+    percentage: "98%",
     testimonial:
       "The expert guidance from IITians and NITians at Samarth Institute helped me achieve an excellent percentile in JEE. The problem-solving approach and regular tests were game-changers.",
     image:
