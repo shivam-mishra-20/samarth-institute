@@ -300,6 +300,12 @@ const AdminDashboard = () => {
                   >
                     Student Feedback
                   </button>
+                  <button
+                    onClick={() => navigate("/manage-announcements")}
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    📢 Manage Announcements
+                  </button>
                 </div>
               </div>
             </div>

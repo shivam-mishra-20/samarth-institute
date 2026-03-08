@@ -45,6 +45,8 @@ import RecordedLectures from "./pages/RecordedLectures";
 import StudentFeedback from "./pages/StudentFeedback";
 import SetupUsers from "./pages/SetupUsers";
 import Unauthorized from "./pages/Unauthorized";
+import Announcements from "./pages/Announcements";
+import ManageAnnouncements from "./pages/ManageAnnouncements";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { USER_ROLES } from "./constants/roles";
 
@@ -275,6 +277,29 @@ function App() {
                 allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}
               >
                 <StudentFeedback />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/announcements"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <Announcements />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manage-announcements"
+            element={
+              <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
+                <ManageAnnouncements />
               </ProtectedRoute>
             }
           />
