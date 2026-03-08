@@ -35,9 +35,14 @@ import ChangePassword from "./pages/ChangePassword";
 import StudentDashboard from "./pages/StudentDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import ParentDashboard from "./pages/ParentDashboard";
 import ManageUsers from "./pages/ManageUsers";
 import Attendance from "./pages/Attendance";
 import Results from "./pages/Results";
+import FeeManagement from "./pages/FeeManagement";
+import StudentFees from "./pages/StudentFees";
+import RecordedLectures from "./pages/RecordedLectures";
+import StudentFeedback from "./pages/StudentFeedback";
 import SetupUsers from "./pages/SetupUsers";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -144,6 +149,7 @@ function App() {
                   USER_ROLES.STUDENT,
                   USER_ROLES.TEACHER,
                   USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
                 ]}
               >
                 <ChangePassword />
@@ -164,6 +170,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={[USER_ROLES.STUDENT]}>
                 <StudentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/parent/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={[USER_ROLES.PARENT]}>
+                <ParentDashboard />
               </ProtectedRoute>
             }
           />
@@ -201,6 +215,7 @@ function App() {
                   USER_ROLES.STUDENT,
                   USER_ROLES.TEACHER,
                   USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
                 ]}
               >
                 <Attendance />
@@ -215,9 +230,51 @@ function App() {
                   USER_ROLES.TEACHER,
                   USER_ROLES.ADMIN,
                   USER_ROLES.STUDENT,
+                  USER_ROLES.PARENT,
                 ]}
               >
                 <Results />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fee-management"
+            element={
+              <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
+                <FeeManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student-fees"
+            element={
+              <ProtectedRoute allowedRoles={[USER_ROLES.PARENT]}>
+                <StudentFees />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recorded-lectures"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <RecordedLectures />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student-feedback"
+            element={
+              <ProtectedRoute
+                allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}
+              >
+                <StudentFeedback />
               </ProtectedRoute>
             }
           />

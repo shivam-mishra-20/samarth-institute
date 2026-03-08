@@ -17,7 +17,8 @@ import Footer from "../components/Footer";
 import Pagination from "../components/Pagination";
 
 const Attendance = () => {
-  const { user, userRole, isAdmin, isTeacher, isStudent } = useAuth();
+  const { user, userRole, userData, isAdmin, isTeacher, isStudent, isParent } =
+    useAuth();
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -74,6 +75,9 @@ const Attendance = () => {
       if (isStudent) {
         // Fetch only current student's attendance
         await fetchStudentAttendance();
+      } else if (isParent) {
+        // Fetch linked student's attendance for parent
+        await fetchParentLinkedStudentAttendance();
       } else {
         // Fetch all students for admin/teacher
         await fetchAllStudents();
@@ -83,6 +87,69 @@ const Attendance = () => {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchParentLinkedStudentAttendance = async () => {
+    try {
+      // Check if parent has a linked student
+      if (!userData?.studentUid) {
+        setError(
+          "No student linked to your account. Please contact the administrator.",
+        );
+        return;
+      }
+
+      // Fetch the linked student's data from users collection by customUid
+      const usersRef = collection(db, "users");
+      const studentQuery = query(
+        usersRef,
+        where("customUid", "==", userData.studentUid),
+      );
+      const studentSnapshot = await getDocs(studentQuery);
+
+      if (studentSnapshot.empty) {
+        setError(
+          "Linked student account not found. Please contact the administrator.",
+        );
+        return;
+      }
+
+      const studentData = studentSnapshot.docs[0].data();
+      setCurrentStudentData(studentData);
+
+      if (!studentData.class || !studentData.name || !studentData.batch) {
+        setError(
+          "Student data is incomplete. Please contact the administrator.",
+        );
+        return;
+      }
+
+      // Fetch all attendance documents for the linked student
+      const attendanceRef = collection(db, "attendance");
+      const q = query(
+        attendanceRef,
+        where("studentName", "==", studentData.name),
+        where("class", "==", studentData.class),
+        where("batch", "==", studentData.batch),
+      );
+      const snapshot = await getDocs(q);
+
+      const records = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Sort by date descending
+      records.sort((a, b) => b.date.localeCompare(a.date));
+      setAttendanceRecords(records);
+
+      if (records.length === 0) {
+        setError("No attendance records found for your child.");
+      }
+    } catch (err) {
+      console.error("Error fetching parent linked student attendance:", err);
+      setError(`Failed to load attendance records: ${err.message}`);
     }
   };
 
@@ -705,8 +772,10 @@ const Attendance = () => {
                   Attendance
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  {isStudent
-                    ? "View your attendance records"
+                  {isStudent || isParent
+                    ? isParent
+                      ? "View your child's attendance records"
+                      : "View your attendance records"
                     : "Mark and manage student attendance"}
                 </p>
               </div>
@@ -724,12 +793,14 @@ const Attendance = () => {
               </div>
             )}
 
-            {/* Student View */}
-            {isStudent && (
+            {/* Student/Parent View */}
+            {(isStudent || isParent) && (
               <div className="bg-white shadow rounded-lg overflow-hidden">
                 <div className="px-4 py-5 sm:px-6 bg-gray-50">
                   <h2 className="text-lg font-medium text-gray-900">
-                    My Attendance Records
+                    {isParent
+                      ? "My Child's Attendance Records"
+                      : "My Attendance Records"}
                   </h2>
                 </div>
 

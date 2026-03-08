@@ -4,6 +4,15 @@ import {
   faculties,
   recentBlogs,
 } from "../marketing/data/seed";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../config/firebase.config";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScholarshipPopup from "../components/ScholarshipPopup";
@@ -100,6 +109,39 @@ const staggerContainer = {
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [featuredLectures, setFeaturedLectures] = useState([]);
+
+  // Fetch featured lectures from Firestore
+  useEffect(() => {
+    const fetchFeaturedLectures = async () => {
+      try {
+        // Simple query - filter client-side to avoid composite index requirement
+        const lecturesQuery = query(
+          collection(db, "recordedLectures"),
+          where("isFeatured", "==", true),
+          limit(10),
+        );
+        const snapshot = await getDocs(lecturesQuery);
+        const lecturesData = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((lecture) => lecture.isPublic === true)
+          .sort((a, b) => {
+            const dateA = a.createdAt?.toDate?.() || new Date(a.createdAt) || 0;
+            const dateB = b.createdAt?.toDate?.() || new Date(b.createdAt) || 0;
+            return dateB - dateA;
+          })
+          .slice(0, 6);
+        setFeaturedLectures(lecturesData);
+      } catch (error) {
+        console.error("Error fetching featured lectures:", error);
+      }
+    };
+
+    fetchFeaturedLectures();
+  }, []);
 
   // Simulate initial loading
   useEffect(() => {
@@ -199,8 +241,7 @@ const Home = () => {
                   icon: Atom,
                   bgColor: "purple",
                   accentColor: "pink",
-                  description:
-                    "Class 11 - 12 Boards + GUJCET with JEE Batch",
+                  description: "Class 11 - 12 Boards + GUJCET with JEE Batch",
                 },
                 {
                   title: "Integrated NEET",
@@ -211,8 +252,7 @@ const Home = () => {
                   icon: Stethoscope,
                   bgColor: "red",
                   accentColor: "orange",
-                  description:
-                    "Class 11 - 12 Boards + GUJCET with NEET Batch",
+                  description: "Class 11 - 12 Boards + GUJCET with NEET Batch",
                 },
                 {
                   title: "Integrated NTSE",
@@ -309,46 +349,66 @@ const Home = () => {
           <div className="h-px bg-linear-to-r from-transparent via-gray-300 to-transparent"></div>
         </div>
 
-        {/* Courses Section (Staggered Grid) */}
-        <section className="py-16 container-custom">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="flex flex-col md:flex-row justify-between items-end mb-12"
-          >
-            <div>
-              <h2 className="text-3xl font-bold text-samarth-blue-900 mb-4">
-                Our Featured Courses
-              </h2>
-              <p className="text-samarth-gray-600 max-w-xl">
-                Explore our highest-rated courses designed by industry experts.
-              </p>
-            </div>
-            <Link
-              to="/courses"
-              className="hidden md:inline-flex items-center text-samarth-blue-700 font-semibold hover:text-samarth-blue-900 transition-colors mt-4 md:mt-0"
+        {/* Courses & Lectures Section */}
+        {(featuredCourses.length > 0 || featuredLectures.length > 0) && (
+          <section className="py-16 container-custom">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              className="flex flex-col md:flex-row justify-between items-end mb-12"
             >
-              View All Courses <FiArrowRight className="ml-2" />
-            </Link>
-          </motion.div>
+              <div>
+                <h2 className="text-3xl font-bold text-samarth-blue-900 mb-4">
+                  {featuredCourses.length > 0 && featuredLectures.length > 0
+                    ? "Our Featured Courses & Lectures"
+                    : featuredLectures.length > 0
+                      ? "Our Featured Lectures"
+                      : "Our Featured Courses"}
+                </h2>
+                <p className="text-samarth-gray-600 max-w-xl">
+                  {featuredLectures.length > 0
+                    ? "Access our collection of high-quality video lectures taught by expert faculty."
+                    : "Explore our highest-rated courses designed by industry experts."}
+                </p>
+              </div>
+              {featuredLectures.length > 0 ? (
+                <Link
+                  to="/recorded-lectures"
+                  className="hidden md:inline-flex items-center text-samarth-blue-700 font-semibold hover:text-samarth-blue-900 transition-colors mt-4 md:mt-0"
+                >
+                  View All Lectures <FiArrowRight className="ml-2" />
+                </Link>
+              ) : (
+                <Link
+                  to="/courses"
+                  className="hidden md:inline-flex items-center text-samarth-blue-700 font-semibold hover:text-samarth-blue-900 transition-colors mt-4 md:mt-0"
+                >
+                  View All Courses <FiArrowRight className="ml-2" />
+                </Link>
+              )}
+            </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={fadeInUp}
-          >
-            <Suspense
-              fallback={
-                <div className="h-96 w-full bg-gray-100 animate-pulse rounded-2xl"></div>
-              }
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={fadeInUp}
             >
-              <CoursesCarousel courses={featuredCourses} />
-            </Suspense>
-          </motion.div>
-        </section>
+              <Suspense
+                fallback={
+                  <div className="h-96 w-full bg-gray-100 animate-pulse rounded-2xl"></div>
+                }
+              >
+                <CoursesCarousel
+                  courses={featuredCourses}
+                  lectures={featuredLectures}
+                />
+              </Suspense>
+            </motion.div>
+          </section>
+        )}
 
         {/* Divider */}
         <div className="container-custom py-4">

@@ -39,11 +39,15 @@ const ManageUsers = () => {
     name: "",
     class: "",
     batch: "",
+    studentUid: "",
+    customUid: "",
   });
 
   const [editForm, setEditForm] = useState({
     class: "",
     batch: "",
+    customUid: "",
+    studentUid: "",
   });
 
   // Filter and search states
@@ -183,6 +187,17 @@ const ManageUsers = () => {
         setError("Please select class and batch for student accounts");
         return;
       }
+      if (!newUser.customUid) {
+        setError("Please enter a custom UID for this student");
+        return;
+      }
+    }
+
+    if (newUser.role === USER_ROLES.PARENT) {
+      if (!newUser.studentUid) {
+        setError("Please enter the Student UID to link this parent account");
+        return;
+      }
     }
 
     try {
@@ -229,26 +244,35 @@ const ManageUsers = () => {
         throw authError; // Re-throw other errors to be caught by outer catch
       }
 
-      // Generate custom document ID: role_name_Class_Batch_Date
+      // Generate custom document ID based on role
       const sanitizedName = newUser.name.replace(/\s+/g, "").toLowerCase();
-      let customDocId = `${newUser.role}_${sanitizedName}`;
-      if (newUser.role === USER_ROLES.STUDENT && newUser.class) {
-        customDocId += `_${newUser.class.replace(/\s+/g, "")}`;
+      let customDocId;
+
+      if (newUser.role === USER_ROLES.STUDENT) {
+        // Student: customUid_role_name_date
+        customDocId = `${newUser.customUid}_${newUser.role}_${sanitizedName}_${dateStamp}`;
+      } else if (newUser.role === USER_ROLES.PARENT) {
+        // Parent: role_name_studentUid_date
+        customDocId = `${newUser.role}_${sanitizedName}_${newUser.studentUid}_${dateStamp}`;
+      } else {
+        // Teacher/Admin: role_name_date
+        customDocId = `${newUser.role}_${sanitizedName}_${dateStamp}`;
       }
-      if (newUser.role === USER_ROLES.STUDENT && newUser.batch) {
-        customDocId += `_${newUser.batch.replace(/\s+/g, "")}`;
-      }
-      customDocId += `_${dateStamp}`;
 
       // Store user data in Firestore with custom document ID
+      // Email is stored in lowercase for consistent querying
       await setDoc(doc(db, "users", customDocId), {
         uid: userCredential.user.uid,
-        email: newUser.email,
+        email: newUser.email.toLowerCase(),
         role: newUser.role,
         name: newUser.name,
         ...(newUser.role === USER_ROLES.STUDENT && {
+          customUid: newUser.customUid,
           class: newUser.class,
           batch: newUser.batch,
+        }),
+        ...(newUser.role === USER_ROLES.PARENT && {
+          studentUid: newUser.studentUid,
         }),
         createdAt: creationDate,
         createdBy: currentUser?.uid,
@@ -267,6 +291,8 @@ const ManageUsers = () => {
         name: "",
         class: "",
         batch: "",
+        studentUid: "",
+        customUid: "",
       });
 
       // Wait a bit before refreshing to allow auth state to settle
@@ -378,17 +404,67 @@ const ManageUsers = () => {
     }
 
     try {
-      await updateDoc(doc(db, "users", selectedUser.id), {
-        class: editForm.class,
-        batch: editForm.batch,
+      const updateData = {
+        ...selectedUser,
         updatedAt: new Date().toISOString(),
-      });
-      setSuccess("Student information updated successfully!");
+      };
+      delete updateData.id; // Remove the id field as it's not part of the document data
+
+      let needsNewDocId = false;
+      let newDocId = selectedUser.id;
+
+      if (selectedUser.role === USER_ROLES.STUDENT) {
+        updateData.class = editForm.class;
+        updateData.batch = editForm.batch;
+        updateData.customUid = editForm.customUid;
+
+        // Check if customUid changed - need to update document ID
+        if (editForm.customUid !== selectedUser.customUid) {
+          needsNewDocId = true;
+          const sanitizedName = selectedUser.name
+            .replace(/\s+/g, "")
+            .toLowerCase();
+          // Extract date from old doc ID or use current date
+          const oldIdParts = selectedUser.id.split("_");
+          const dateStamp =
+            oldIdParts[oldIdParts.length - 1] ||
+            new Date().toISOString().split("T")[0].replace(/-/g, "");
+          newDocId = `${editForm.customUid}_${USER_ROLES.STUDENT}_${sanitizedName}_${dateStamp}`;
+        }
+      } else if (selectedUser.role === USER_ROLES.PARENT) {
+        updateData.studentUid = editForm.studentUid;
+
+        // Check if studentUid changed - need to update document ID
+        if (editForm.studentUid !== selectedUser.studentUid) {
+          needsNewDocId = true;
+          const sanitizedName = selectedUser.name
+            .replace(/\s+/g, "")
+            .toLowerCase();
+          const oldIdParts = selectedUser.id.split("_");
+          const dateStamp =
+            oldIdParts[oldIdParts.length - 1] ||
+            new Date().toISOString().split("T")[0].replace(/-/g, "");
+          newDocId = `${USER_ROLES.PARENT}_${sanitizedName}_${editForm.studentUid}_${dateStamp}`;
+        }
+      }
+
+      if (needsNewDocId) {
+        // Create new document with new ID
+        await setDoc(doc(db, "users", newDocId), updateData);
+        // Delete old document
+        await deleteDoc(doc(db, "users", selectedUser.id));
+        setSuccess("User information and document ID updated successfully!");
+      } else {
+        // Just update the existing document
+        await updateDoc(doc(db, "users", selectedUser.id), updateData);
+        setSuccess("User information updated successfully!");
+      }
+
       setShowEditModal(false);
       setSelectedUser(null);
       fetchUsers();
     } catch (err) {
-      setError(err.message || "Failed to update student information");
+      setError(err.message || "Failed to update user information");
       console.error("Update error:", err);
     }
   };
@@ -535,6 +611,9 @@ const ManageUsers = () => {
                     <option value="">All Roles</option>
                     <option value={USER_ROLES.STUDENT}>
                       {ROLE_NAMES[USER_ROLES.STUDENT]}
+                    </option>
+                    <option value={USER_ROLES.PARENT}>
+                      {ROLE_NAMES[USER_ROLES.PARENT]}
                     </option>
                     <option value={USER_ROLES.TEACHER}>
                       {ROLE_NAMES[USER_ROLES.TEACHER]}
@@ -686,6 +765,9 @@ const ManageUsers = () => {
                               <option value={USER_ROLES.STUDENT}>
                                 {ROLE_NAMES[USER_ROLES.STUDENT]}
                               </option>
+                              <option value={USER_ROLES.PARENT}>
+                                {ROLE_NAMES[USER_ROLES.PARENT]}
+                              </option>
                               <option value={USER_ROLES.TEACHER}>
                                 {ROLE_NAMES[USER_ROLES.TEACHER]}
                               </option>
@@ -702,11 +784,21 @@ const ManageUsers = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {u.role === USER_ROLES.STUDENT ? (
                             <div>
-                              <div className="text-sm text-gray-900">
-                                {u.class || "N/A"}
+                              <div className="text-xs text-gray-500">UID:</div>
+                              <div className="text-sm text-gray-900 font-mono font-semibold">
+                                {u.customUid || "N/A"}
                               </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {u.class || "N/A"} | {u.batch || "N/A"}
+                              </div>
+                            </div>
+                          ) : u.role === USER_ROLES.PARENT ? (
+                            <div>
                               <div className="text-xs text-gray-500">
-                                {u.batch || "N/A"}
+                                Linked to Student:
+                              </div>
+                              <div className="text-sm text-gray-900 font-mono font-semibold">
+                                {u.studentUid || "Not linked"}
                               </div>
                             </div>
                           ) : (
@@ -720,13 +812,16 @@ const ManageUsers = () => {
                         </td>
                         {isAdmin && (
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            {u.role === USER_ROLES.STUDENT && (
+                            {(u.role === USER_ROLES.STUDENT ||
+                              u.role === USER_ROLES.PARENT) && (
                               <button
                                 onClick={() => {
                                   setSelectedUser(u);
                                   setEditForm({
                                     class: u.class || "",
                                     batch: u.batch || "",
+                                    customUid: u.customUid || "",
+                                    studentUid: u.studentUid || "",
                                   });
                                   setShowEditModal(true);
                                 }}
@@ -771,12 +866,58 @@ const ManageUsers = () => {
 
         {/* Create User Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-              <div className="mt-3">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
-                  Create New User
-                </h3>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-10 animate-fadeIn">
+            <div className="relative mx-4 p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp">
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setNewUser({
+                    email: "",
+                    password: "",
+                    role: USER_ROLES.STUDENT,
+                    name: "",
+                    class: "",
+                    batch: "",
+                    studentUid: "",
+                  });
+                }}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-indigo-100 rounded-lg">
+                    <svg
+                      className="w-6 h-6 text-indigo-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    Create New User
+                  </h3>
+                </div>
                 <form onSubmit={handleCreateUser} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -835,6 +976,9 @@ const ManageUsers = () => {
                       <option value={USER_ROLES.STUDENT}>
                         {ROLE_NAMES[USER_ROLES.STUDENT]}
                       </option>
+                      <option value={USER_ROLES.PARENT}>
+                        {ROLE_NAMES[USER_ROLES.PARENT]}
+                      </option>
                       <option value={USER_ROLES.TEACHER}>
                         {ROLE_NAMES[USER_ROLES.TEACHER]}
                       </option>
@@ -845,6 +989,30 @@ const ManageUsers = () => {
                   </div>
                   {newUser.role === USER_ROLES.STUDENT && (
                     <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Student UID (Custom ID)
+                        </label>
+                        <input
+                          type="text"
+                          required={newUser.role === USER_ROLES.STUDENT}
+                          placeholder="e.g., STU001, S2026001"
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                          value={newUser.customUid}
+                          onChange={(e) =>
+                            setNewUser({
+                              ...newUser,
+                              customUid: e.target.value
+                                .toUpperCase()
+                                .replace(/\s+/g, ""),
+                            })
+                          }
+                        />
+                        <p className="mt-1 text-xs text-gray-500">
+                          Unique ID for this student. Parents will use this to
+                          link their account.
+                        </p>
+                      </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
                           Class
@@ -888,7 +1056,34 @@ const ManageUsers = () => {
                       </div>
                     </>
                   )}
-                  <div className="flex gap-2 justify-end">
+                  {newUser.role === USER_ROLES.PARENT && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Link to Student UID
+                      </label>
+                      <input
+                        type="text"
+                        required={newUser.role === USER_ROLES.PARENT}
+                        placeholder="e.g., STU001 (the student's custom UID)"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        value={newUser.studentUid}
+                        onChange={(e) =>
+                          setNewUser({
+                            ...newUser,
+                            studentUid: e.target.value
+                              .toUpperCase()
+                              .replace(/\s+/g, ""),
+                          })
+                        }
+                      />
+                      <p className="mt-1 text-xs text-gray-500">
+                        Enter the Student UID assigned when the student was
+                        created. This links the parent to view their child's
+                        data.
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
                     <button
                       type="button"
                       onClick={() => {
@@ -898,17 +1093,20 @@ const ManageUsers = () => {
                           password: "",
                           role: USER_ROLES.STUDENT,
                           name: "",
+                          class: "",
+                          batch: "",
+                          studentUid: "",
                         });
                       }}
-                      className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                      className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium shadow-lg shadow-indigo-200 hover:shadow-indigo-300"
                     >
-                      Create
+                      Create User
                     </button>
                   </div>
                 </form>
@@ -917,76 +1115,175 @@ const ManageUsers = () => {
           </div>
         )}
 
-        {/* Edit Student Modal */}
+        {/* Edit User Modal */}
         {showEditModal && selectedUser && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-              <div className="mt-3">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
-                  Edit Student Information
-                </h3>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-10 animate-fadeIn">
+            <div className="relative mx-4 p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp">
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setSelectedUser(null);
+                }}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-indigo-100 rounded-lg">
+                    <svg
+                      className="w-6 h-6 text-indigo-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    Edit{" "}
+                    {selectedUser.role === USER_ROLES.STUDENT
+                      ? "Student"
+                      : "Parent"}{" "}
+                    Information
+                  </h3>
+                </div>
 
                 <form onSubmit={handleUpdateStudent}>
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Email: <strong>{selectedUser.email}</strong>
+                      Name: <strong>{selectedUser.name}</strong>
+                    </label>
+                    <label className="block text-gray-700 text-sm mb-2">
+                      Email: {selectedUser.email}
                     </label>
                   </div>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Class
-                    </label>
-                    <select
-                      value={editForm.class}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, class: e.target.value })
-                      }
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      required
-                    >
-                      <option value="">Select Class</option>
-                      {[5, 6, 7, 8, 9, 10, 11, 12].map((cls) => (
-                        <option key={cls} value={`Class ${cls}`}>
-                          Class {cls}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {selectedUser.role === USER_ROLES.STUDENT && (
+                    <>
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Student UID
+                        </label>
+                        <input
+                          type="text"
+                          value={editForm.customUid}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              customUid: e.target.value
+                                .toUpperCase()
+                                .replace(/\s+/g, ""),
+                            })
+                          }
+                          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline font-mono"
+                          required
+                          placeholder="e.g., STU001"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Parents use this UID to link their account.
+                        </p>
+                      </div>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Batch
-                    </label>
-                    <select
-                      value={editForm.batch}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, batch: e.target.value })
-                      }
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      required
-                    >
-                      <option value="">Select Batch</option>
-                      <option value="Batch A">Batch A</option>
-                      <option value="Batch B">Batch B</option>
-                      <option value="Batch C">Batch C</option>
-                    </select>
-                  </div>
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Class
+                        </label>
+                        <select
+                          value={editForm.class}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, class: e.target.value })
+                          }
+                          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          required
+                        >
+                          <option value="">Select Class</option>
+                          {[5, 6, 7, 8, 9, 10, 11, 12].map((cls) => (
+                            <option key={cls} value={`Class ${cls}`}>
+                              Class {cls}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                  <div className="flex gap-2 justify-end">
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Batch
+                        </label>
+                        <select
+                          value={editForm.batch}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, batch: e.target.value })
+                          }
+                          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          required
+                        >
+                          <option value="">Select Batch</option>
+                          <option value="Batch A">Batch A</option>
+                          <option value="Batch B">Batch B</option>
+                          <option value="Batch C">Batch C</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {selectedUser.role === USER_ROLES.PARENT && (
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Linked Student UID
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.studentUid}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            studentUid: e.target.value
+                              .toUpperCase()
+                              .replace(/\s+/g, ""),
+                          })
+                        }
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline font-mono"
+                        required
+                        placeholder="e.g., STU001"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        The Student UID this parent account is linked to.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
                     <button
                       type="button"
                       onClick={() => {
                         setShowEditModal(false);
                         setSelectedUser(null);
                       }}
-                      className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                      className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium shadow-lg shadow-indigo-200 hover:shadow-indigo-300"
                     >
                       Update
                     </button>
@@ -999,32 +1296,73 @@ const ManageUsers = () => {
 
         {/* Reset Password Modal */}
         {showResetPasswordModal && selectedUser && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-              <div className="mt-3">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
-                  Reset Password
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Reset password for: <strong>{selectedUser.email}</strong>
-                </p>
-                <p className="text-sm text-gray-500 mb-4">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-10 animate-fadeIn">
+            <div className="relative mx-4 p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp">
+              <button
+                onClick={() => {
+                  setShowResetPasswordModal(false);
+                  setSelectedUser(null);
+                }}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <svg
+                      className="w-6 h-6 text-orange-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    Reset Password
+                  </h3>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-gray-600">Reset password for:</p>
+                  <p className="font-semibold text-gray-900">
+                    {selectedUser.email}
+                  </p>
+                </div>
+                <p className="text-sm text-gray-500 mb-6">
                   The user will be prompted to change their password on next
                   login.
                 </p>
-                <div className="flex gap-2 justify-end">
+                <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
                   <button
                     onClick={() => {
                       setShowResetPasswordModal(false);
                       setSelectedUser(null);
                     }}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                    className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleResetPassword(selectedUser.id)}
-                    className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+                    className="px-5 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-200 font-medium shadow-lg shadow-orange-200 hover:shadow-orange-300"
                   >
                     Confirm Reset
                   </button>

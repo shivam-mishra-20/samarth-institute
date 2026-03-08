@@ -24,7 +24,7 @@ import Pagination from "../components/Pagination";
 import * as XLSX from "xlsx";
 
 const Results = () => {
-  const { user, userData, isAdmin, isTeacher, isStudent } = useAuth();
+  const { user, userData, isAdmin, isTeacher, isStudent, isParent } = useAuth();
   const navigate = useNavigate();
 
   // Tab state
@@ -138,10 +138,10 @@ const Results = () => {
   useEffect(() => {
     if (!user) {
       navigate("/login");
-    } else if (!isAdmin && !isTeacher && !isStudent) {
+    } else if (!isAdmin && !isTeacher && !isStudent && !isParent) {
       navigate("/unauthorized");
     }
-  }, [user, isAdmin, isTeacher, isStudent, navigate]);
+  }, [user, isAdmin, isTeacher, isStudent, isParent, navigate]);
 
   // Fetch student's own results
   useEffect(() => {
@@ -182,6 +182,74 @@ const Results = () => {
 
     fetchStudentResults();
   }, [isStudent, user, userData]);
+
+  // Fetch parent's linked student results
+  useEffect(() => {
+    if (!isParent || !user || !userData) return;
+
+    const fetchParentLinkedStudentResults = async () => {
+      setStudentLoading(true);
+      try {
+        // Check if parent has a linked student
+        if (!userData?.studentUid) {
+          setError(
+            "No student linked to your account. Please contact the administrator.",
+          );
+          setStudentLoading(false);
+          return;
+        }
+
+        // Fetch the linked student's data from users collection by customUid
+        const usersRef = collection(db, "users");
+        const studentQuery = query(
+          usersRef,
+          where("customUid", "==", userData.studentUid),
+        );
+        const studentSnapshot = await getDocs(studentQuery);
+
+        if (studentSnapshot.empty) {
+          setError(
+            "Linked student account not found. Please contact the administrator.",
+          );
+          setStudentLoading(false);
+          return;
+        }
+
+        const linkedStudent = studentSnapshot.docs[0].data();
+
+        // Fetch results for linked student
+        const resultsRef = collection(db, "results");
+        const q = query(
+          resultsRef,
+          where("studentName", "==", linkedStudent.name),
+          where("class", "==", linkedStudent.class),
+          where("batch", "==", linkedStudent.batch),
+        );
+        const snapshot = await getDocs(q);
+
+        const results = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // Sort by exam date (most recent first), then by subject
+        results.sort((a, b) => {
+          const dateCompare = new Date(b.examDate) - new Date(a.examDate);
+          if (dateCompare !== 0) return dateCompare;
+          return a.subject.localeCompare(b.subject);
+        });
+
+        setStudentResults(results);
+      } catch (error) {
+        console.error("Error fetching parent linked student results:", error);
+        setError("Failed to load your child's results. Please try again.");
+      } finally {
+        setStudentLoading(false);
+      }
+    };
+
+    fetchParentLinkedStudentResults();
+  }, [isParent, user, userData]);
 
   // Fetch batches for selected class
   useEffect(() => {
@@ -624,7 +692,7 @@ const Results = () => {
     }
   };
 
-  if (!user || (!isAdmin && !isTeacher && !isStudent)) {
+  if (!user || (!isAdmin && !isTeacher && !isStudent && !isParent)) {
     return null;
   }
 
@@ -670,11 +738,11 @@ const Results = () => {
     // Prepare data for export
     const exportData = dataToExport.map((result) => ({
       "Exam Date": new Date(result.examDate).toLocaleDateString(),
-      "Subject": result.subject,
+      Subject: result.subject,
       "Exam Type": result.examType,
       "Marks Obtained": result.marks,
       "Total Marks": result.maxMarks,
-      "Percentage": `${((result.marks / result.maxMarks) * 100).toFixed(2)}%`,
+      Percentage: `${((result.marks / result.maxMarks) * 100).toFixed(2)}%`,
     }));
 
     // Create worksheet
@@ -710,14 +778,14 @@ const Results = () => {
     // Prepare data for export
     const exportData = dataToExport.map((result) => ({
       "Student Name": result.studentName,
-      "Class": result.class,
-      "Batch": result.batch,
-      "Subject": result.subject,
+      Class: result.class,
+      Batch: result.batch,
+      Subject: result.subject,
       "Exam Type": result.examType,
       "Exam Date": new Date(result.examDate).toLocaleDateString(),
       "Marks Obtained": result.marks,
       "Total Marks": result.maxMarks,
-      "Percentage": `${((result.marks / result.maxMarks) * 100).toFixed(2)}%`,
+      Percentage: `${((result.marks / result.maxMarks) * 100).toFixed(2)}%`,
     }));
 
     // Create worksheet
@@ -749,8 +817,8 @@ const Results = () => {
     XLSX.writeFile(workbook, filename);
   };
 
-  // Student View
-  if (isStudent) {
+  // Student/Parent View
+  if (isStudent || isParent) {
     return (
       <>
         <Navbar />
@@ -760,9 +828,12 @@ const Results = () => {
             <div className="max-w-7xl mx-auto">
               {/* Header */}
               <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">My Results</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {isParent ? "My Child's Results" : "My Results"}
+                </h1>
                 <p className="mt-2 text-sm text-gray-700">
-                  View all your examination results
+                  View all {isParent ? "your child's" : "your"} examination
+                  results
                 </p>
               </div>
 
@@ -983,41 +1054,45 @@ const Results = () => {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {(() => {
-                          const startIndex = (studentResultsPage - 1) * itemsPerPage;
+                          const startIndex =
+                            (studentResultsPage - 1) * itemsPerPage;
                           const endIndex = startIndex + itemsPerPage;
-                          const paginatedResults = filteredStudentResults.slice(startIndex, endIndex);
-                          
+                          const paginatedResults = filteredStudentResults.slice(
+                            startIndex,
+                            endIndex,
+                          );
+
                           return paginatedResults.map((result) => (
-                          <tr key={result.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {result.subject}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {result.examType}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {new Date(result.examDate).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {result.marks}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {result.maxMarks}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  result.percentage >= 75
-                                    ? "bg-green-100 text-green-800"
-                                    : result.percentage >= 50
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {result.percentage}%
-                              </span>
-                            </td>
-                          </tr>
+                            <tr key={result.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {result.subject}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {result.examType}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {new Date(result.examDate).toLocaleDateString()}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {result.marks}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {result.maxMarks}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                <span
+                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    result.percentage >= 75
+                                      ? "bg-green-100 text-green-800"
+                                      : result.percentage >= 50
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : "bg-red-100 text-red-800"
+                                  }`}
+                                >
+                                  {result.percentage}%
+                                </span>
+                              </td>
+                            </tr>
                           ));
                         })()}
                       </tbody>
@@ -1027,7 +1102,9 @@ const Results = () => {
                 {filteredStudentResults.length > 0 && (
                   <Pagination
                     currentPage={studentResultsPage}
-                    totalPages={Math.ceil(filteredStudentResults.length / itemsPerPage)}
+                    totalPages={Math.ceil(
+                      filteredStudentResults.length / itemsPerPage,
+                    )}
                     onPageChange={setStudentResultsPage}
                     itemsPerPage={itemsPerPage}
                     totalItems={filteredStudentResults.length}
@@ -1647,150 +1724,165 @@ const Results = () => {
                             Results for {searchClass} - {searchBatch} (
                             {searchResults.length} records)
                           </h3>
-                        {(searchStudent || searchSubject) && (
-                          <p className="text-sm text-gray-600 mt-1">
-                            Filters applied:
-                            {searchStudent && (
-                              <span className="ml-1 font-medium">
-                                Student: "{searchStudent}"
-                              </span>
-                            )}
-                            {searchStudent && searchSubject && <span>, </span>}
-                            {searchSubject && (
-                              <span className="ml-1 font-medium">
-                                Subject: {searchSubject}
-                              </span>
-                            )}
-                          </p>
-                        )}
-                      </div>
-                      <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Student Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Subject
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Exam Type
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Exam Date
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Marks
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Percentage
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Uploaded By
-                            </th>
-                            {isAdmin && (
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                              </th>
-                            )}
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {(() => {
-                            const startIndex = (searchResultsPage - 1) * itemsPerPage;
-                            const endIndex = startIndex + itemsPerPage;
-                            const paginatedResults = searchResults.slice(startIndex, endIndex);
-                            
-                            return paginatedResults.map((result) => (
-                            <tr key={result.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {result.studentName}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {result.subject}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {result.examType}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {result.examDate}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {result.marks} / {result.maxMarks}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <span
-                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                    parseFloat(result.percentage) >= 75
-                                      ? "bg-green-100 text-green-800"
-                                      : parseFloat(result.percentage) >= 50
-                                        ? "bg-yellow-100 text-yellow-800"
-                                        : "bg-red-100 text-red-800"
-                                  }`}
-                                >
-                                  {result.percentage}%
+                          {(searchStudent || searchSubject) && (
+                            <p className="text-sm text-gray-600 mt-1">
+                              Filters applied:
+                              {searchStudent && (
+                                <span className="ml-1 font-medium">
+                                  Student: "{searchStudent}"
                                 </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {result.uploadedByName}
-                              </td>
+                              )}
+                              {searchStudent && searchSubject && (
+                                <span>, </span>
+                              )}
+                              {searchSubject && (
+                                <span className="ml-1 font-medium">
+                                  Subject: {searchSubject}
+                                </span>
+                              )}
+                            </p>
+                          )}
+                        </div>
+                        <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Student Name
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Subject
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Exam Type
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Exam Date
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Marks
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Percentage
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Uploaded By
+                              </th>
                               {isAdmin && (
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      onClick={() => handleEditResult(result)}
-                                      className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
-                                      title="Edit result"
-                                    >
-                                      <svg
-                                        className="w-5 h-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                        />
-                                      </svg>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteResult(result)}
-                                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                                      title="Delete result"
-                                    >
-                                      <svg
-                                        className="w-5 h-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                        />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                </td>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Actions
+                                </th>
                               )}
                             </tr>
-                            ));
-                          })()}
-                        </tbody>
-                      </table>
-                      <Pagination
-                        currentPage={searchResultsPage}
-                        totalPages={Math.ceil(searchResults.length / itemsPerPage)}
-                        onPageChange={setSearchResultsPage}
-                        itemsPerPage={itemsPerPage}
-                        totalItems={searchResults.length}
-                      />
-                    </div>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {(() => {
+                              const startIndex =
+                                (searchResultsPage - 1) * itemsPerPage;
+                              const endIndex = startIndex + itemsPerPage;
+                              const paginatedResults = searchResults.slice(
+                                startIndex,
+                                endIndex,
+                              );
+
+                              return paginatedResults.map((result) => (
+                                <tr
+                                  key={result.id}
+                                  className="hover:bg-gray-50"
+                                >
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {result.studentName}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {result.subject}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {result.examType}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {result.examDate}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {result.marks} / {result.maxMarks}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <span
+                                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                        parseFloat(result.percentage) >= 75
+                                          ? "bg-green-100 text-green-800"
+                                          : parseFloat(result.percentage) >= 50
+                                            ? "bg-yellow-100 text-yellow-800"
+                                            : "bg-red-100 text-red-800"
+                                      }`}
+                                    >
+                                      {result.percentage}%
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {result.uploadedByName}
+                                  </td>
+                                  {isAdmin && (
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          onClick={() =>
+                                            handleEditResult(result)
+                                          }
+                                          className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
+                                          title="Edit result"
+                                        >
+                                          <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth={2}
+                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                            />
+                                          </svg>
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            handleDeleteResult(result)
+                                          }
+                                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                                          title="Delete result"
+                                        >
+                                          <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth={2}
+                                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                            />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    </td>
+                                  )}
+                                </tr>
+                              ));
+                            })()}
+                          </tbody>
+                        </table>
+                        <Pagination
+                          currentPage={searchResultsPage}
+                          totalPages={Math.ceil(
+                            searchResults.length / itemsPerPage,
+                          )}
+                          onPageChange={setSearchResultsPage}
+                          itemsPerPage={itemsPerPage}
+                          totalItems={searchResults.length}
+                        />
+                      </div>
                     </>
                   ) : searchClass && searchBatch && !searchLoading ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -1874,32 +1966,37 @@ const Results = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {(() => {
-                        const startIndex = (recentResultsPage - 1) * itemsPerPage;
+                        const startIndex =
+                          (recentResultsPage - 1) * itemsPerPage;
                         const endIndex = startIndex + itemsPerPage;
-                        const paginatedResults = recentResults.slice(startIndex, endIndex);
-                        
+                        const paginatedResults = recentResults.slice(
+                          startIndex,
+                          endIndex,
+                        );
+
                         return paginatedResults.map((result) => (
-                        <tr key={result.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {result.studentName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {classOptions.find((c) => c.value === result.class)
-                              ?.label || result.class}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {result.subject}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {result.examType}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {result.marks} / {result.maxMarks}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {result.percentage}%
-                          </td>
-                        </tr>
+                          <tr key={result.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {result.studentName}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {classOptions.find(
+                                (c) => c.value === result.class,
+                              )?.label || result.class}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {result.subject}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {result.examType}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {result.marks} / {result.maxMarks}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {result.percentage}%
+                            </td>
+                          </tr>
                         ));
                       })()}
                     </tbody>

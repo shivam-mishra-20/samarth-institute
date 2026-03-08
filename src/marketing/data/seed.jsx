@@ -8,74 +8,7 @@ import {
   FiVideo,
 } from "react-icons/fi";
 
-export const featuredCourses = [
-  {
-    id: 1,
-    title: "Pre Foundation",
-    instructor: "Building Strong Fundamentals",
-    cover:
-      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=800",
-    duration: "1 Year Program",
-    slug: "pre-foundation",
-    rating: 4.9,
-    students: "Class 6-8",
-  },
-  {
-    id: 2,
-    title: "Foundation Class 9",
-    instructor: "Critical Foundation Year",
-    cover:
-      "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=800",
-    duration: "1 Year Program",
-    slug: "foundation-class-9",
-    rating: 4.9,
-    students: "Class 9 | NTSE Stage I",
-  },
-  {
-    id: 3,
-    title: "Foundation Class 10",
-    instructor: "Board Excellence & Beyond",
-    cover:
-      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=800",
-    duration: "1 Year Program",
-    slug: "foundation-class-10",
-    rating: 4.9,
-    students: "Class 10 | Board Exams",
-  },
-  {
-    id: 4,
-    title: "Integrated JEE",
-    instructor: "Target IIT/NIT",
-    cover:
-      "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&q=80&w=800",
-    duration: "2 Years",
-    slug: "integrated-jee",
-    rating: 4.9,
-    students: "Class 11-12",
-  },
-  {
-    id: 5,
-    title: "Integrated NEET",
-    instructor: "Target Medical Colleges",
-    cover:
-      "https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&q=80&w=800",
-    duration: "2 Years",
-    slug: "integrated-neet",
-    rating: 4.9,
-    students: "Class 11-12",
-  },
-  {
-    id: 6,
-    title: "Integrated NTSE",
-    instructor: "5 Year Excellence Program",
-    cover:
-      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=800",
-    duration: "Long-term",
-    slug: "integrated-ntse",
-    rating: 4.8,
-    students: "Class 6-10",
-  },
-];
+export const featuredCourses = [];
 
 export const faculties = [
   {

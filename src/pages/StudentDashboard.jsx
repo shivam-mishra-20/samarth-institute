@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+} from "firebase/firestore";
 import { db } from "../config/firebase.config";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -30,6 +37,7 @@ const StudentDashboard = () => {
   const [totalAttendanceDays, setTotalAttendanceDays] = useState(0);
   const [subjectWiseResults, setSubjectWiseResults] = useState([]);
   const [subjectProgression, setSubjectProgression] = useState([]);
+  const [recentLectures, setRecentLectures] = useState([]);
 
   // Helper function to convert subject names to short forms
   const getShortSubjectName = (subject) => {
@@ -50,7 +58,37 @@ const StudentDashboard = () => {
     if (userData) {
       fetchStudentData();
     }
+    fetchRecentLectures();
   }, [userData]);
+
+  const fetchRecentLectures = async () => {
+    try {
+      const lecturesQuery = query(
+        collection(db, "recordedLectures"),
+        where("isPublic", "==", true),
+        orderBy("createdAt", "desc"),
+        limit(4),
+      );
+      const snapshot = await getDocs(lecturesQuery);
+      const lecturesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setRecentLectures(lecturesData);
+    } catch (error) {
+      console.error("Error fetching recent lectures:", error);
+    }
+  };
+
+  const getYouTubeThumbnail = (url) => {
+    if (!url) return "";
+    const videoId = url.match(
+      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
+    );
+    return videoId
+      ? `https://img.youtube.com/vi/${videoId[1]}/maxresdefault.jpg`
+      : "";
+  };
 
   const fetchStudentData = async () => {
     try {
@@ -493,6 +531,96 @@ const StudentDashboard = () => {
                         </ResponsiveContainer>
                       </div>
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recent Lectures Section */}
+            {recentLectures.length > 0 && (
+              <div className="mt-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <svg
+                      className="h-6 w-6 text-red-600 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      📺 Recent Video Lectures
+                    </h2>
+                  </div>
+                  <Link
+                    to="/recorded-lectures"
+                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                  >
+                    View all →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {recentLectures.map((lecture) => (
+                    <a
+                      key={lecture.id}
+                      href={lecture.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 group"
+                    >
+                      <div className="relative aspect-video bg-gray-100">
+                        <img
+                          src={
+                            lecture.thumbnailUrl ||
+                            getYouTubeThumbnail(lecture.videoUrl) ||
+                            "/Images/default-video-thumbnail.jpg"
+                          }
+                          alt={lecture.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src =
+                              "/Images/default-video-thumbnail.jpg";
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-indigo-600 ml-0.5"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                        </div>
+                        {lecture.duration && (
+                          <span className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white text-xs rounded">
+                            {lecture.duration}
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded">
+                            {lecture.subject}
+                          </span>
+                        </div>
+                        <h3 className="font-medium text-gray-900 text-sm line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                          {lecture.title}
+                        </h3>
+                        {lecture.instructor && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {lecture.instructor}
+                          </p>
+                        )}
+                      </div>
+                    </a>
                   ))}
                 </div>
               </div>

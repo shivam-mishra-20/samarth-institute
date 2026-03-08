@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { USER_ROLES, ROLE_NAMES, ROLE_ROUTES } from "../constants/roles";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../config/firebase.config";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -10,9 +12,12 @@ const Login = () => {
   const roleParam = searchParams.get("role") || USER_ROLES.STUDENT;
 
   const [email, setEmail] = useState("");
+  const [studentUid, setStudentUid] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isParentLogin = roleParam === USER_ROLES.PARENT;
 
   const { login, user, userRole, passwordResetRequired } = useAuth();
   const navigate = useNavigate();
@@ -43,6 +48,37 @@ const Login = () => {
     setLoading(true);
 
     try {
+      // For parent login, verify Student UID before authentication
+      if (isParentLogin) {
+        if (!studentUid.trim()) {
+          throw new Error("Please enter the Student UID.");
+        }
+
+        // Check if parent exists with this email and verify studentUid
+        const usersRef = collection(db, "users");
+        const parentQuery = query(
+          usersRef,
+          where("email", "==", email.trim().toLowerCase()),
+          where("role", "==", USER_ROLES.PARENT),
+        );
+        const parentSnapshot = await getDocs(parentQuery);
+
+        if (parentSnapshot.empty) {
+          throw new Error(
+            "No parent account found with this email. Please contact the administrator.",
+          );
+        }
+
+        const parentData = parentSnapshot.docs[0].data();
+
+        // Verify the Student UID matches
+        if (parentData.studentUid !== studentUid.toUpperCase().trim()) {
+          throw new Error(
+            "The Student UID does not match this parent account. Please check and try again.",
+          );
+        }
+      }
+
       await login(email, password, roleParam);
       // Check will happen in useEffect after login updates state
     } catch (err) {
@@ -89,12 +125,31 @@ const Login = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 ${isParentLogin ? "" : "rounded-t-md"} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${isParentLogin ? "rounded-t-md" : ""}`}
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+              {isParentLogin && (
+                <div>
+                  <label htmlFor="student-uid" className="sr-only">
+                    Student UID
+                  </label>
+                  <input
+                    id="student-uid"
+                    name="studentUid"
+                    type="text"
+                    required
+                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder="Student UID (e.g., STU001)"
+                    value={studentUid}
+                    onChange={(e) =>
+                      setStudentUid(e.target.value.toUpperCase())
+                    }
+                  />
+                </div>
+              )}
               <div>
                 <label htmlFor="password" className="sr-only">
                   Password
@@ -134,15 +189,26 @@ const Login = () => {
               </button>
             </div>
 
-            <div className="text-center text-sm">
-              <span className="text-gray-600">Don't have an account? </span>
-              <Link
-                to={`/signup?role=${roleParam}`}
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Sign up
-              </Link>
-            </div>
+            {!isParentLogin && (
+              <div className="text-center text-sm">
+                <span className="text-gray-600">Don't have an account? </span>
+                <Link
+                  to={`/signup?role=${roleParam}`}
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  Sign up
+                </Link>
+              </div>
+            )}
+
+            {isParentLogin && (
+              <div className="text-center text-sm text-gray-600">
+                <p>
+                  Enter your email, your child's Student UID, and password
+                  provided by the administrator.
+                </p>
+              </div>
+            )}
 
             <div className="text-center">
               <Link

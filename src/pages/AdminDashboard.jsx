@@ -294,6 +294,12 @@ const AdminDashboard = () => {
                   <button className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                     System Settings
                   </button>
+                  <button
+                    onClick={() => navigate("/student-feedback")}
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700"
+                  >
+                    Student Feedback
+                  </button>
                 </div>
               </div>
             </div>

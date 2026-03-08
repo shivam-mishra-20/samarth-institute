@@ -47,11 +47,11 @@ export const AuthProvider = ({ children }) => {
           );
           let querySnapshot = await getDocs(usersQuery);
 
-          // Fallback: If not found by uid, try querying by email
+          // Fallback: If not found by uid, try querying by email (lowercase for consistency)
           if (querySnapshot.empty && firebaseUser.email) {
             usersQuery = query(
               collection(db, "users"),
-              where("email", "==", firebaseUser.email),
+              where("email", "==", firebaseUser.email.toLowerCase()),
             );
             querySnapshot = await getDocs(usersQuery);
           }
@@ -113,12 +113,12 @@ export const AuthProvider = ({ children }) => {
       );
       let querySnapshot = await getDocs(usersQuery);
 
-      // Fallback: If not found by uid, try querying by email
+      // Fallback: If not found by uid, try querying by email (case-insensitive)
       if (querySnapshot.empty) {
         console.log("User not found by UID, trying email lookup...");
         usersQuery = query(
           collection(db, "users"),
-          where("email", "==", email),
+          where("email", "==", email.toLowerCase()),
         );
         querySnapshot = await getDocs(usersQuery);
       }
@@ -223,6 +223,7 @@ export const AuthProvider = ({ children }) => {
     isStudent: userRole === USER_ROLES.STUDENT,
     isTeacher: userRole === USER_ROLES.TEACHER,
     isAdmin: userRole === USER_ROLES.ADMIN,
+    isParent: userRole === USER_ROLES.PARENT,
   };
 
   return (

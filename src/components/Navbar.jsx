@@ -16,7 +16,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState(null);
   const location = useLocation();
-  const { user, isStudent, isTeacher } = useAuth();
+  const { user, isStudent, isTeacher, logout } = useAuth();
 
   // Handle window resize to close mobile menu on desktop
   useEffect(() => {
@@ -303,6 +303,17 @@ const Navbar = () => {
       ),
     },
     {
+      key: "parent",
+      label: (
+        <Link
+          to="/login?role=parent"
+          className="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          Parent Login
+        </Link>
+      ),
+    },
+    {
       key: "teacher",
       label: (
         <Link
@@ -461,18 +472,26 @@ const Navbar = () => {
 
             {/* Login Dropdown or Dashboard Link */}
             {user ? (
-              <Link
-                to={
-                  isStudent
-                    ? "/student/dashboard"
-                    : isTeacher
-                      ? "/teacher/dashboard"
-                      : "/admin/dashboard"
-                }
-                className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 border-2 border-blue-800"
-              >
-                Dashboard
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to={
+                    isStudent
+                      ? "/student/dashboard"
+                      : isTeacher
+                        ? "/teacher/dashboard"
+                        : "/admin/dashboard"
+                  }
+                  className="px-5 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 border-2 border-blue-800"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => logout()}
+                  className="px-5 py-2.5 rounded-full bg-gray-600 text-white font-bold hover:bg-gray-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 border-2 border-gray-700"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <Dropdown
                 menu={{ items: loginItems }}
@@ -768,19 +787,30 @@ const Navbar = () => {
 
             {/* Login Options or Dashboard */}
             {user ? (
-              <Link
-                to={
-                  isStudent
-                    ? "/student/dashboard"
-                    : isTeacher
-                      ? "/teacher/dashboard"
-                      : "/admin/dashboard"
-                }
-                className="block px-4 py-3 rounded-lg text-base font-bold bg-blue-700 text-white hover:bg-blue-800 transition-all shadow-md hover:shadow-lg"
-                onClick={() => setIsOpen(false)}
-              >
-                Go to Dashboard
-              </Link>
+              <div className="space-y-2">
+                <Link
+                  to={
+                    isStudent
+                      ? "/student/dashboard"
+                      : isTeacher
+                        ? "/teacher/dashboard"
+                        : "/admin/dashboard"
+                  }
+                  className="block px-4 py-3 rounded-lg text-base font-bold bg-blue-700 text-white hover:bg-blue-800 transition-all shadow-md hover:shadow-lg text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Go to Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-4 py-3 rounded-lg text-base font-bold bg-gray-600 text-white hover:bg-gray-700 transition-all shadow-md hover:shadow-lg"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <>
                 <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -792,6 +822,13 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   Student Login
+                </Link>
+                <Link
+                  to="/login?role=parent"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-samarth-gray-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Parent Login
                 </Link>
                 <Link
                   to="/login?role=teacher"

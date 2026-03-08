@@ -260,7 +260,7 @@ const TeacherDashboard = () => {
                 </h2>
               </div>
               <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <button
                     onClick={handleManageUsers}
                     className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
@@ -287,6 +287,12 @@ const TeacherDashboard = () => {
                     className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700"
                   >
                     Scholarship Applications
+                  </button>
+                  <button
+                    onClick={() => navigate("/student-feedback")}
+                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700"
+                  >
+                    Student Feedback
                   </button>
                 </div>
               </div>
