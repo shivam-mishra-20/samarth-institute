@@ -215,7 +215,7 @@ const ClassCard = ({ course }) => {
       </div>
 
       {/* Custom styles for animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%,
           100% {

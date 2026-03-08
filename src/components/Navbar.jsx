@@ -150,13 +150,13 @@ const Navbar = () => {
             </h3>
             <div className="space-y-1">
               <Link
-                to="/academic/boards/class-11"
+                to="/academic"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
               >
                 Class 11
               </Link>
               <Link
-                to="/academic/boards/class-12"
+                to="/academic"
                 className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-md"
               >
                 Class 12
@@ -403,8 +403,8 @@ const Navbar = () => {
                 <Dropdown
                   key={link.name}
                   menu={{ items: link.items }}
-                  placement="bottomCenter"
-                  overlayClassName="navbar-dropdown"
+                  placement="bottom"
+                  classNames={{ root: "navbar-dropdown" }}
                   trigger={["hover"]}
                 >
                   <span
@@ -477,7 +477,7 @@ const Navbar = () => {
               <Dropdown
                 menu={{ items: loginItems }}
                 placement="bottomRight"
-                overlayClassName="navbar-dropdown"
+                classNames={{ root: "navbar-dropdown" }}
                 trigger={["hover"]}
               >
                 <button className="px-6 py-2.5 rounded-full bg-blue-700 text-white font-bold hover:bg-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 border-2 border-blue-800">
@@ -620,14 +620,14 @@ const Navbar = () => {
                               Boards
                             </p>
                             <Link
-                              to="/academic/boards/class-11"
+                              to="/academic"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >
                               Class 11
                             </Link>
                             <Link
-                              to="/academic/boards/class-12"
+                              to="/academic"
                               onClick={() => setIsOpen(false)}
                               className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                             >

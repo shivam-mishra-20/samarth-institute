@@ -117,7 +117,9 @@ function App() {
           <Route
             path="/scholarship-applications"
             element={
-              <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+              <ProtectedRoute
+                allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}
+              >
                 <ScholarshipApplications />
               </ProtectedRoute>
             }

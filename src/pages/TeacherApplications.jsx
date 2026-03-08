@@ -156,10 +156,10 @@ const TeacherApplications = () => {
       const statusChangeData = {
         status: newStatus,
         lastStatusChange: {
-          changedBy: userData?.name || userData?.email || 'Unknown',
+          changedBy: userData?.name || userData?.email || "Unknown",
           changedAt: Timestamp.now(),
-          newStatus: newStatus
-        }
+          newStatus: newStatus,
+        },
       };
       await updateDoc(docRef, statusChangeData);
       setApplications((prev) =>
@@ -236,7 +236,9 @@ const TeacherApplications = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500">Total</p>
-                    <p className="text-2xl font-bold text-gray-900">{applications.length}</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {applications.length}
+                    </p>
                   </div>
                   <FiUser className="w-8 h-8 text-blue-500 opacity-50" />
                 </div>
@@ -246,7 +248,10 @@ const TeacherApplications = () => {
                   <div>
                     <p className="text-sm text-gray-500">Pending</p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {applications.filter((a) => a.status === "pending").length}
+                      {
+                        applications.filter((a) => a.status === "pending")
+                          .length
+                      }
                     </p>
                   </div>
                   <FiCalendar className="w-8 h-8 text-yellow-500 opacity-50" />
@@ -257,7 +262,10 @@ const TeacherApplications = () => {
                   <div>
                     <p className="text-sm text-gray-500">Contacted</p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {applications.filter((a) => a.status === "contacted").length}
+                      {
+                        applications.filter((a) => a.status === "contacted")
+                          .length
+                      }
                     </p>
                   </div>
                   <FiPhone className="w-8 h-8 text-purple-500 opacity-50" />
@@ -279,7 +287,10 @@ const TeacherApplications = () => {
                   <div>
                     <p className="text-sm text-gray-500">Rejected</p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {applications.filter((a) => a.status === "rejected").length}
+                      {
+                        applications.filter((a) => a.status === "rejected")
+                          .length
+                      }
                     </p>
                   </div>
                   <FiBriefcase className="w-8 h-8 text-red-500 opacity-50" />
@@ -343,10 +354,13 @@ const TeacherApplications = () => {
 
               {/* Results count */}
               <div className="mt-3 text-sm text-gray-500">
-                Showing {paginatedApplications.length} of {filteredApplications.length}{" "}
-                applications
+                Showing {paginatedApplications.length} of{" "}
+                {filteredApplications.length} applications
                 {filteredApplications.length !== applications.length && (
-                  <span className="text-gray-400"> (filtered from {applications.length} total)</span>
+                  <span className="text-gray-400">
+                    {" "}
+                    (filtered from {applications.length} total)
+                  </span>
                 )}
               </div>
             </div>
@@ -627,10 +641,30 @@ const TeacherApplications = () => {
                             <div className="mt-3 pt-3 border-t border-gray-100">
                               <p className="text-xs text-gray-500 flex items-center gap-1">
                                 <FiCalendar className="w-3 h-3" />
-                                Last status change: <span className="font-medium text-gray-700">{application.lastStatusChange.changedBy}</span> → <span className="font-medium text-blue-600">{application.lastStatusChange.newStatus?.charAt(0).toUpperCase() + application.lastStatusChange.newStatus?.slice(1)}</span>
+                                Last status change:{" "}
+                                <span className="font-medium text-gray-700">
+                                  {application.lastStatusChange.changedBy}
+                                </span>{" "}
+                                →{" "}
+                                <span className="font-medium text-blue-600">
+                                  {application.lastStatusChange.newStatus
+                                    ?.charAt(0)
+                                    .toUpperCase() +
+                                    application.lastStatusChange.newStatus?.slice(
+                                      1,
+                                    )}
+                                </span>
                                 {application.lastStatusChange.changedAt && (
                                   <span className="text-gray-400 ml-1">
-                                    ({formatDate(application.lastStatusChange.changedAt?.toDate ? application.lastStatusChange.changedAt.toDate() : application.lastStatusChange.changedAt)})
+                                    (
+                                    {formatDate(
+                                      application.lastStatusChange.changedAt
+                                        ?.toDate
+                                        ? application.lastStatusChange.changedAt.toDate()
+                                        : application.lastStatusChange
+                                            .changedAt,
+                                    )}
+                                    )
                                   </span>
                                 )}
                               </p>
@@ -653,14 +687,16 @@ const TeacherApplications = () => {
                   </p>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                       className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <FiChevronLeft className="w-4 h-4" />
                       Previous
                     </button>
-                    
+
                     {/* Page Numbers */}
                     <div className="hidden sm:flex items-center gap-1">
                       {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -690,7 +726,9 @@ const TeacherApplications = () => {
                     </div>
 
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                       className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >

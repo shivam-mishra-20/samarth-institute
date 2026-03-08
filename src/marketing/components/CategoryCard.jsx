@@ -3,7 +3,17 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const CategoryCard = ({ category }) => {
-  const { title, subtitle, tags, subjects, description, link, icon: IconComponent, bgColor, accentColor } = category;
+  const {
+    title,
+    subtitle,
+    tags,
+    subjects,
+    description,
+    link,
+    icon: IconComponent,
+    bgColor,
+    accentColor,
+  } = category;
 
   // Background color classes - slightly darker for better visibility
   const getBgClass = (color) => {
@@ -146,14 +156,14 @@ const CategoryCard = ({ category }) => {
                 {title}
               </h3>
               {subtitle && (
-                <p className="text-sm text-gray-600 font-medium">
-                  {subtitle}
-                </p>
+                <p className="text-sm text-gray-600 font-medium">{subtitle}</p>
               )}
             </div>
             {/* Icon from Lucide */}
             {IconComponent && (
-              <div className={`w-12 h-12 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm group-hover:shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ${iconColorClass} shrink-0 ml-3`}>
+              <div
+                className={`w-12 h-12 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm group-hover:shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ${iconColorClass} shrink-0 ml-3`}
+              >
                 <IconComponent className="w-6 h-6" strokeWidth={1.5} />
               </div>
             )}
@@ -168,23 +178,26 @@ const CategoryCard = ({ category }) => {
 
           {/* Tags with staggered animation */}
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {tags && tags.map((tag, idx) => (
-              <span
-                key={idx}
-                className={`inline-flex items-center px-2.5 py-1 text-xs font-medium text-gray-700 bg-white/90 border border-gray-200 rounded-full transition-all duration-300 ${tagHoverClass} group-hover:shadow-sm group-hover:-translate-y-0.5`}
-                style={{
-                  transitionDelay: `${idx * 50}ms`,
-                }}
-              >
-                {tag}
-              </span>
-            ))}
+            {tags &&
+              tags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  className={`inline-flex items-center px-2.5 py-1 text-xs font-medium text-gray-700 bg-white/90 border border-gray-200 rounded-full transition-all duration-300 ${tagHoverClass} group-hover:shadow-sm group-hover:-translate-y-0.5`}
+                  style={{
+                    transitionDelay: `${idx * 50}ms`,
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
           </div>
 
           {/* Subjects */}
           {subjects && subjects.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-semibold text-gray-500 mb-1.5">Subjects Covered:</p>
+              <p className="text-xs font-semibold text-gray-500 mb-1.5">
+                Subjects Covered:
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {subjects.map((subject, idx) => (
                   <span
@@ -227,7 +240,7 @@ const CategoryCard = ({ category }) => {
       </div>
 
       {/* Animation keyframes */}
-      <style jsx>{`
+      <style>{`
         @keyframes float-up {
           0%,
           100% {
