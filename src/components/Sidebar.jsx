@@ -9,7 +9,7 @@ const Sidebar = () => {
     useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [hoveredItem, setHoveredItem] = useState(null);
   // Mobile: drawer open/closed
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -432,11 +432,11 @@ const Sidebar = () => {
 
       {/* ── Desktop sidebar (hidden on mobile) ── */}
       <motion.aside
-        initial="expanded"
+        initial="collapsed"
         animate={isCollapsed ? "collapsed" : "expanded"}
         variants={sidebarVariants}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="hidden md:block self-stretch bg-white shadow-lg overflow-hidden shrink-0"
+        className="hidden md:block self-stretch bg-white shadow-lg overflow-visible shrink-0 relative"
       >
         <div className="sticky top-28 h-[calc(100vh-7rem)] flex flex-col">
           {/* Toggle Button */}
