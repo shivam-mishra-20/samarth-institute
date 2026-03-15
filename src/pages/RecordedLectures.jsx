@@ -221,8 +221,8 @@ const RecordedLectures = () => {
     return (
       <>
         <Navbar />
-        <div className="flex bg-gray-50 min-h-screen">
-          <Sidebar />
+        <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+          <Sidebar mobileTopBarMode="inline" />
           <div className="flex-1 pt-28 py-6 px-4 flex items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
           </div>
@@ -235,25 +235,30 @@ const RecordedLectures = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="bg-white shadow rounded-lg mb-6">
-              <div className="px-4 py-5 sm:px-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl bg-linear-to-br from-blue-600 via-indigo-600 to-purple-600 mb-8">
+              <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-14 -left-10 h-32 w-32 rounded-full bg-cyan-300/30 blur-2xl" />
+              <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 ring-1 ring-white/25 text-xs font-semibold uppercase tracking-wide">
+                    Lecture Library
+                  </div>
+                  <h1 className="mt-4 text-2xl sm:text-3xl font-extrabold leading-tight">
                     Recorded Lectures
                   </h1>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Manage video lectures for students
+                  <p className="mt-2 text-sm sm:text-base text-white/90">
+                    Manage and publish video lectures for students.
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => navigate(-1)}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+                    className="px-4 py-2 rounded-lg bg-white/15 text-white ring-1 ring-white/35 hover:bg-white/25 transition-colors"
                   >
                     ← Back
                   </button>
@@ -263,14 +268,14 @@ const RecordedLectures = () => {
                         resetForm();
                         setShowModal(true);
                       }}
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                      className="px-4 py-2 rounded-lg bg-white text-indigo-700 font-semibold hover:bg-indigo-50 transition-colors"
                     >
                       + Add Lecture
                     </button>
                   )}
                 </div>
               </div>
-            </div>
+            </section>
 
             {/* Messages */}
             {error && (
@@ -785,3 +790,4 @@ const RecordedLectures = () => {
 };
 
 export default RecordedLectures;
+

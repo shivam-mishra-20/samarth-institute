@@ -192,62 +192,70 @@ const Announcements = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-8xl mx-auto">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
 
             {/* ── Header ── */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <svg className="w-7 h-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                  </svg>
-                  Announcements
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Stay up-to-date with exam alerts, holidays, results, and more.
-                </p>
-              </div>
-
-              {/* Notification Permission Button */}
-              {permission !== "granted" && (
-                <button
-                  onClick={requestPermissionAndGetToken}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-all shadow-sm"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                  Enable Push Notifications
-                </button>
-              )}
-              {permission === "granted" && (
-                <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded-xl">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Push Notifications Active
+            <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl bg-linear-to-br from-indigo-600 via-violet-600 to-purple-600 mb-8">
+              <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-14 -left-10 h-32 w-32 rounded-full bg-fuchsia-300/30 blur-2xl" />
+              <div className="relative flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 ring-1 ring-white/25 text-xs font-semibold uppercase tracking-wide">
+                    Live Updates
+                  </div>
+                  <h1 className="mt-4 text-2xl sm:text-3xl font-extrabold leading-tight flex items-center gap-2">
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                    </svg>
+                    Announcements
+                  </h1>
+                  <p className="mt-2 text-sm sm:text-base text-white/90 max-w-2xl">
+                    Stay up-to-date with exam alerts, holidays, results, and more.
+                  </p>
                 </div>
-              )}
-              <button
-                onClick={() => setRefreshKey((k) => k + 1)}
-                disabled={loading}
-                className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-all"
-                title="Refresh announcements"
-              >
-                <svg
-                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Refresh
-              </button>
-            </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {permission !== "granted" && (
+                    <button
+                      onClick={requestPermissionAndGetToken}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-indigo-700 text-sm font-semibold hover:bg-indigo-50 transition-all shadow-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      </svg>
+                      Enable Push Notifications
+                    </button>
+                  )}
+                  {permission === "granted" && (
+                    <div className="flex items-center gap-2 text-sm text-white bg-white/15 px-3 py-2 rounded-xl ring-1 ring-white/25">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Push Notifications Active
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setRefreshKey((k) => k + 1)}
+                    disabled={loading}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm bg-white/15 ring-1 ring-white/25 text-white hover:bg-white/25 disabled:opacity-50 transition-all"
+                    title="Refresh announcements"
+                  >
+                    <svg
+                      className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            </section>
 
             {/* ── Type Summary Strip ── */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
@@ -508,3 +516,4 @@ const Announcements = () => {
 };
 
 export default Announcements;
+

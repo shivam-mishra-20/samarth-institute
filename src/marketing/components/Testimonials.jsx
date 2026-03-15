@@ -106,7 +106,7 @@ const Testimonials = () => {
             </h2>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
               We are proud to have received a stellar rating of 4.9 out of 5
-              from 129 reviews on Google! These reviews are a testament to the
+              from 230+ reviews on Google! These reviews are a testament to the
               quality education and exceptional services we provide at Samarth
               Institute.
             </p>

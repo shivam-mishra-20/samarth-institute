@@ -16,6 +16,11 @@ import {
 import { db } from "../config/firebase.config";
 import { USER_ROLES, ROLE_NAMES } from "../constants/roles";
 import { classOptions } from "../data/subjectsData";
+import {
+  getBatchLabelForClass,
+  isBatchRequiredForClass,
+  normalizeBatchForClass,
+} from "../utils/classBatchPolicy";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
@@ -87,6 +92,7 @@ const FeeManagement = () => {
   const [success, setSuccess] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const filterBatchRequired = isBatchRequiredForClass(filterClass);
 
   useEffect(() => {
     if (!isAdmin) {
@@ -104,6 +110,12 @@ const FeeManagement = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [filterClass, filterBatch, filterStatus, searchName]);
+
+  useEffect(() => {
+    if (!isBatchRequiredForClass(filterClass)) {
+      setFilterBatch("");
+    }
+  }, [filterClass]);
 
   const fetchData = async () => {
     try {
@@ -182,7 +194,8 @@ const FeeManagement = () => {
   const getFilteredStudents = () => {
     return getStudentsWithFeeInfo().filter((s) => {
       if (filterClass && s.class !== filterClass) return false;
-      if (filterBatch && s.batch !== filterBatch) return false;
+      if (filterBatchRequired && filterBatch && s.batch !== filterBatch)
+        return false;
       if (filterStatus && s.feeStatus !== filterStatus) return false;
       if (
         searchName &&
@@ -206,7 +219,10 @@ const FeeManagement = () => {
         studentId: selectedStudent.id,
         studentName: selectedStudent.name,
         studentClass: selectedStudent.class,
-        studentBatch: selectedStudent.batch,
+        studentBatch: normalizeBatchForClass(
+          selectedStudent.class,
+          selectedStudent.batch,
+        ),
         customUid: selectedStudent.customUid,
         totalAmount: parseFloat(feeForm.totalAmount),
         dueDate: feeForm.dueDate,
@@ -353,7 +369,7 @@ const FeeManagement = () => {
       "Student UID": s.customUid || "N/A",
       Name: s.name || "N/A",
       Class: s.class || "N/A",
-      Batch: s.batch || "N/A",
+      Batch: isBatchRequiredForClass(s.class) ? s.batch || "N/A" : "No Batch",
       "Total Due (₹)": s.totalDue,
       "Total Paid (₹)": s.totalPaid,
       "Balance (₹)": s.balance,
@@ -406,9 +422,9 @@ const FeeManagement = () => {
     return (
       <>
         <Navbar />
-        <div className="flex bg-gray-50 min-h-screen">
-          <Sidebar />
-          <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+          <Sidebar mobileTopBarMode="inline" />
+          <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <p className="text-gray-600">Loading fee records...</p>
           </div>
         </div>
@@ -428,9 +444,9 @@ const FeeManagement = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="bg-white shadow rounded-lg mb-6">
@@ -570,14 +586,19 @@ const FeeManagement = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Batch
+                    {getBatchLabelForClass(filterClass)}
                   </label>
                   <select
                     value={filterBatch}
                     onChange={(e) => setFilterBatch(e.target.value)}
+                    disabled={!filterBatchRequired}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   >
-                    <option value="">All Batches</option>
+                    <option value="">
+                      {filterBatchRequired
+                        ? "All Batches"
+                        : "Not required for this class"}
+                    </option>
                     {availableBatches.map((batch) => (
                       <option key={batch} value={batch}>
                         {batch}
@@ -634,6 +655,7 @@ const FeeManagement = () => {
 
             {/* Students Table */}
             <div className="bg-white shadow rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -684,7 +706,7 @@ const FeeManagement = () => {
                           </div>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {student.class} | {student.batch}
+                          {student.class} | {isBatchRequiredForClass(student.class) ? (student.batch || "N/A") : "No Batch"}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-right font-medium">
                           {student.totalDue > 0
@@ -720,7 +742,8 @@ const FeeManagement = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-right text-sm">
+                        <td className="px-4 py-4 text-right text-sm">
+                          <div className="flex flex-col sm:flex-row sm:justify-end gap-1 sm:gap-0">
                           <button
                             onClick={() => {
                               setSelectedStudent(student);
@@ -747,7 +770,7 @@ const FeeManagement = () => {
                               }
                               setShowFeeModal(true);
                             }}
-                            className="text-indigo-600 hover:text-indigo-900 mr-3"
+                            className="text-indigo-600 hover:text-indigo-900 sm:mr-3 whitespace-nowrap"
                           >
                             {student.feeRecord ? "Edit Fee" : "Set Fee"}
                           </button>
@@ -766,7 +789,7 @@ const FeeManagement = () => {
                                 });
                                 setShowPaymentModal(true);
                               }}
-                              className="text-green-600 hover:text-green-900 mr-3"
+                              className="text-green-600 hover:text-green-900 sm:mr-3 whitespace-nowrap"
                             >
                               + Payment
                             </button>
@@ -777,17 +800,19 @@ const FeeManagement = () => {
                                 setSelectedFeeRecord(student.feeRecord);
                                 setShowHistoryModal(true);
                               }}
-                              className="text-blue-600 hover:text-blue-900"
+                              className="text-blue-600 hover:text-blue-900 whitespace-nowrap"
                             >
                               History
                             </button>
                           )}
+                          </div>
                         </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
 
             <Pagination
@@ -802,8 +827,8 @@ const FeeManagement = () => {
 
         {/* Set/Edit Fee Modal */}
         {showFeeModal && selectedStudent && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-10 animate-fadeIn">
-            <div className="relative mx-4 p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-4 sm:pt-10 animate-fadeIn">
+            <div className="relative mx-4 p-5 sm:p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp mb-4">
               <button
                 onClick={() => {
                   setShowFeeModal(false);
@@ -947,8 +972,8 @@ const FeeManagement = () => {
 
         {/* Add Payment Modal */}
         {showPaymentModal && selectedFeeRecord && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-10 animate-fadeIn">
-            <div className="relative mx-4 p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-4 sm:pt-10 animate-fadeIn">
+            <div className="relative mx-4 p-5 sm:p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp mb-4">
               <button
                 onClick={() => {
                   setShowPaymentModal(false);
@@ -1146,8 +1171,8 @@ const FeeManagement = () => {
 
         {/* Payment History Modal */}
         {showHistoryModal && selectedFeeRecord && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-6 animate-fadeIn">
-            <div className="relative mx-4 p-6 w-full max-w-2xl shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-4 sm:pt-6 animate-fadeIn">
+            <div className="relative mx-2 sm:mx-4 p-4 sm:p-6 w-full max-w-2xl shadow-2xl rounded-2xl bg-white border border-gray-100 animate-slideUp mb-4">
               <button
                 onClick={() => {
                   setShowHistoryModal(false);
@@ -1280,7 +1305,7 @@ const FeeManagement = () => {
                             <td className="px-4 py-3 whitespace-nowrap text-sm capitalize">
                               {payment.paymentMethod?.replace("_", " ")}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono text-xs">
+                            <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 font-mono">
                               {payment.receiptNumber}
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-500 max-w-xs truncate">
@@ -1327,3 +1352,4 @@ const FeeManagement = () => {
 };
 
 export default FeeManagement;
+

@@ -47,6 +47,12 @@ import SetupUsers from "./pages/SetupUsers";
 import Unauthorized from "./pages/Unauthorized";
 import Announcements from "./pages/Announcements";
 import ManageAnnouncements from "./pages/ManageAnnouncements";
+import SchoolUpdates from "./pages/SchoolUpdates";
+import Assignments from "./pages/Assignments";
+import Homework from "./pages/Homework";
+import Exams from "./pages/Exams";
+import Timetable from "./pages/Timetable";
+import Communication from "./pages/Communication";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { USER_ROLES } from "./constants/roles";
 
@@ -250,7 +256,9 @@ function App() {
           <Route
             path="/student-fees"
             element={
-              <ProtectedRoute allowedRoles={[USER_ROLES.PARENT]}>
+              <ProtectedRoute
+                allowedRoles={[USER_ROLES.PARENT, USER_ROLES.STUDENT]}
+              >
                 <StudentFees />
               </ProtectedRoute>
             }
@@ -300,6 +308,96 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
                 <ManageAnnouncements />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/school-updates"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <SchoolUpdates />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/assignments"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <Assignments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/homework"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <Homework />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/exams"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <Exams />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/timetable"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <Timetable />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/communication"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.STUDENT,
+                  USER_ROLES.TEACHER,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.PARENT,
+                ]}
+              >
+                <Communication />
               </ProtectedRoute>
             }
           />

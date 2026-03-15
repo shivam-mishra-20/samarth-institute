@@ -157,9 +157,9 @@ const StudentFeedback = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="bg-white shadow rounded-lg mb-6">
@@ -316,3 +316,4 @@ const StudentFeedback = () => {
 };
 
 export default StudentFeedback;
+

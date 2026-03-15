@@ -13,11 +13,35 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db, secondaryAuth } from "../config/firebase.config";
 import { USER_ROLES, ROLE_NAMES } from "../constants/roles";
 import { classOptions } from "../data/subjectsData";
+import {
+  getBatchLabelForClass,
+  isBatchRequiredForClass,
+  normalizeBatchForClass,
+} from "../utils/classBatchPolicy";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 import Pagination from "../components/Pagination";
 import * as XLSX from "xlsx";
+import { Select, Input, Tag } from "antd";
+
+const roleOptions = [
+  { label: ROLE_NAMES[USER_ROLES.STUDENT], value: USER_ROLES.STUDENT },
+  { label: ROLE_NAMES[USER_ROLES.PARENT], value: USER_ROLES.PARENT },
+  { label: ROLE_NAMES[USER_ROLES.TEACHER], value: USER_ROLES.TEACHER },
+  { label: ROLE_NAMES[USER_ROLES.ADMIN], value: USER_ROLES.ADMIN },
+];
+
+const classSelectOptions = classOptions.map((option) => ({
+  label: option.label,
+  value: option.value,
+}));
+
+const batchOptions = [
+  { label: "Batch A", value: "Batch A" },
+  { label: "Batch B", value: "Batch B" },
+  { label: "Batch C", value: "Batch C" },
+];
 
 const ManageUsers = () => {
   const { user, isAdmin } = useAuth();
@@ -60,6 +84,8 @@ const ManageUsers = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const newUserBatchRequired = isBatchRequiredForClass(newUser.class);
+  const editBatchRequired = isBatchRequiredForClass(editForm.class);
 
   useEffect(() => {
     fetchUsers();
@@ -183,8 +209,12 @@ const ManageUsers = () => {
     }
 
     if (newUser.role === USER_ROLES.STUDENT) {
-      if (!newUser.class || !newUser.batch) {
-        setError("Please select class and batch for student accounts");
+      if (!newUser.class || (newUserBatchRequired && !newUser.batch)) {
+        setError(
+          newUserBatchRequired
+            ? "Please select class and batch for student accounts"
+            : "Please select class for student accounts",
+        );
         return;
       }
       if (!newUser.customUid) {
@@ -269,7 +299,7 @@ const ManageUsers = () => {
         ...(newUser.role === USER_ROLES.STUDENT && {
           customUid: newUser.customUid,
           class: newUser.class,
-          batch: newUser.batch,
+          batch: normalizeBatchForClass(newUser.class, newUser.batch),
         }),
         ...(newUser.role === USER_ROLES.PARENT && {
           studentUid: newUser.studentUid,
@@ -415,7 +445,7 @@ const ManageUsers = () => {
 
       if (selectedUser.role === USER_ROLES.STUDENT) {
         updateData.class = editForm.class;
-        updateData.batch = editForm.batch;
+        updateData.batch = normalizeBatchForClass(editForm.class, editForm.batch);
         updateData.customUid = editForm.customUid;
 
         // Check if customUid changed - need to update document ID
@@ -473,9 +503,9 @@ const ManageUsers = () => {
     return (
       <>
         <Navbar />
-        <div className="flex bg-gray-50 min-h-screen">
-          <Sidebar />
-          <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+          <Sidebar mobileTopBarMode="inline" />
+          <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <p className="text-gray-600">Loading users...</p>
           </div>
         </div>
@@ -484,21 +514,36 @@ const ManageUsers = () => {
     );
   }
 
+  const filteredUsers = getFilteredUsers();
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  const roleColorMap = {
+    [USER_ROLES.STUDENT]: "blue",
+    [USER_ROLES.PARENT]: "purple",
+    [USER_ROLES.TEACHER]: "green",
+    [USER_ROLES.ADMIN]: "gold",
+  };
+
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="bg-white shadow rounded-lg mb-6">
-              <div className="px-4 py-5 sm:px-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="rounded-3xl bg-linear-to-r from-indigo-600 via-blue-600 to-cyan-500 text-white shadow-xl mb-6 overflow-hidden relative">
+              <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/15" />
+              <div className="px-5 py-6 sm:px-7 sm:py-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-100">Administration</p>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mt-1">
                     Manage Users
                   </h1>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-blue-100">
                     {isAdmin
                       ? "Create, edit, and manage user accounts"
                       : "View user accounts"}
@@ -507,19 +552,38 @@ const ManageUsers = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => navigate(-1)}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+                    className="px-4 py-2 bg-white/15 text-white rounded-lg hover:bg-white/25 transition-colors"
                   >
                     ← Back
                   </button>
                   {isAdmin && (
                     <button
                       onClick={() => setShowCreateModal(true)}
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                      className="px-4 py-2 bg-white text-indigo-700 font-semibold rounded-lg hover:bg-indigo-50 transition-colors"
                     >
                       + Create User
                     </button>
                   )}
                 </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs uppercase tracking-wide text-slate-500">Total Users</p>
+                <p className="text-2xl font-bold text-slate-800 mt-1">{users.length}</p>
+              </div>
+              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
+                <p className="text-xs uppercase tracking-wide text-blue-600">Students</p>
+                <p className="text-2xl font-bold text-blue-700 mt-1">{users.filter((u) => u.role === USER_ROLES.STUDENT).length}</p>
+              </div>
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
+                <p className="text-xs uppercase tracking-wide text-emerald-700">Teachers</p>
+                <p className="text-2xl font-bold text-emerald-700 mt-1">{users.filter((u) => u.role === USER_ROLES.TEACHER).length}</p>
+              </div>
+              <div className="rounded-2xl border border-purple-200 bg-purple-50 p-4 shadow-sm">
+                <p className="text-xs uppercase tracking-wide text-purple-700">Parents</p>
+                <p className="text-2xl font-bold text-purple-700 mt-1">{users.filter((u) => u.role === USER_ROLES.PARENT).length}</p>
               </div>
             </div>
 
@@ -553,14 +617,14 @@ const ManageUsers = () => {
             )}
 
             {/* Filters & Search */}
-            <div className="bg-white shadow rounded-lg mb-6 p-6">
+            <div className="bg-white shadow rounded-2xl border border-slate-200 mb-6 p-5 sm:p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-slate-900">
                   Filters & Export
                 </h3>
                 <button
                   onClick={handleExportToExcel}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -584,18 +648,15 @@ const ManageUsers = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Filter by Class
                   </label>
-                  <select
+                  <Select
                     value={filterClass}
-                    onChange={(e) => setFilterClass(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="">All Classes</option>
-                    {classOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFilterClass(value || "")}
+                    className="w-full"
+                    size="large"
+                    allowClear
+                    placeholder="All Classes"
+                    options={classSelectOptions}
+                  />
                 </div>
 
                 {/* Role Filter */}
@@ -603,25 +664,15 @@ const ManageUsers = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Filter by Role
                   </label>
-                  <select
+                  <Select
                     value={filterRole}
-                    onChange={(e) => setFilterRole(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="">All Roles</option>
-                    <option value={USER_ROLES.STUDENT}>
-                      {ROLE_NAMES[USER_ROLES.STUDENT]}
-                    </option>
-                    <option value={USER_ROLES.PARENT}>
-                      {ROLE_NAMES[USER_ROLES.PARENT]}
-                    </option>
-                    <option value={USER_ROLES.TEACHER}>
-                      {ROLE_NAMES[USER_ROLES.TEACHER]}
-                    </option>
-                    <option value={USER_ROLES.ADMIN}>
-                      {ROLE_NAMES[USER_ROLES.ADMIN]}
-                    </option>
-                  </select>
+                    onChange={(value) => setFilterRole(value || "")}
+                    className="w-full"
+                    size="large"
+                    allowClear
+                    placeholder="All Roles"
+                    options={roleOptions}
+                  />
                 </div>
 
                 {/* Batch Filter */}
@@ -629,18 +680,18 @@ const ManageUsers = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Filter by Batch
                   </label>
-                  <select
+                  <Select
                     value={filterBatch}
-                    onChange={(e) => setFilterBatch(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="">All Batches</option>
-                    {availableBatches.map((batch) => (
-                      <option key={batch} value={batch}>
-                        {batch}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFilterBatch(value || "")}
+                    className="w-full"
+                    size="large"
+                    allowClear
+                    placeholder="All Batches"
+                    options={availableBatches.map((batch) => ({
+                      label: batch,
+                      value: batch,
+                    }))}
+                  />
                 </div>
 
                 {/* Search by Name */}
@@ -649,15 +700,15 @@ const ManageUsers = () => {
                     Search by Name
                   </label>
                   <div className="relative">
-                    <input
-                      type="text"
+                    <Input
                       value={searchName}
                       onChange={(e) => setSearchName(e.target.value)}
                       placeholder="Search by name"
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      size="large"
+                      className="w-full"
                     />
                     <svg
-                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                      className="absolute left-3 top-3 h-5 w-5 text-gray-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -691,8 +742,8 @@ const ManageUsers = () => {
               )}
             </div>
 
-            {/* Users Table */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
+            {/* Users Table - Desktop */}
+            <div className="hidden md:block bg-white shadow rounded-2xl border border-slate-200 overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -716,29 +767,14 @@ const ManageUsers = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {(() => {
-                    const filteredUsers = getFilteredUsers();
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    const paginatedUsers = filteredUsers.slice(
-                      startIndex,
-                      endIndex,
-                    );
-
-                    if (filteredUsers.length === 0) {
-                      return (
-                        <tr>
-                          <td
-                            colSpan="5"
-                            className="px-6 py-8 text-center text-gray-500"
-                          >
-                            No users found matching the selected filters.
-                          </td>
-                        </tr>
-                      );
-                    }
-
-                    return paginatedUsers.map((u) => (
+                  {filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                        No users found matching the selected filters.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedUsers.map((u) => (
                       <tr key={u.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
@@ -754,31 +790,17 @@ const ManageUsers = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {isAdmin ? (
-                            <select
+                            <Select
                               value={u.role}
-                              onChange={(e) =>
-                                handleUpdateRole(u.id, e.target.value)
-                              }
-                              className="text-sm border border-gray-300 rounded px-2 py-1"
+                              onChange={(value) => handleUpdateRole(u.id, value)}
+                              options={roleOptions}
+                              className="min-w-40"
                               disabled={u.id === user.uid}
-                            >
-                              <option value={USER_ROLES.STUDENT}>
-                                {ROLE_NAMES[USER_ROLES.STUDENT]}
-                              </option>
-                              <option value={USER_ROLES.PARENT}>
-                                {ROLE_NAMES[USER_ROLES.PARENT]}
-                              </option>
-                              <option value={USER_ROLES.TEACHER}>
-                                {ROLE_NAMES[USER_ROLES.TEACHER]}
-                              </option>
-                              <option value={USER_ROLES.ADMIN}>
-                                {ROLE_NAMES[USER_ROLES.ADMIN]}
-                              </option>
-                            </select>
+                            />
                           ) : (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            <Tag color={roleColorMap[u.role]}>
                               {ROLE_NAMES[u.role]}
-                            </span>
+                            </Tag>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -789,7 +811,7 @@ const ManageUsers = () => {
                                 {u.customUid || "N/A"}
                               </div>
                               <div className="text-xs text-gray-500 mt-1">
-                                {u.class || "N/A"} | {u.batch || "N/A"}
+                                {u.class || "N/A"} | {isBatchRequiredForClass(u.class) ? (u.batch || "N/A") : "No Batch"}
                               </div>
                             </div>
                           ) : u.role === USER_ROLES.PARENT ? (
@@ -849,17 +871,91 @@ const ManageUsers = () => {
                           </td>
                         )}
                       </tr>
-                    ));
-                  })()}
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* Users Cards - Mobile */}
+            <div className="md:hidden space-y-3">
+              {filteredUsers.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center text-slate-500">
+                  No users found matching the selected filters.
+                </div>
+              ) : (
+                paginatedUsers.map((u) => (
+                  <div key={u.id} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-base font-semibold text-slate-900">{u.name || "N/A"}</p>
+                        <p className="text-sm text-slate-500 break-all">{u.email}</p>
+                      </div>
+                      <Tag color={roleColorMap[u.role]}>{ROLE_NAMES[u.role]}</Tag>
+                    </div>
+
+                    <div className="mt-3 text-sm text-slate-600 space-y-1">
+                      {u.role === USER_ROLES.STUDENT ? (
+                        <>
+                          <p><span className="font-medium">UID:</span> <span className="font-mono">{u.customUid || "N/A"}</span></p>
+                          <p><span className="font-medium">Class:</span> {u.class || "N/A"} | {isBatchRequiredForClass(u.class) ? (u.batch || "N/A") : "No Batch"}</p>
+                        </>
+                      ) : u.role === USER_ROLES.PARENT ? (
+                        <p><span className="font-medium">Linked Student UID:</span> <span className="font-mono">{u.studentUid || "Not linked"}</span></p>
+                      ) : (
+                        <p className="text-slate-400">No class/batch info</p>
+                      )}
+                      <p><span className="font-medium">Created:</span> {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "N/A"}</p>
+                    </div>
+
+                    {isAdmin && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {(u.role === USER_ROLES.STUDENT || u.role === USER_ROLES.PARENT) && (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(u);
+                              setEditForm({
+                                class: u.class || "",
+                                batch: u.batch || "",
+                                customUid: u.customUid || "",
+                                studentUid: u.studentUid || "",
+                              });
+                              setShowEditModal(true);
+                            }}
+                            className="px-3 py-1.5 text-sm rounded-lg bg-indigo-50 text-indigo-700"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            setSelectedUser(u);
+                            setShowResetPasswordModal(true);
+                          }}
+                          className="px-3 py-1.5 text-sm rounded-lg bg-orange-50 text-orange-700"
+                        >
+                          Reset
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(u.id)}
+                          className="px-3 py-1.5 text-sm rounded-lg bg-red-50 text-red-700"
+                          disabled={u.id === user.uid}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
             <Pagination
               currentPage={currentPage}
-              totalPages={Math.ceil(getFilteredUsers().length / itemsPerPage)}
+              totalPages={totalPages}
               onPageChange={setCurrentPage}
               itemsPerPage={itemsPerPage}
-              totalItems={getFilteredUsers().length}
+              totalItems={filteredUsers.length}
             />
           </div>
         </div>
@@ -966,26 +1062,13 @@ const ManageUsers = () => {
                     <label className="block text-sm font-medium text-gray-700">
                       Role
                     </label>
-                    <select
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    <Select
+                      className="mt-1 block w-full"
+                      size="large"
                       value={newUser.role}
-                      onChange={(e) =>
-                        setNewUser({ ...newUser, role: e.target.value })
-                      }
-                    >
-                      <option value={USER_ROLES.STUDENT}>
-                        {ROLE_NAMES[USER_ROLES.STUDENT]}
-                      </option>
-                      <option value={USER_ROLES.PARENT}>
-                        {ROLE_NAMES[USER_ROLES.PARENT]}
-                      </option>
-                      <option value={USER_ROLES.TEACHER}>
-                        {ROLE_NAMES[USER_ROLES.TEACHER]}
-                      </option>
-                      <option value={USER_ROLES.ADMIN}>
-                        {ROLE_NAMES[USER_ROLES.ADMIN]}
-                      </option>
-                    </select>
+                      options={roleOptions}
+                      onChange={(value) => setNewUser({ ...newUser, role: value })}
+                    />
                   </div>
                   {newUser.role === USER_ROLES.STUDENT && (
                     <>
@@ -1017,43 +1100,40 @@ const ManageUsers = () => {
                         <label className="block text-sm font-medium text-gray-700">
                           Class
                         </label>
-                        <select
+                        <Select
                           required={newUser.role === USER_ROLES.STUDENT}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                          className="mt-1 block w-full"
+                          size="large"
                           value={newUser.class}
-                          onChange={(e) =>
-                            setNewUser({ ...newUser, class: e.target.value })
+                          options={classSelectOptions}
+                          onChange={(value) =>
+                            setNewUser({
+                              ...newUser,
+                              class: value || "",
+                              batch: isBatchRequiredForClass(value || "")
+                                ? newUser.batch
+                                : "",
+                            })
                           }
-                        >
-                          <option value="">Select Class</option>
-                          <option value="Class 5">Class 5</option>
-                          <option value="Class 6">Class 6</option>
-                          <option value="Class 7">Class 7</option>
-                          <option value="Class 8">Class 8</option>
-                          <option value="Class 9">Class 9</option>
-                          <option value="Class 10">Class 10</option>
-                          <option value="Class 11">Class 11</option>
-                          <option value="Class 12">Class 12</option>
-                        </select>
+                        />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Batch
-                        </label>
-                        <select
-                          required={newUser.role === USER_ROLES.STUDENT}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          value={newUser.batch}
-                          onChange={(e) =>
-                            setNewUser({ ...newUser, batch: e.target.value })
-                          }
-                        >
-                          <option value="">Select Batch</option>
-                          <option value="Batch A">Batch A</option>
-                          <option value="Batch B">Batch B</option>
-                          <option value="Batch C">Batch C</option>
-                        </select>
-                      </div>
+                      {newUserBatchRequired && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            {getBatchLabelForClass(newUser.class)}
+                          </label>
+                          <Select
+                            required={newUser.role === USER_ROLES.STUDENT && newUserBatchRequired}
+                            className="mt-1 block w-full"
+                            size="large"
+                            value={newUser.batch}
+                            options={batchOptions}
+                            onChange={(value) =>
+                              setNewUser({ ...newUser, batch: value || "" })
+                            }
+                          />
+                        </div>
+                      )}
                     </>
                   )}
                   {newUser.role === USER_ROLES.PARENT && (
@@ -1206,41 +1286,41 @@ const ManageUsers = () => {
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                           Class
                         </label>
-                        <select
+                        <Select
                           value={editForm.class}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, class: e.target.value })
+                          onChange={(value) =>
+                            setEditForm({
+                              ...editForm,
+                              class: value || "",
+                              batch: isBatchRequiredForClass(value || "")
+                                ? editForm.batch
+                                : "",
+                            })
                           }
-                          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          className="w-full"
+                          size="large"
+                          options={classSelectOptions}
                           required
-                        >
-                          <option value="">Select Class</option>
-                          {[5, 6, 7, 8, 9, 10, 11, 12].map((cls) => (
-                            <option key={cls} value={`Class ${cls}`}>
-                              Class {cls}
-                            </option>
-                          ))}
-                        </select>
+                        />
                       </div>
 
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Batch
-                        </label>
-                        <select
-                          value={editForm.batch}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, batch: e.target.value })
-                          }
-                          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          required
-                        >
-                          <option value="">Select Batch</option>
-                          <option value="Batch A">Batch A</option>
-                          <option value="Batch B">Batch B</option>
-                          <option value="Batch C">Batch C</option>
-                        </select>
-                      </div>
+                      {editBatchRequired && (
+                        <div className="mb-4">
+                          <label className="block text-gray-700 text-sm font-bold mb-2">
+                            {getBatchLabelForClass(editForm.class)}
+                          </label>
+                          <Select
+                            value={editForm.batch}
+                            onChange={(value) =>
+                              setEditForm({ ...editForm, batch: value || "" })
+                            }
+                            className="w-full"
+                            size="large"
+                            options={batchOptions}
+                            required
+                          />
+                        </div>
+                      )}
                     </>
                   )}
 

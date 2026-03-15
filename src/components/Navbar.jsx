@@ -8,8 +8,10 @@ import {
   FiChevronRight,
   FiPhone,
 } from "react-icons/fi";
-import { Dropdown } from "antd";
+import { Dropdown, notification as antNotification } from "antd";
+import { BellOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext";
+import { useFCMToken } from "../hooks/useFCMToken";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +19,31 @@ const Navbar = () => {
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState(null);
   const location = useLocation();
   const { user, isStudent, isTeacher, logout } = useAuth();
+
+  // Global FCM registration + foreground notification toast for all authenticated users
+  const { foregroundNotification, clearForegroundNotification, permission, requestPermissionAndGetToken } = useFCMToken();
+
+  // Show Ant Design notification toast when a foreground FCM message arrives
+  useEffect(() => {
+    if (!foregroundNotification) return;
+    antNotification.open({
+      message: foregroundNotification.title,
+      description: foregroundNotification.body,
+      icon: <BellOutlined style={{ color: "#4F46E5" }} />,
+      duration: 6,
+      placement: "topRight",
+      onClose: clearForegroundNotification,
+    });
+  }, [foregroundNotification]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Silently request permission for logged-in users who haven't been asked yet
+  useEffect(() => {
+    if (user && permission === "default") {
+      // Delay slightly to avoid jarring the user on first page load
+      const t = setTimeout(() => requestPermissionAndGetToken(), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [user, permission]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle window resize to close mobile menu on desktop
   useEffect(() => {

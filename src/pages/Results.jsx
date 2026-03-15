@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import {
   collection,
   getDocs,
-  addDoc,
   query,
   where,
   orderBy,
@@ -17,6 +16,11 @@ import {
 import { db } from "../config/firebase.config";
 import { USER_ROLES } from "../constants/roles";
 import { subjectsByClass, classOptions, examTypes } from "../data/subjectsData";
+import {
+  getBatchLabelForClass,
+  isBatchRequiredForClass,
+  normalizeBatchForClass,
+} from "../utils/classBatchPolicy";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
@@ -78,7 +82,6 @@ const Results = () => {
   const [students, setStudents] = useState([]);
   const [recentResults, setRecentResults] = useState([]);
   const [availableClasses, setAvailableClasses] = useState([]);
-  const [availableBatches, setAvailableBatches] = useState([]);
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -90,6 +93,9 @@ const Results = () => {
   const [searchResultsPage, setSearchResultsPage] = useState(1);
   const [recentResultsPage, setRecentResultsPage] = useState(1);
   const itemsPerPage = 10;
+  const singleBatchRequired = isBatchRequiredForClass(selectedClass);
+  const bulkBatchRequired = isBatchRequiredForClass(bulkClass);
+  const searchBatchRequired = isBatchRequiredForClass(searchClass);
 
   // Fetch all unique classes and batches from student records
   useEffect(() => {
@@ -103,12 +109,9 @@ const Results = () => {
         const snapshot = await getDocs(q);
 
         const classesSet = new Set();
-        const batchesSet = new Set();
-
         snapshot.docs.forEach((doc) => {
           const data = doc.data();
           if (data.class) classesSet.add(data.class);
-          if (data.batch) batchesSet.add(data.batch);
         });
 
         // Convert class values to label format
@@ -125,14 +128,13 @@ const Results = () => {
         setAvailableClasses(
           classesArray.sort((a, b) => a.label.localeCompare(b.label)),
         );
-        setAvailableBatches(Array.from(batchesSet).sort());
       } catch (err) {
         console.error("Error fetching classes and batches:", err);
       }
     };
 
     fetchClassesAndBatches();
-  }, []);
+  }, [isStudent]);
 
   // Authorization check
   useEffect(() => {
@@ -151,12 +153,14 @@ const Results = () => {
       setStudentLoading(true);
       try {
         const resultsRef = collection(db, "results");
-        const q = query(
-          resultsRef,
+        const constraints = [
           where("studentName", "==", userData.name),
           where("class", "==", userData.class),
-          where("batch", "==", userData.batch),
-        );
+        ];
+        if (isBatchRequiredForClass(userData.class)) {
+          constraints.push(where("batch", "==", userData.batch || ""));
+        }
+        const q = query(resultsRef, ...constraints);
         const snapshot = await getDocs(q);
 
         const results = snapshot.docs.map((doc) => ({
@@ -219,12 +223,14 @@ const Results = () => {
 
         // Fetch results for linked student
         const resultsRef = collection(db, "results");
-        const q = query(
-          resultsRef,
+        const constraints = [
           where("studentName", "==", linkedStudent.name),
           where("class", "==", linkedStudent.class),
-          where("batch", "==", linkedStudent.batch),
-        );
+        ];
+        if (isBatchRequiredForClass(linkedStudent.class)) {
+          constraints.push(where("batch", "==", linkedStudent.batch || ""));
+        }
+        const q = query(resultsRef, ...constraints);
         const snapshot = await getDocs(q);
 
         const results = snapshot.docs.map((doc) => ({
@@ -272,16 +278,16 @@ const Results = () => {
 
   // Fetch students for selected class and batch
   useEffect(() => {
-    if (selectedClass && selectedBatch) {
+    if (selectedClass && (!singleBatchRequired || selectedBatch)) {
       fetchStudents(selectedClass, selectedBatch);
     }
-  }, [selectedClass, selectedBatch]);
+  }, [selectedClass, selectedBatch, singleBatchRequired]);
 
   useEffect(() => {
-    if (bulkClass && bulkBatch) {
+    if (bulkClass && (!bulkBatchRequired || bulkBatch)) {
       fetchStudents(bulkClass, bulkBatch, true);
     }
-  }, [bulkClass, bulkBatch]);
+  }, [bulkClass, bulkBatch, bulkBatchRequired]);
 
   // Fetch recent results on mount
   useEffect(() => {
@@ -293,6 +299,20 @@ const Results = () => {
     isBulk = false,
     isSearch = false,
   ) => {
+    if (!isBatchRequiredForClass(classValue)) {
+      if (isSearch) {
+        setSearchBatches([]);
+        setSearchBatch("");
+      } else if (isBulk) {
+        setBatches([]);
+        setBulkBatch("");
+      } else {
+        setBatches([]);
+        setSelectedBatch("");
+      }
+      return;
+    }
+
     try {
       const usersRef = collection(db, "users");
       const q = query(
@@ -324,12 +344,14 @@ const Results = () => {
   const fetchStudents = async (classValue, batch, isBulk = false) => {
     try {
       const usersRef = collection(db, "users");
-      const q = query(
-        usersRef,
+      const constraints = [
         where("role", "==", USER_ROLES.STUDENT),
         where("class", "==", classValue),
-        where("batch", "==", batch),
-      );
+      ];
+      if (isBatchRequiredForClass(classValue)) {
+        constraints.push(where("batch", "==", batch || ""));
+      }
+      const q = query(usersRef, ...constraints);
       const snapshot = await getDocs(q);
 
       const studentsList = snapshot.docs.map((doc) => ({
@@ -380,7 +402,7 @@ const Results = () => {
 
     if (
       !selectedClass ||
-      !selectedBatch ||
+      (singleBatchRequired && !selectedBatch) ||
       !selectedStudent ||
       !selectedSubject ||
       !examType ||
@@ -401,17 +423,19 @@ const Results = () => {
 
     try {
       const student = students.find((s) => s.id === selectedStudent);
+      const normalizedBatch = normalizeBatchForClass(selectedClass, selectedBatch);
+      const batchSegment = normalizedBatch || "nobatch";
 
       // Create custom document ID: name_class_batch_subject_date_examtype
       const sanitize = (str) =>
         str.replace(/\s+/g, "").replace(/[^a-zA-Z0-9]/g, "");
-      const customDocId = `${sanitize(student.name)}_${sanitize(selectedClass)}_${sanitize(selectedBatch)}_${sanitize(selectedSubject)}_${examDate}_${sanitize(examType)}`;
+      const customDocId = `${sanitize(student.name)}_${sanitize(selectedClass)}_${sanitize(batchSegment)}_${sanitize(selectedSubject)}_${examDate}_${sanitize(examType)}`;
 
       const resultData = {
         studentName: student.name,
         studentEmail: student.email,
         class: selectedClass,
-        batch: selectedBatch,
+        batch: normalizedBatch,
         subject: selectedSubject,
         examType: examType,
         marks: parseFloat(marks),
@@ -454,7 +478,7 @@ const Results = () => {
 
     if (
       !bulkClass ||
-      !bulkBatch ||
+      (bulkBatchRequired && !bulkBatch) ||
       !bulkSubject ||
       !bulkExamType ||
       !bulkMaxMarks ||
@@ -486,19 +510,21 @@ const Results = () => {
       const resultsToUpload = [];
       const sanitize = (str) =>
         str.replace(/\s+/g, "").replace(/[^a-zA-Z0-9]/g, "");
+      const normalizedBatch = normalizeBatchForClass(bulkClass, bulkBatch);
+      const batchSegment = normalizedBatch || "nobatch";
 
       for (const student of bulkStudents) {
         const studentMarks = bulkMarks[student.id];
 
         if (studentMarks !== "" && studentMarks !== null) {
           // Create custom document ID: name_class_batch_subject_date_examtype
-          const customDocId = `${sanitize(student.name)}_${sanitize(bulkClass)}_${sanitize(bulkBatch)}_${sanitize(bulkSubject)}_${bulkExamDate}_${sanitize(bulkExamType)}`;
+          const customDocId = `${sanitize(student.name)}_${sanitize(bulkClass)}_${sanitize(batchSegment)}_${sanitize(bulkSubject)}_${bulkExamDate}_${sanitize(bulkExamType)}`;
 
           const resultData = {
             studentName: student.name,
             studentEmail: student.email,
             class: bulkClass,
-            batch: bulkBatch,
+            batch: normalizedBatch,
             subject: bulkSubject,
             examType: bulkExamType,
             marks: parseFloat(studentMarks),
@@ -555,8 +581,12 @@ const Results = () => {
   };
 
   const handleSearchResults = async () => {
-    if (!searchClass || !searchBatch) {
-      setError("Please select both class and batch to search");
+    if (!searchClass || (searchBatchRequired && !searchBatch)) {
+      setError(
+        searchBatchRequired
+          ? "Please select both class and batch to search"
+          : "Please select class to search",
+      );
       return;
     }
 
@@ -565,11 +595,11 @@ const Results = () => {
 
     try {
       const resultsRef = collection(db, "results");
-      const q = query(
-        resultsRef,
-        where("class", "==", searchClass),
-        where("batch", "==", searchBatch),
-      );
+      const constraints = [where("class", "==", searchClass)];
+      if (searchBatchRequired) {
+        constraints.push(where("batch", "==", searchBatch || ""));
+      }
+      const q = query(resultsRef, ...constraints);
       const snapshot = await getDocs(q);
 
       let results = snapshot.docs.map((doc) => ({
@@ -822,20 +852,27 @@ const Results = () => {
     return (
       <>
         <Navbar />
-        <div className="flex bg-gray-50 min-h-screen">
-          <Sidebar />
-          <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+          <Sidebar mobileTopBarMode="inline" />
+          <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               {/* Header */}
-              <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {isParent ? "My Child's Results" : "My Results"}
-                </h1>
-                <p className="mt-2 text-sm text-gray-700">
-                  View all {isParent ? "your child's" : "your"} examination
-                  results
-                </p>
-              </div>
+              <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl bg-linear-to-br from-blue-600 via-indigo-600 to-violet-500 mb-8">
+                <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-14 -left-10 h-32 w-32 rounded-full bg-cyan-300/30 blur-2xl" />
+                <div className="relative">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 ring-1 ring-white/25 text-xs font-semibold uppercase tracking-wide">
+                    Student Performance
+                  </div>
+                  <h1 className="mt-4 text-2xl sm:text-3xl font-extrabold leading-tight">
+                    {isParent ? "My Child's Results" : "My Results"}
+                  </h1>
+                  <p className="mt-2 text-sm sm:text-base text-white/90 max-w-2xl">
+                    View all {isParent ? "your child's" : "your"} examination results
+                    with clear marks and percentage insights.
+                  </p>
+                </div>
+              </section>
 
               {/* Error Message */}
               {error && (
@@ -1123,19 +1160,27 @@ const Results = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">
-                Results Management
-              </h1>
-              <p className="mt-2 text-sm text-gray-700">
-                Upload and manage student results
-              </p>
-            </div>
+            <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl bg-linear-to-br from-blue-600 via-indigo-600 to-violet-500 mb-8">
+              <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-14 -left-10 h-32 w-32 rounded-full bg-cyan-300/30 blur-2xl" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 ring-1 ring-white/25 text-xs font-semibold uppercase tracking-wide">
+                  Academic Control Center
+                </div>
+                <h1 className="mt-4 text-2xl sm:text-3xl font-extrabold leading-tight">
+                  Results Management
+                </h1>
+                <p className="mt-2 text-sm sm:text-base text-white/90 max-w-2xl">
+                  Upload, edit, and organize student results with efficient workflows for
+                  exam type, subject, and class filtering.
+                </p>
+              </div>
+            </section>
 
             {/* Success/Error Messages */}
             {error && (
@@ -1190,7 +1235,7 @@ const Results = () => {
               {activeTab === "single" && (
                 <div className="p-6">
                   <form onSubmit={handleSingleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {/* Class Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1219,7 +1264,10 @@ const Results = () => {
                       {/* Batch Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Batch <span className="text-red-500">*</span>
+                          {getBatchLabelForClass(selectedClass)}
+                          {singleBatchRequired && (
+                            <span className="text-red-500">*</span>
+                          )}
                         </label>
                         <select
                           value={selectedBatch}
@@ -1228,10 +1276,14 @@ const Results = () => {
                             setSelectedStudent("");
                           }}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          disabled={!selectedClass}
-                          required
+                          disabled={!selectedClass || !singleBatchRequired}
+                          required={singleBatchRequired}
                         >
-                          <option value="">Select Batch</option>
+                          <option value="">
+                            {singleBatchRequired
+                              ? "Select Batch"
+                              : "Not required for this class"}
+                          </option>
                           {batches.map((batch) => (
                             <option key={batch} value={batch}>
                               {batch}
@@ -1249,7 +1301,9 @@ const Results = () => {
                           value={selectedStudent}
                           onChange={(e) => setSelectedStudent(e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          disabled={!selectedBatch}
+                          disabled={
+                            !selectedClass || (singleBatchRequired && !selectedBatch)
+                          }
                           required
                         >
                           <option value="">Select Student</option>
@@ -1397,16 +1451,23 @@ const Results = () => {
                       {/* Batch Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Batch <span className="text-red-500">*</span>
+                          {getBatchLabelForClass(bulkClass)}
+                          {bulkBatchRequired && (
+                            <span className="text-red-500">*</span>
+                          )}
                         </label>
                         <select
                           value={bulkBatch}
                           onChange={(e) => setBulkBatch(e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          disabled={!bulkClass}
-                          required
+                          disabled={!bulkClass || !bulkBatchRequired}
+                          required={bulkBatchRequired}
                         >
-                          <option value="">Select Batch</option>
+                          <option value="">
+                            {bulkBatchRequired
+                              ? "Select Batch"
+                              : "Not required for this class"}
+                          </option>
                           {batches.map((batch) => (
                             <option key={batch} value={batch}>
                               {batch}
@@ -1632,7 +1693,10 @@ const Results = () => {
                       {/* Batch Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Batch <span className="text-red-500">*</span>
+                          {getBatchLabelForClass(searchClass)}
+                          {searchBatchRequired && (
+                            <span className="text-red-500">*</span>
+                          )}
                         </label>
                         <select
                           value={searchBatch}
@@ -1641,9 +1705,13 @@ const Results = () => {
                             setSearchResults([]);
                           }}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          disabled={!searchClass}
+                          disabled={!searchClass || !searchBatchRequired}
                         >
-                          <option value="">Select Batch</option>
+                          <option value="">
+                            {searchBatchRequired
+                              ? "Select Batch"
+                              : "Not required for this class"}
+                          </option>
                           {searchBatches.map((batch) => (
                             <option key={batch} value={batch}>
                               {batch}
@@ -1692,7 +1760,9 @@ const Results = () => {
                         <button
                           onClick={handleSearchResults}
                           disabled={
-                            searchLoading || !searchClass || !searchBatch
+                            searchLoading ||
+                            !searchClass ||
+                            (searchBatchRequired && !searchBatch)
                           }
                           className="flex-1 px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
@@ -1721,7 +1791,8 @@ const Results = () => {
                       <div className="overflow-x-auto">
                         <div className="mb-4">
                           <h3 className="text-lg font-medium text-gray-900">
-                            Results for {searchClass} - {searchBatch} (
+                            Results for {searchClass}
+                            {searchBatchRequired && searchBatch ? ` - ${searchBatch}` : ""} (
                             {searchResults.length} records)
                           </h3>
                           {(searchStudent || searchSubject) && (
@@ -1884,7 +1955,7 @@ const Results = () => {
                         />
                       </div>
                     </>
-                  ) : searchClass && searchBatch && !searchLoading ? (
+                  ) : searchClass && (!searchBatchRequired || searchBatch) && !searchLoading ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
                       <svg
                         className="mx-auto h-12 w-12 text-gray-400"
@@ -1903,8 +1974,10 @@ const Results = () => {
                         No results found
                       </h3>
                       <p className="mt-1 text-sm text-gray-500">
-                        No results have been uploaded for {searchClass} -{" "}
-                        {searchBatch}
+                        No results have been uploaded for {searchClass}
+                        {searchBatchRequired && searchBatch
+                          ? ` - ${searchBatch}`
+                          : ""}
                       </p>
                     </div>
                   ) : (
@@ -1926,7 +1999,7 @@ const Results = () => {
                         Search for results
                       </h3>
                       <p className="mt-1 text-sm text-gray-500">
-                        Select a class and batch to view results
+                        Select class{searchBatchRequired ? " and batch" : ""} to view results
                       </p>
                     </div>
                   )}
@@ -2124,3 +2197,4 @@ const Results = () => {
 };
 
 export default Results;
+

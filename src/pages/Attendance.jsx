@@ -1,16 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   collection,
   getDocs,
   doc,
   setDoc,
-  getDoc,
   query,
   where,
 } from "firebase/firestore";
 import { db } from "../config/firebase.config";
 import { USER_ROLES } from "../constants/roles";
+import {
+  getBatchLabelForClass,
+  isBatchRequiredForClass,
+  normalizeBatchForClass,
+} from "../utils/classBatchPolicy";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
@@ -25,12 +29,10 @@ const Attendance = () => {
   const [batches, setBatches] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedBatch, setSelectedBatch] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState("");
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0],
   );
-  const [currentStudentData, setCurrentStudentData] = useState(null);
   const [currentDateAttendance, setCurrentDateAttendance] = useState({});
   const [pendingChanges, setPendingChanges] = useState({});
   const [saving, setSaving] = useState(false);
@@ -62,6 +64,8 @@ const Attendance = () => {
   const [studentCurrentPage, setStudentCurrentPage] = useState(1);
   const [searchCurrentPage, setSearchCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const selectedBatchRequired = isBatchRequiredForClass(selectedClass);
+  const searchBatchRequired = isBatchRequiredForClass(searchClass);
 
   useEffect(() => {
     fetchData();
@@ -116,9 +120,7 @@ const Attendance = () => {
       }
 
       const studentData = studentSnapshot.docs[0].data();
-      setCurrentStudentData(studentData);
-
-      if (!studentData.class || !studentData.name || !studentData.batch) {
+      if (!studentData.class || !studentData.name) {
         setError(
           "Student data is incomplete. Please contact the administrator.",
         );
@@ -127,12 +129,14 @@ const Attendance = () => {
 
       // Fetch all attendance documents for the linked student
       const attendanceRef = collection(db, "attendance");
-      const q = query(
-        attendanceRef,
+      const constraints = [
         where("studentName", "==", studentData.name),
         where("class", "==", studentData.class),
-        where("batch", "==", studentData.batch),
-      );
+      ];
+      if (isBatchRequiredForClass(studentData.class)) {
+        constraints.push(where("batch", "==", studentData.batch || ""));
+      }
+      const q = query(attendanceRef, ...constraints);
       const snapshot = await getDocs(q);
 
       const records = snapshot.docs.map((doc) => ({
@@ -168,26 +172,26 @@ const Attendance = () => {
       }
 
       const studentData = usersSnapshot.docs[0].data();
-      setCurrentStudentData(studentData);
-
       if (!studentData.class || !studentData.name) {
         setError("No class or name assigned to your account");
         return;
       }
 
-      if (!studentData.batch) {
+      if (isBatchRequiredForClass(studentData.class) && !studentData.batch) {
         setError("No batch assigned to your account");
         return;
       }
 
       // Fetch all attendance documents for this student
       const attendanceRef = collection(db, "attendance");
-      const q = query(
-        attendanceRef,
+      const constraints = [
         where("studentName", "==", studentData.name),
         where("class", "==", studentData.class),
-        where("batch", "==", studentData.batch),
-      );
+      ];
+      if (isBatchRequiredForClass(studentData.class)) {
+        constraints.push(where("batch", "==", studentData.batch || ""));
+      }
+      const q = query(attendanceRef, ...constraints);
       const snapshot = await getDocs(q);
 
       const records = snapshot.docs.map((doc) => ({
@@ -234,6 +238,11 @@ const Attendance = () => {
   // Fetch batches when class is selected
   useEffect(() => {
     if (selectedClass) {
+      if (!isBatchRequiredForClass(selectedClass)) {
+        setBatches([]);
+        setSelectedBatch("");
+        return;
+      }
       const classBatches = [
         ...new Set(
           students
@@ -253,6 +262,11 @@ const Attendance = () => {
   // Update search batches when searchClass changes
   useEffect(() => {
     if (searchClass) {
+      if (!isBatchRequiredForClass(searchClass)) {
+        setSearchBatches([]);
+        setSearchBatch("");
+        return;
+      }
       const classBatches = [
         ...new Set(
           students
@@ -272,17 +286,20 @@ const Attendance = () => {
     }
   }, [searchClass, students]);
 
-  const fetchAttendanceForDate = async (classValue, date) => {
-    if (!classValue || !date || !selectedBatch) return;
+  const fetchAttendanceForDate = useCallback(async (classValue, date) => {
+    if (!classValue || !date) return;
+    if (isBatchRequiredForClass(classValue) && !selectedBatch) return;
 
     try {
       const attendanceRef = collection(db, "attendance");
-      const q = query(
-        attendanceRef,
+      const constraints = [
         where("class", "==", classValue),
-        where("batch", "==", selectedBatch),
         where("date", "==", date),
-      );
+      ];
+      if (isBatchRequiredForClass(classValue)) {
+        constraints.push(where("batch", "==", selectedBatch || ""));
+      }
+      const q = query(attendanceRef, ...constraints);
       const snapshot = await getDocs(q);
 
       const attendanceMap = {};
@@ -293,7 +310,7 @@ const Attendance = () => {
           (s) =>
             s.name === data.studentName &&
             s.class === data.class &&
-            s.batch === data.batch,
+            (!isBatchRequiredForClass(s.class) || s.batch === data.batch),
         );
         if (student) {
           attendanceMap[student.uid] = {
@@ -310,19 +327,27 @@ const Attendance = () => {
     } catch (err) {
       console.error("Error fetching attendance for date:", err);
     }
-  };
+  }, [selectedBatch, students]);
 
   useEffect(() => {
     if (
       (isTeacher || isAdmin) &&
       selectedClass &&
-      selectedBatch &&
+      (!selectedBatchRequired || selectedBatch) &&
       selectedDate
     ) {
       fetchAttendanceForDate(selectedClass, selectedDate);
       setPendingChanges({}); // Clear pending changes when filters change
     }
-  }, [selectedClass, selectedBatch, selectedDate, isTeacher, isAdmin]);
+  }, [
+    selectedClass,
+    selectedBatch,
+    selectedDate,
+    isTeacher,
+    isAdmin,
+    fetchAttendanceForDate,
+    selectedBatchRequired,
+  ]);
 
   const handleMarkAttendance = (studentId, status) => {
     if (!isAdmin && !isTeacher) {
@@ -386,14 +411,19 @@ const Attendance = () => {
       const savePromises = Object.keys(pendingChanges).map(
         async (studentUid) => {
           const change = pendingChanges[studentUid];
+          const normalizedBatch = normalizeBatchForClass(
+            selectedClass,
+            selectedBatch,
+          );
+          const batchSegment = normalizedBatch || "nobatch";
 
           // Create document ID: studentname_class_batch_day_date
-          const docId = `${sanitize(change.studentName)}_${sanitize(selectedClass)}_${sanitize(selectedBatch)}_${sanitize(dayOfWeek)}_${selectedDate}`;
+          const docId = `${sanitize(change.studentName)}_${sanitize(selectedClass)}_${sanitize(batchSegment)}_${sanitize(dayOfWeek)}_${selectedDate}`;
 
           const attendanceData = {
             studentName: change.studentName,
             class: selectedClass,
-            batch: change.batch,
+            batch: normalizedBatch,
             date: selectedDate,
             dayOfWeek: dayOfWeek,
             status: change.status,
@@ -457,7 +487,6 @@ const Attendance = () => {
     const expectedHeaders = [
       "STUDENT_NAME",
       "CLASS",
-      "BATCH",
       "DATE",
       "TIME IN",
       "TIME OUT",
@@ -491,11 +520,20 @@ const Attendance = () => {
       if (
         !row["STUDENT_NAME"] ||
         !row["CLASS"] ||
-        !row["BATCH"] ||
         !row["DATE"]
       ) {
         errors.push(
-          `Row ${i + 1}: Missing required fields (STUDENT_NAME, CLASS, BATCH, or DATE)`,
+          `Row ${i + 1}: Missing required fields (STUDENT_NAME, CLASS, or DATE)`,
+        );
+        continue;
+      }
+
+      if (
+        isBatchRequiredForClass(row["CLASS"]) &&
+        !row["BATCH"]
+      ) {
+        errors.push(
+          `Row ${i + 1}: BATCH is required for ${row["CLASS"]}`,
         );
         continue;
       }
@@ -512,7 +550,7 @@ const Attendance = () => {
       data.push({
         studentName: row["STUDENT_NAME"],
         class: row["CLASS"],
-        batch: row["BATCH"],
+        batch: normalizeBatchForClass(row["CLASS"], row["BATCH"]),
         date: row["DATE"],
         timeIn: row["TIME IN"] || "",
         timeOut: row["TIME OUT"] || "",
@@ -553,7 +591,8 @@ const Attendance = () => {
             (s) =>
               s.name === record.studentName &&
               s.class === record.class &&
-              s.batch === record.batch,
+              (!isBatchRequiredForClass(record.class) ||
+                s.batch === record.batch),
           );
 
           if (!matchingStudent) {
@@ -566,12 +605,13 @@ const Attendance = () => {
           });
 
           // Create document ID: studentname_class_batch_day_date
-          const docId = `${sanitize(record.studentName)}_${sanitize(record.class)}_${sanitize(record.batch)}_${sanitize(dayOfWeek)}_${record.date}`;
+          const batchSegment = record.batch || "nobatch";
+          const docId = `${sanitize(record.studentName)}_${sanitize(record.class)}_${sanitize(batchSegment)}_${sanitize(dayOfWeek)}_${record.date}`;
 
           const attendanceData = {
             studentName: matchingStudent.name,
             class: record.class,
-            batch: matchingStudent.batch,
+            batch: normalizeBatchForClass(record.class, matchingStudent.batch),
             date: record.date,
             dayOfWeek: dayOfWeek,
             status: "present",
@@ -622,7 +662,7 @@ const Attendance = () => {
       if (searchClass) {
         conditions.push(where("class", "==", searchClass));
       }
-      if (searchBatch) {
+      if (searchBatchRequired && searchBatch) {
         conditions.push(where("batch", "==", searchBatch));
       }
       if (searchDate) {
@@ -737,9 +777,11 @@ const Attendance = () => {
   };
 
   const filteredStudents =
-    selectedClass && selectedBatch
+    selectedClass && (!selectedBatchRequired || selectedBatch)
       ? students.filter(
-          (s) => s.class === selectedClass && s.batch === selectedBatch,
+          (s) =>
+            s.class === selectedClass &&
+            (!selectedBatchRequired || s.batch === selectedBatch),
         )
       : [];
 
@@ -747,9 +789,9 @@ const Attendance = () => {
     return (
       <>
         <Navbar />
-        <div className="flex bg-gray-50 min-h-screen">
-          <Sidebar />
-          <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+          <Sidebar mobileTopBarMode="inline" />
+          <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <p className="text-gray-600">Loading attendance data...</p>
           </div>
         </div>
@@ -761,25 +803,28 @@ const Attendance = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="bg-white shadow rounded-lg mb-6">
-              <div className="px-4 py-5 sm:px-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                  Attendance
-                </h1>
-                <p className="mt-1 text-sm text-gray-500">
-                  {isStudent || isParent
-                    ? isParent
-                      ? "View your child's attendance records"
-                      : "View your attendance records"
-                    : "Mark and manage student attendance"}
-                </p>
+            <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 mb-8 text-white shadow-2xl bg-linear-to-br from-green-600 via-emerald-500 to-teal-500">
+              <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-300/25 blur-3xl" />
+              <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-teal-300/20 blur-3xl" />
+              <div className="relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 ring-1 ring-white/25 text-xs font-semibold uppercase tracking-wide">
+                Attendance Module
               </div>
-            </div>
+              <h1 className="relative mt-4 text-2xl sm:text-3xl font-extrabold leading-tight">
+                Attendance
+              </h1>
+              <p className="relative mt-2 text-sm sm:text-base text-white/90 max-w-2xl">
+                {isStudent || isParent
+                  ? isParent
+                    ? "View your child's attendance records and history"
+                    : "View your personal attendance records and history"
+                  : "Mark, track and manage student attendance records"}
+              </p>
+            </section>
 
             {/* Messages */}
             {error && (
@@ -795,12 +840,10 @@ const Attendance = () => {
 
             {/* Student/Parent View */}
             {(isStudent || isParent) && (
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-4 py-5 sm:px-6 bg-gray-50">
-                  <h2 className="text-lg font-medium text-gray-900">
-                    {isParent
-                      ? "My Child's Attendance Records"
-                      : "My Attendance Records"}
+              <div className="bg-white shadow-sm rounded-2xl overflow-hidden border border-slate-200">
+                <div className="px-4 py-4 sm:px-6 bg-linear-to-r from-green-50 to-emerald-50 border-b border-emerald-100">
+                  <h2 className="text-lg font-bold text-emerald-800">
+                    {isParent ? "My Child's Attendance Records" : "My Attendance Records"}
                   </h2>
                 </div>
 
@@ -973,14 +1016,19 @@ const Attendance = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Batch
+                          {getBatchLabelForClass(searchClass)}
                         </label>
                         <select
                           value={searchBatch}
                           onChange={(e) => setSearchBatch(e.target.value)}
+                          disabled={!searchBatchRequired}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         >
-                          <option value="">All Batches</option>
+                          <option value="">
+                            {searchBatchRequired
+                              ? "All Batches"
+                              : "Not required for this class"}
+                          </option>
                           {searchBatches.map((batch) => (
                             <option key={batch} value={batch}>
                               {batch}
@@ -1294,7 +1342,7 @@ const Attendance = () => {
                     {/* Filters */}
                     <div className="bg-white shadow rounded-lg mb-6 p-6">
                       <h2 className="text-lg font-medium text-gray-900 mb-4">
-                        Select Class, Batch & Date
+                        Select Class{selectedBatchRequired ? ", Batch" : ""} & Date
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
@@ -1316,15 +1364,22 @@ const Attendance = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Batch <span className="text-red-500">*</span>
+                            {getBatchLabelForClass(selectedClass)}
+                            {selectedBatchRequired && (
+                              <span className="text-red-500">*</span>
+                            )}
                           </label>
                           <select
                             value={selectedBatch}
                             onChange={(e) => setSelectedBatch(e.target.value)}
-                            disabled={!selectedClass}
+                            disabled={!selectedClass || !selectedBatchRequired}
                             className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                           >
-                            <option value="">Select Batch</option>
+                            <option value="">
+                              {selectedBatchRequired
+                                ? "Select Batch"
+                                : "Not required for this class"}
+                            </option>
                             {batches.map((batch) => (
                               <option key={batch} value={batch}>
                                 {batch}
@@ -1347,7 +1402,7 @@ const Attendance = () => {
                     </div>
 
                     {/* Students List */}
-                    {selectedClass && selectedBatch ? (
+                    {selectedClass && (!selectedBatchRequired || selectedBatch) ? (
                       <>
                         {/* Save Button */}
                         {Object.keys(pendingChanges).length > 0 && (
@@ -1426,7 +1481,10 @@ const Attendance = () => {
                         <div className="bg-white shadow rounded-lg overflow-hidden">
                           <div className="px-4 py-5 sm:px-6 bg-gray-50">
                             <h2 className="text-lg font-medium text-gray-900">
-                              Mark Attendance - {selectedClass} {selectedBatch}{" "}
+                              Mark Attendance - {selectedClass}
+                              {selectedBatchRequired && selectedBatch
+                                ? ` ${selectedBatch}`
+                                : ""}{" "}
                               - {new Date(selectedDate).toLocaleDateString()}
                             </h2>
                             <p className="mt-1 text-sm text-gray-500">
@@ -1459,7 +1517,7 @@ const Attendance = () => {
                                       className="px-6 py-8 text-center text-gray-500"
                                     >
                                       No students found in {selectedClass}{" "}
-                                      {selectedBatch}
+                                      {selectedBatchRequired ? selectedBatch : ""}
                                     </td>
                                   </tr>
                                 ) : (
@@ -1548,10 +1606,10 @@ const Attendance = () => {
                           />
                         </svg>
                         <h3 className="mt-2 text-sm font-medium text-gray-900">
-                          Select Class and Batch
+                          Select Class{selectedBatchRequired ? " and Batch" : ""}
                         </h3>
                         <p className="mt-1 text-sm text-gray-500">
-                          Please select a class and batch to view and mark
+                          Please select class{selectedBatchRequired ? " and batch" : ""} to view and mark
                           attendance.
                         </p>
                       </div>
@@ -1574,9 +1632,10 @@ const Attendance = () => {
                           </h3>
                           <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
                             <li>
-                              Columns: STUDENT_NAME, CLASS, BATCH, DATE, TIME
+                              Columns: STUDENT_NAME, CLASS, DATE, TIME
                               IN, TIME OUT
                             </li>
+                            <li>BATCH is required only for Class 11 and Class 12</li>
                             <li>Date format: YYYY-MM-DD (e.g., 2026-02-08)</li>
                             <li>
                               Student name must match exactly with registered
@@ -1963,3 +2022,4 @@ const Attendance = () => {
 };
 
 export default Attendance;
+

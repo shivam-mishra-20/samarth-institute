@@ -8,28 +8,54 @@ const AboutSection = () => {
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           {/* Left Side - Video */}
           <div className="flex justify-center w-full lg:w-1/2">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50 group w-full max-w-[300px] md:max-w-[360px]"
-            >
-              <div className="aspect-[9/16] bg-black relative">
-                <video
-                  className="absolute inset-0 w-full h-full object-cover"
-                  controls
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  poster="/logo.png"
-                >
-                  <source src="/samarth-institute.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </motion.div>
+            <div className="w-full max-w-75 space-y-4 md:max-w-90">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50 group w-full"
+              >
+                <div className="aspect-9/16 bg-black relative">
+                  <video
+                    className="absolute inset-0 w-full h-full object-cover"
+                    controls
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    poster="/logo.png"
+                  >
+                    <source src="/samarth-institute.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.55, delay: 0.15 }}
+                className="relative overflow-hidden rounded-2xl border border-samarth-blue-100 bg-linear-to-br from-samarth-blue-900 via-samarth-blue-800 to-samarth-blue-700 p-5 text-white shadow-xl"
+              >
+                <div className="absolute inset-y-0 left-0 w-1.5 bg-yellow-400" />
+                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
+                <div className="relative pl-3">
+      
+                  <h3 className="mt-2 text-xl font-extrabold tracking-wide text-yellow-300 sm:text-2xl">
+                    Mrs. Tejashri Jadhav
+                  </h3>
+                  <p className="mt-1 text-sm font-semibold text-white/95 sm:text-base">
+                    Founder & Director
+                  </p>
+                  <div className="mt-3 h-px w-full bg-white/20" />
+                  <p className="mt-3 text-sm leading-relaxed text-blue-50/90">
+                    M.Sc Biotechnology, PGDM Bioinformatics, B.Ed
+                  </p>
+                </div>
+              </motion.div>
+            </div>
           </div>
 
           {/* Right Side - Text Content */}

@@ -30,7 +30,7 @@ const FEE_STATUS_COLORS = {
 };
 
 const StudentFees = () => {
-  const { user, userData, isParent } = useAuth();
+  const { user, userData, isParent, isStudent } = useAuth();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -39,34 +39,48 @@ const StudentFees = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isParent) {
+    if (!isParent && !isStudent) {
       navigate("/unauthorized");
       return;
     }
     fetchFeeData();
-  }, [isParent, userData]);
+  }, [isParent, isStudent, userData, user]);
 
   const fetchFeeData = async () => {
     try {
       setLoading(true);
       setError("");
 
-      if (!userData?.studentUid) {
-        setError("No linked student found. Please contact administrator.");
-        setLoading(false);
-        return;
+      let studentsSnapshot;
+
+      if (isStudent) {
+        const ownStudentQuery = query(
+          collection(db, "users"),
+          where("uid", "==", user.uid),
+          where("role", "==", USER_ROLES.STUDENT),
+        );
+        studentsSnapshot = await getDocs(ownStudentQuery);
+      } else {
+        if (!userData?.studentUid) {
+          setError("No linked student found. Please contact administrator.");
+          setLoading(false);
+          return;
+        }
+
+        const linkedStudentQuery = query(
+          collection(db, "users"),
+          where("customUid", "==", userData.studentUid),
+          where("role", "==", USER_ROLES.STUDENT),
+        );
+        studentsSnapshot = await getDocs(linkedStudentQuery);
       }
 
-      // Find the linked student
-      const studentsQuery = query(
-        collection(db, "users"),
-        where("customUid", "==", userData.studentUid),
-        where("role", "==", USER_ROLES.STUDENT),
-      );
-      const studentsSnapshot = await getDocs(studentsQuery);
-
       if (studentsSnapshot.empty) {
-        setError("Linked student not found. Please contact administrator.");
+        setError(
+          isStudent
+            ? "Student profile not found. Please contact administrator."
+            : "Linked student not found. Please contact administrator.",
+        );
         setLoading(false);
         return;
       }
@@ -123,9 +137,9 @@ const StudentFees = () => {
     return (
       <>
         <Navbar />
-        <div className="flex bg-gray-50 min-h-screen">
-          <Sidebar />
-          <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+          <Sidebar mobileTopBarMode="inline" />
+          <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <p className="text-gray-600">Loading fee information...</p>
           </div>
         </div>
@@ -137,29 +151,34 @@ const StudentFees = () => {
   return (
     <>
       <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <div className="flex-1 pt-28 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row bg-slate-50 min-h-screen">
+        <Sidebar mobileTopBarMode="inline" />
+        <div className="flex-1 pt-3 sm:pt-4 md:pt-28 py-6 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
-            <div className="bg-white shadow rounded-lg mb-6">
-              <div className="px-4 py-5 sm:px-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl bg-linear-to-br from-yellow-500 via-amber-500 to-orange-500 mb-8">
+              <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-14 -left-10 h-32 w-32 rounded-full bg-amber-100/30 blur-2xl" />
+              <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 ring-1 ring-white/25 text-xs font-semibold uppercase tracking-wide">
+                    Fee Snapshot
+                  </div>
+                  <h1 className="mt-4 text-2xl sm:text-3xl font-extrabold leading-tight">
                     My Child's Fees
                   </h1>
-                  <p className="mt-1 text-sm text-gray-500">
-                    View fee status and payment history
+                  <p className="mt-2 text-sm sm:text-base text-white/90">
+                    View fee status and payment history in one place.
                   </p>
                 </div>
                 <button
                   onClick={() => navigate(-1)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white/15 text-white ring-1 ring-white/35 hover:bg-white/25 transition-colors self-start"
                 >
                   ← Back
                 </button>
               </div>
-            </div>
+            </section>
 
             {/* Error Message */}
             {error && (
@@ -337,7 +356,7 @@ const StudentFees = () => {
                                   {payment.paymentMethod?.replace("_", " ") ||
                                     "Cash"}
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono text-xs">
+                                <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 font-mono">
                                   {payment.receiptNumber || "—"}
                                 </td>
                               </tr>
@@ -381,3 +400,4 @@ const StudentFees = () => {
 };
 
 export default StudentFees;
+

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { USER_ROLES } from "../constants/roles";
 
-const Sidebar = () => {
+const Sidebar = ({ mobileTopBarMode = "fixed" }) => {
   const { user, userData, userRole, isTeacher, isStudent, isParent, logout } =
     useAuth();
   const location = useLocation();
@@ -184,6 +184,156 @@ const Sidebar = () => {
       ],
     },
     {
+      name: "School Updates",
+      path: "/school-updates",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h11l5 5v9a2 2 0 01-2 2zM17 20v-8H7v8"
+          />
+        </svg>
+      ),
+      roles: [
+        USER_ROLES.STUDENT,
+        USER_ROLES.TEACHER,
+        USER_ROLES.ADMIN,
+        USER_ROLES.PARENT,
+      ],
+    },
+    {
+      name: "Assignments",
+      path: "/assignments",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+      ),
+      roles: [
+        USER_ROLES.STUDENT,
+        USER_ROLES.TEACHER,
+        USER_ROLES.ADMIN,
+        USER_ROLES.PARENT,
+      ],
+    },
+    {
+      name: "Homework",
+      path: "/homework",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6.253v11.494m-7-5.747h14"
+          />
+        </svg>
+      ),
+      roles: [
+        USER_ROLES.STUDENT,
+        USER_ROLES.TEACHER,
+        USER_ROLES.ADMIN,
+        USER_ROLES.PARENT,
+      ],
+    },
+    {
+      name: "Exam Schedule",
+      path: "/exams",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10m-5 4v4m-4 0h8a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"
+          />
+        </svg>
+      ),
+      roles: [
+        USER_ROLES.STUDENT,
+        USER_ROLES.TEACHER,
+        USER_ROLES.ADMIN,
+        USER_ROLES.PARENT,
+      ],
+    },
+    {
+      name: "Timetable",
+      path: "/timetable",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
+      roles: [
+        USER_ROLES.STUDENT,
+        USER_ROLES.TEACHER,
+        USER_ROLES.ADMIN,
+        USER_ROLES.PARENT,
+      ],
+    },
+    {
+      name: "Communication",
+      path: "/communication",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+          />
+        </svg>
+      ),
+      roles: [
+        USER_ROLES.STUDENT,
+        USER_ROLES.TEACHER,
+        USER_ROLES.ADMIN,
+        USER_ROLES.PARENT,
+      ],
+    },
+    {
       name: "Manage Announcements",
       path: "/manage-announcements",
       icon: (
@@ -330,24 +480,44 @@ const Sidebar = () => {
   );
 
   const isActivePath = (path) => location.pathname === path;
+  const activeMenuItem =
+    visibleMenuItems.find((item) => item.path === location.pathname) ||
+    visibleMenuItems[0];
+  const mobilePageTitle = activeMenuItem?.name || "Dashboard";
+  const isInlineTopBar = mobileTopBarMode === "inline";
 
   return (
     <>
-      {/* ── Mobile hamburger button (fixed, always visible on small screens) ── */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="md:hidden fixed top-18 left-4 z-40 w-10 h-10 bg-white rounded-xl shadow-md border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-        aria-label="Open menu"
+      {/* ── Mobile top utility bar under navbar ── */}
+      <div
+        className={`md:hidden px-3 ${
+          isInlineTopBar
+            ? "w-full pt-22"
+            : "fixed top-22 left-0 right-0 z-30"
+        }`}
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+        <div className="mx-auto max-w-5xl border border-slate-200 bg-white/95 backdrop-blur-md rounded-lg px-2.5 py-1.5 shadow-sm">
+          <div className="flex items-center justify-between gap-3 min-h-9">
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="h-8 w-8 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+              aria-label="Open menu"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <p className="text-sm font-semibold text-slate-800 truncate text-right pr-1">
+              {mobilePageTitle}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* ── Mobile backdrop overlay ── */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
+          <Motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -362,7 +532,7 @@ const Sidebar = () => {
       {/* ── Mobile drawer ── */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.aside
+          <Motion.aside
             key="mobile-drawer"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
@@ -426,12 +596,12 @@ const Sidebar = () => {
                 Logout
               </button>
             </div>
-          </motion.aside>
+          </Motion.aside>
         )}
       </AnimatePresence>
 
       {/* ── Desktop sidebar (hidden on mobile) ── */}
-      <motion.aside
+      <Motion.aside
         initial="collapsed"
         animate={isCollapsed ? "collapsed" : "expanded"}
         variants={sidebarVariants}
@@ -440,14 +610,14 @@ const Sidebar = () => {
       >
         <div className="sticky top-28 h-[calc(100vh-7rem)] flex flex-col">
           {/* Toggle Button */}
-          <motion.button
+          <Motion.button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="absolute -right-3 top-4 z-10 w-6 h-6 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 flex items-center justify-center"
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <motion.svg
+            <Motion.svg
               animate={{ rotate: isCollapsed ? 180 : 0 }}
               transition={{ duration: 0.3 }}
               className="w-3 h-3"
@@ -456,14 +626,14 @@ const Sidebar = () => {
               stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </motion.svg>
-          </motion.button>
+            </Motion.svg>
+          </Motion.button>
 
           {/* Navigation Menu */}
           <nav className="flex-1 overflow-y-auto px-3 py-6">
             <div className="space-y-1">
               {visibleMenuItems.map((item, index) => (
-                <motion.div
+                <Motion.div
                   key={item.path}
                   custom={index}
                   initial="hidden"
@@ -481,7 +651,7 @@ const Sidebar = () => {
                   >
                     {/* Background Animation */}
                     {isActivePath(item.path) && (
-                      <motion.div
+                      <Motion.div
                         layoutId="activeBackground"
                         className="absolute inset-0 bg-indigo-600 rounded-lg shadow-md"
                         initial={false}
@@ -491,7 +661,7 @@ const Sidebar = () => {
 
                     {/* Hover Background */}
                     {hoveredItem === item.path && !isActivePath(item.path) && (
-                      <motion.div
+                      <Motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
@@ -500,18 +670,18 @@ const Sidebar = () => {
                     )}
 
                     {/* Icon */}
-                    <motion.span
+                    <Motion.span
                       className="shrink-0 relative z-10"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       {item.icon}
-                    </motion.span>
+                    </Motion.span>
 
                     {/* Text */}
                     <AnimatePresence mode="wait">
                       {!isCollapsed && (
-                        <motion.span
+                        <Motion.span
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -10 }}
@@ -519,17 +689,17 @@ const Sidebar = () => {
                           className="font-medium text-sm relative z-10 whitespace-nowrap"
                         >
                           {item.name}
-                        </motion.span>
+                        </Motion.span>
                       )}
                     </AnimatePresence>
                   </Link>
-                </motion.div>
+                </Motion.div>
               ))}
             </div>
           </nav>
 
           {/* User Section */}
-          <motion.div
+          <Motion.div
             className="border-t border-gray-200 p-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -537,7 +707,7 @@ const Sidebar = () => {
           >
             <AnimatePresence mode="wait">
               {!isCollapsed && (
-                <motion.div
+                <Motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
@@ -557,11 +727,11 @@ const Sidebar = () => {
                       {userData.batch ? ` - ${userData.batch}` : ""}
                     </p>
                   )}
-                </motion.div>
+                </Motion.div>
               )}
             </AnimatePresence>
 
-            <motion.button
+            <Motion.button
               onClick={handleLogout}
               className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors ${
                 isCollapsed ? "justify-center" : ""
@@ -570,7 +740,7 @@ const Sidebar = () => {
               whileHover={{ scale: 1.02, backgroundColor: "rgba(254, 226, 226, 0.5)" }}
               whileTap={{ scale: 0.98 }}
             >
-              <motion.svg
+              <Motion.svg
                 className="w-5 h-5"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -579,10 +749,10 @@ const Sidebar = () => {
                 transition={{ type: "spring", stiffness: 400 }}
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </motion.svg>
+              </Motion.svg>
               <AnimatePresence mode="wait">
                 {!isCollapsed && (
-                  <motion.span
+                  <Motion.span
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
@@ -590,15 +760,16 @@ const Sidebar = () => {
                     className="font-medium text-sm"
                   >
                     Logout
-                  </motion.span>
+                  </Motion.span>
                 )}
               </AnimatePresence>
-            </motion.button>
-          </motion.div>
+            </Motion.button>
+          </Motion.div>
         </div>
-      </motion.aside>
+      </Motion.aside>
     </>
   );
 };
 
 export default Sidebar;
+

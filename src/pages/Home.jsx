@@ -456,7 +456,7 @@ const Home = () => {
                     Experiences
                   </h2>
                   <p className="text-blue-100 text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
-                    At Samarth Classes, we believe in the power of education to
+                    At Samarth Institute, we believe in the power of education to
                     transform lives. Join our community today.
                   </p>
                   <Link
